@@ -47,6 +47,9 @@ export function LeyendaEstados({
   onToggleMinor,
   progresosMinors,
 }: LeyendaEstadosProps) {
+  const porcentajeCompletado = Math.min(100, (creditosAprobados / creditosTitulo) * 100);
+  const porcentajeProyectado = Math.min(100, (creditosProyectados / creditosTitulo) * 100);
+
   const minors: MinorTag[] = [
     "finanzas-cripto",
     "tecnologia-datos",
@@ -70,26 +73,26 @@ export function LeyendaEstados({
           <div className="mb-1 flex items-center justify-between text-xs text-slate-300">
             <span>Progreso total</span>
             <span>
-              {creditosAprobados}/{creditosTitulo} cr
+              {creditosAprobados}/{creditosTitulo} cr ({porcentajeCompletado.toFixed(1)}%)
             </span>
           </div>
           <div className="h-2 w-full rounded-full bg-slate-800">
             <div
               className="h-full rounded-full bg-indigo-400"
-              style={{ width: `${Math.min(100, (creditosAprobados / creditosTitulo) * 100)}%` }}
+              style={{ width: `${porcentajeCompletado}%` }}
             />
           </div>
           <div className="mt-2 mb-1 flex items-center justify-between text-[11px] text-slate-400">
             <span>Progreso proyectado (si aprobas lo cursando)</span>
             <span>
-              {creditosProyectados}/{creditosTitulo} cr
+              {creditosProyectados}/{creditosTitulo} cr ({porcentajeProyectado.toFixed(1)}%)
             </span>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
             <div
               className="h-full rounded-full"
               style={{
-                width: `${Math.min(100, (creditosProyectados / creditosTitulo) * 100)}%`,
+                width: `${porcentajeProyectado}%`,
                 backgroundImage:
                   "repeating-linear-gradient(135deg, rgba(56,189,248,0.9) 0px, rgba(56,189,248,0.9) 8px, rgba(14,116,144,0.95) 8px, rgba(14,116,144,0.95) 16px)",
               }}
