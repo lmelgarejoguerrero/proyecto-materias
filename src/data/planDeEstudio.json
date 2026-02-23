@@ -1,0 +1,1476 @@
+{
+  "plan": "L20",
+  "creditosTitulo": 192,
+  "materias": [
+    {
+      "id": "71.20",
+      "nombre": "Informatica General",
+      "cuatrimestre": 1,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "71.30",
+      "nombre": "Introduccion a la tecnologia informatica",
+      "cuatrimestre": 1,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "71.90",
+      "nombre": "Certificaciones tecnologicas",
+      "cuatrimestre": 1,
+      "creditos": 0,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.06",
+      "nombre": "Introduccion a la Administracion",
+      "cuatrimestre": 1,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.07",
+      "nombre": "Sistemas Contables",
+      "cuatrimestre": 1,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "93.21",
+      "nombre": "Algebra",
+      "cuatrimestre": 1,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "71.38",
+      "nombre": "Programacion web",
+      "cuatrimestre": 2,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["71.30"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.11",
+      "nombre": "Contabilidad Gerencial",
+      "cuatrimestre": 2,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.07"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.53",
+      "nombre": "Negocios en internet",
+      "cuatrimestre": 2,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["71.30", "81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "93.20",
+      "nombre": "Analisis Matematico",
+      "cuatrimestre": 2,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "94.60",
+      "nombre": "Panorama Historico Global",
+      "cuatrimestre": 2,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "94.61",
+      "nombre": "Filosofia",
+      "cuatrimestre": 2,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "61.12",
+      "nombre": "Gestion Financiera",
+      "cuatrimestre": 3,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.11", "81.07", "93.21"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "61.81",
+      "nombre": "Microeconomia",
+      "cuatrimestre": 3,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["93.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "71.88",
+      "nombre": "Gestion de Datos",
+      "cuatrimestre": 3,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": ["71.30", "71.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.20",
+      "nombre": "Comercializacion",
+      "cuatrimestre": 3,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "93.39",
+      "nombre": "Estadistica",
+      "cuatrimestre": 3,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": ["71.20", "93.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "61.82",
+      "nombre": "Macroeconomia",
+      "cuatrimestre": 4,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["93.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "61.87",
+      "nombre": "Derecho Publico y Privado I",
+      "cuatrimestre": 4,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["94.60", "94.61"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.29",
+      "nombre": "Gestion organizacional basada en procesos de negocio",
+      "cuatrimestre": 4,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.06", "71.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.32",
+      "nombre": "Analisis funcional de aplicaciones informaticas",
+      "cuatrimestre": 4,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["71.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "94.63",
+      "nombre": "Epistemologia y Heuristica",
+      "cuatrimestre": 4,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["94.61"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "94.64",
+      "nombre": "Practicas Expositivas",
+      "cuatrimestre": 4,
+      "creditos": 3,
+      "creditosRequeridos": 24,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "11.85",
+      "nombre": "Toma de Decisiones",
+      "cuatrimestre": 5,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": ["93.39", "81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.47",
+      "nombre": "Impuestos para la toma de decisiones I",
+      "cuatrimestre": 5,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.11", "61.82", "61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.57",
+      "nombre": "Arquitectura de soluciones digitales",
+      "cuatrimestre": 5,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.32", "71.88", "81.53"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "94.40",
+      "nombre": "Estructura de las Organizaciones",
+      "cuatrimestre": 5,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "11.83",
+      "nombre": "Gestion de Operaciones",
+      "cuatrimestre": 6,
+      "creditos": 6,
+      "creditosRequeridos": 0,
+      "correlativas": ["93.39", "81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.21",
+      "nombre": "Gestion de Ventas",
+      "cuatrimestre": 6,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.48",
+      "nombre": "Impuestos para la toma de decisiones II",
+      "cuatrimestre": 6,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.47"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.68",
+      "nombre": "Sistemas Integrados de Gestion I",
+      "cuatrimestre": 6,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.11", "81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "94.27",
+      "nombre": "Administracion de Recursos Humanos",
+      "cuatrimestre": 6,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.34",
+      "nombre": "Arquitectura empresarial",
+      "cuatrimestre": 7,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.57", "81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "81.42",
+      "nombre": "Estrategia Empresarial",
+      "cuatrimestre": 7,
+      "creditos": 3,
+      "creditosRequeridos": 144,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "obligatoria"
+    },
+    {
+      "id": "10.07",
+      "nombre": "Creatividad",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "10.09",
+      "nombre": "Formacion para Emprendedores",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["94.40"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "10.15",
+      "nombre": "Agroindustria",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.82"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "10.23",
+      "nombre": "Agroindustria II",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 96,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "11.79",
+      "nombre": "Sistemas y Modelos",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["93.39", "81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "11.84",
+      "nombre": "Gestion de Proyectos",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["93.39", "81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "14.24",
+      "nombre": "La Evolucion de la Calidad y la Mejora Continua",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "14.46",
+      "nombre": "Lean Manufacturing",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "14.59",
+      "nombre": "Lean Six Sigma White Belt",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "14.90",
+      "nombre": "Neurociencia y Liderazgo",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "14.94",
+      "nombre": "Business Model Implementation",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "14.95",
+      "nombre": "Economia de la Innovacion y la Produccion",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "14.96",
+      "nombre": "Herramientas para Ganar Productividad",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "14.97",
+      "nombre": "Diseno Circular: Sustentabilidad e innovacion en la Cadena de Valor",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "15.06",
+      "nombre": "Storytelling aplicado a los negocios",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": ["94.64"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "15.09",
+      "nombre": "Agile, Lean y Lean Six Sigma",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "15.65",
+      "nombre": "Logistica Internacional",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["11.83"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "17.22",
+      "nombre": "Calculo de Huella de Carbono en Organizaciones",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 96,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "17.23",
+      "nombre": "Triple Impacto: Estrategias para el Desarrollo Sostenible",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 96,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.02",
+      "nombre": "Economia del Mercado Laboral",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["61.82", "61.81", "94.27"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.04",
+      "nombre": "Sistema Monetario y Financiero en Argentina",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.82"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.05",
+      "nombre": "Economia de la Salud",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.07",
+      "nombre": "Mercado de Capitales",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.12"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.08",
+      "nombre": "Derecho Digital",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 0,
+      "correlativas": ["61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.11",
+      "nombre": "Derecho Laboral y Seguridad Social en la Empresa",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 0,
+      "correlativas": ["61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.13",
+      "nombre": "Practica Contractual",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 0,
+      "correlativas": ["61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.14",
+      "nombre": "Economia Internacional Real",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.82", "61.12"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.15",
+      "nombre": "Economia Internacional Monetaria",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.82", "61.12"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.30",
+      "nombre": "Econometria Aplicada",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["93.39", "61.82"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.34",
+      "nombre": "Valuacion de Empresas",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.12"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.88",
+      "nombre": "Derecho Publico y Privado II",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.92",
+      "nombre": "Derecho Aduanero",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.26", "61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "61.93",
+      "nombre": "Estrategia Financiera",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["61.12"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.04",
+      "nombre": "Teoria de Juegos y Estrategia",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.82", "61.81"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.05",
+      "nombre": "Responsabilidad Social Empresaria",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.13",
+      "nombre": "Futuros Posibles",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.14",
+      "nombre": "Product Management",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.53"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.16",
+      "nombre": "Negociacion",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.17",
+      "nombre": "Finanzas y Programacion",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.18",
+      "nombre": "Taller de Simulacion Comercial",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.24",
+      "nombre": "Internacionalizacion de la Empresa",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.26",
+      "nombre": "Comercio Exterior",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.43",
+      "nombre": "Ciclo de charlas sobre estrategia empresarial",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 144,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.46",
+      "nombre": "Auditoria General y de sistemas",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.49",
+      "nombre": "Branding y Comunicacion",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.51",
+      "nombre": "Gestion de Empresas Familiares",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.58",
+      "nombre": "Service Design",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.59",
+      "nombre": "Gestion de Servicios",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.64",
+      "nombre": "Gestion y Sistemas de informacion de la Logistica Internacional",
+      "cuatrimestre": 9,
+      "creditos": 6,
+      "creditosRequeridos": 48,
+      "correlativas": ["11.83"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.65",
+      "nombre": "Logistica Internacional",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["11.83"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.66",
+      "nombre": "Logistica Internacional Aplicada",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["11.83", "81.26"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.67",
+      "nombre": "Logistica E-commerce",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["11.83"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.71",
+      "nombre": "Marketing avanzado",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.82",
+      "nombre": "Growth Hacking",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.86",
+      "nombre": "Gestion de la Experiencia del Usuario (CX, UX, UI)",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "81.94",
+      "nombre": "Experiencia Inmersiva de Innovacion Tecnologica",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.80",
+      "nombre": "Serv. de Exc. Lean aplic. a los Serv y Princ. de Lean Office",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.88",
+      "nombre": "Estudio de Casos con Grandes Volumenes de Datos",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.89",
+      "nombre": "Framing: How Politicians Debate",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.91",
+      "nombre": "Responsible Innovation: Ethics, Safety and Technology",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.92",
+      "nombre": "An Introduction to Credit Risk Management",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.93",
+      "nombre": "Diseno de Producto",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.94",
+      "nombre": "Demand Forecasting",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.95",
+      "nombre": "Analytics",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.96",
+      "nombre": "Negocios en la era de internet",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.97",
+      "nombre": "Introduccion a Estrategia",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.98",
+      "nombre": "Introduccion a la Consultoria",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.99",
+      "nombre": "Gestion de la Innovacion",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "94.07",
+      "nombre": "Cultura Latinoamericana",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "94.09",
+      "nombre": "Cultura, Identidad y Politica",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "94.11",
+      "nombre": "Sociologia Politica",
+      "cuatrimestre": 9,
+      "creditos": 6,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "94.13",
+      "nombre": "Gestion de Organizaciones Sociales",
+      "cuatrimestre": 9,
+      "creditos": 6,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.06"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "94.19",
+      "nombre": "Comportamiento Organizacional",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["94.40"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "94.42",
+      "nombre": "Comunicacion Estrategica",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "94.62",
+      "nombre": "Etica en los Negocios",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "23.15",
+      "nombre": "Realidad Virtual",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.45", "81.28", "93.21"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "71.22",
+      "nombre": "Sistemas de Inteligencia Artificial",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "71.45",
+      "nombre": "Estructura de Datos y Programacion",
+      "cuatrimestre": 10,
+      "creditos": 6,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "71.79",
+      "nombre": "Introduccion a las bases de datos",
+      "cuatrimestre": 10,
+      "creditos": 6,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "72.74",
+      "nombre": "Visualizacion de Informacion",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "72.80",
+      "nombre": "Big Data",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.88"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "73.84",
+      "nombre": "Ciencia de Datos Aplicada",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["71.22"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.19",
+      "nombre": "Marketing Digital",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.20"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.23",
+      "nombre": "Comercio Electronico",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.53"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.28",
+      "nombre": "Tecnologias exponenciales",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 120,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.33",
+      "nombre": "Diseno de aplicaciones informaticas",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.32"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.38",
+      "nombre": "Integracion de Procesos de Negocios y Aplicaciones Informaticas",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.30", "71.20", "81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.54",
+      "nombre": "Aplicaciones en Internet",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.30"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.69",
+      "nombre": "Sistemas Integrados de Gestion Empresaria II",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["61.12", "81.68"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.72",
+      "nombre": "Introduccion a la realidad virtual",
+      "cuatrimestre": 10,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.73",
+      "nombre": "Introduccion a la IOT",
+      "cuatrimestre": 10,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.74",
+      "nombre": "Introduccion a la realidad aumentada",
+      "cuatrimestre": 10,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.75",
+      "nombre": "Fund. del desarrollo de software y analisis de datos en Python",
+      "cuatrimestre": 10,
+      "creditos": 1,
+      "creditosRequeridos": 71,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.76",
+      "nombre": "Tecnologias para las Finanzas",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.57", "61.12"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.83",
+      "nombre": "Tecnologia e Innovacion Aplicada a la Industria",
+      "cuatrimestre": 10,
+      "creditos": 1,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.84",
+      "nombre": "ERP Action Lab",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.11", "81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.85",
+      "nombre": "CRM Action Lab",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.21", "81.29"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.87",
+      "nombre": "Taller de Sistemas Integrados de Gestion Empresaria",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.88",
+      "nombre": "Taller de modelado Avanzado",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.89",
+      "nombre": "Taller de Sistemas Integrados de Gestion Empresaria II",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.91",
+      "nombre": "Inteligencia Artificial Aplicada a los Negocios",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.38"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "82.06",
+      "nombre": "Plataformas de Computacion Cognitiva",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["71.38"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "82.07",
+      "nombre": "Blockchain (Moneda digital descentralizada)",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.53"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "82.08",
+      "nombre": "Cloud Computing",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "82.21",
+      "nombre": "Factibilidad de Proyectos Data Driven",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 140,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "82.22",
+      "nombre": "Inteligencia Artificial Generativa",
+      "cuatrimestre": 10,
+      "creditos": 1,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.57"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "82.23",
+      "nombre": "Marketing Analytics",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["93.39", "81.20", "71.88"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "94.15",
+      "nombre": "Propiedad Intelectual y Nuevas Tecnologias",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 48,
+      "correlativas": ["81.53", "61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "81.95",
+      "nombre": "Proyecto de lanzamiento de productos o servicios (Trabajo Final)",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.48", "11.83", "61.12", "81.57", "81.42"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-proyecto-final"
+    },
+    {
+      "id": "81.96",
+      "nombre": "Diagnostico Empresario y Plan de Implementacion de Sistemas (TF)",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.48", "11.83", "61.12", "81.57", "81.42"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-proyecto-final"
+    },
+    {
+      "id": "81.97",
+      "nombre": "Diagnostico Empresario y Plan de Accion (Trabajo Final)",
+      "cuatrimestre": 10,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["81.48", "11.83", "81.57", "61.12", "81.42"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-proyecto-final"
+    },
+    {
+      "id": "94.90",
+      "nombre": "Ingles I (analista)",
+      "cuatrimestre": 10,
+      "creditos": 0,
+      "creditosRequeridos": 0,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "skills-complementarias"
+    },
+    {
+      "id": "94.91",
+      "nombre": "Ingles II (licenciado)",
+      "cuatrimestre": 10,
+      "creditos": 0,
+      "creditosRequeridos": 0,
+      "correlativas": ["94.90"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "skills-complementarias"
+    }
+  ]
+}
