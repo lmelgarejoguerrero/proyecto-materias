@@ -75,7 +75,7 @@ export function MallaApp() {
 
     for (const materia of materias) {
       const estado = progreso[materia.id] ?? "pendiente";
-      if (estado === "cursando") {
+      if (estado === "cursando" || estado === "regular") {
         total += materia.creditos;
       }
     }

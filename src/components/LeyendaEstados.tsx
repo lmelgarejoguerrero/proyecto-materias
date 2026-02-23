@@ -83,7 +83,7 @@ export function LeyendaEstados({
             />
           </div>
           <div className="mt-2 mb-1 flex items-center justify-between text-[11px] text-slate-400">
-            <span>Progreso proyectado (si aprobas lo cursando)</span>
+            <span>Progreso proyectado (sumando cursando + regular)</span>
             <span>
               {creditosProyectados}/{creditosTitulo} cr ({porcentajeProyectado.toFixed(1)}%)
             </span>
