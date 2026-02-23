@@ -100,10 +100,13 @@ export function MallaGrid({
 
   return (
     <div className="h-full overflow-x-auto overflow-y-hidden pb-2">
-      <div className="relative min-w-max px-4 py-4">
-        <div className="relative z-10 grid grid-flow-col auto-cols-[19rem] gap-4">
+      <div className="relative h-full min-w-max px-4 py-4">
+        <div className="relative z-10 grid h-full grid-flow-col auto-cols-[19rem] gap-4">
           {materiasPorCuatrimestre.map(([cuatrimestre, materiasColumna]) => (
-            <section key={cuatrimestre} className="rounded-2xl border border-slate-800/60 bg-slate-950/40 p-2">
+            <section
+              key={cuatrimestre}
+              className="flex h-full min-h-0 flex-col rounded-2xl border border-slate-800/60 bg-slate-950/40 p-2"
+            >
               <header className="sticky top-0 z-20 mb-2 rounded-lg border border-slate-700/70 bg-slate-900/90 px-3 py-2 backdrop-blur">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-100">
                   {etiquetaCuatrimestre(cuatrimestre)}
@@ -113,7 +116,7 @@ export function MallaGrid({
                 </p>
               </header>
 
-              <div className="max-h-[calc(100vh-260px)] space-y-2.5 overflow-y-auto pr-1">
+              <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-1">
                 {materiasColumna.map((materia) => (
                   <div key={materia.id}>
                     <MateriaCard
@@ -143,7 +146,7 @@ export function MallaGrid({
             </section>
           ))}
 
-          <section className="rounded-2xl border border-slate-800/60 bg-slate-950/40 p-2">
+          <section className="flex h-full min-h-0 flex-col rounded-2xl border border-slate-800/60 bg-slate-950/40 p-2">
             <header className="sticky top-0 z-20 mb-2 rounded-lg border border-slate-700/70 bg-slate-900/90 px-3 py-2 backdrop-blur">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-100">
                 {etiquetaCuatrimestre(8)}
@@ -151,7 +154,7 @@ export function MallaGrid({
               <p className="mt-0.5 text-xs text-slate-400">Contenedores de creditos</p>
             </header>
 
-            <div className="space-y-2.5">
+            <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-1">
               {(
                 [
                   ["gestion", "Electivas Gestion (27 cr)"],
@@ -193,7 +196,7 @@ export function MallaGrid({
           <section
             className={`rounded-2xl border bg-slate-950/40 p-2 ${
               slotActivo === "gestion" ? "border-cyan-500/70" : "border-slate-800/60"
-            }`}
+            } flex h-full min-h-0 flex-col`}
           >
             <header className="sticky top-0 z-20 mb-2 rounded-lg border border-slate-700/70 bg-slate-900/90 px-3 py-2 backdrop-blur">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-100">
@@ -203,7 +206,7 @@ export function MallaGrid({
                 {progresoSlots8Cuat.gestion.aprobado}/{progresoSlots8Cuat.gestion.objetivo} creditos
               </p>
             </header>
-            <div className="max-h-[calc(100vh-260px)] space-y-2 overflow-y-auto pr-1">
+            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
               {poolGestion.map((materia) => (
                 <div key={materia.id}>
                   <MateriaCard
@@ -235,7 +238,7 @@ export function MallaGrid({
           <section
             className={`rounded-2xl border bg-slate-950/40 p-2 ${
               slotActivo === "sistemas-tecnologia" ? "border-cyan-500/70" : "border-slate-800/60"
-            }`}
+            } flex h-full min-h-0 flex-col`}
           >
             <header className="sticky top-0 z-20 mb-2 rounded-lg border border-slate-700/70 bg-slate-900/90 px-3 py-2 backdrop-blur">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-100">
@@ -246,7 +249,7 @@ export function MallaGrid({
                 {progresoSlots8Cuat["sistemas-tecnologia"].objetivo} creditos
               </p>
             </header>
-            <div className="max-h-[calc(100vh-260px)] space-y-2 overflow-y-auto pr-1">
+            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
               {poolTecnologia.map((materia) => (
                 <div key={materia.id}>
                   <MateriaCard
@@ -278,7 +281,7 @@ export function MallaGrid({
           <section
             className={`rounded-2xl border bg-slate-950/40 p-2 ${
               slotActivo === "proyecto-final" ? "border-cyan-500/70" : "border-slate-800/60"
-            }`}
+            } flex h-full min-h-0 flex-col`}
           >
             <header className="sticky top-0 z-20 mb-2 rounded-lg border border-slate-700/70 bg-slate-900/90 px-3 py-2 backdrop-blur">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-100">
@@ -288,7 +291,7 @@ export function MallaGrid({
                 {progresoSlots8Cuat["proyecto-final"].aprobado}/{progresoSlots8Cuat["proyecto-final"].objetivo} creditos
               </p>
             </header>
-            <div className="max-h-[calc(100vh-260px)] space-y-2 overflow-y-auto pr-1">
+            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
               {poolProyectoFinalYOtros.map((materia) => (
                 <div key={materia.id}>
                   <MateriaCard
