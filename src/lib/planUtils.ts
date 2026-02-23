@@ -104,8 +104,7 @@ export function calcularProgresoMinor(
 ): ProgresoMinor {
   const electivasActivas = materias.filter(
     (materia) =>
-      (materia.grupo === "electiva-gestion" || materia.grupo === "electiva-sistemas-tecnologia") &&
-      materia.estadoOferta !== "inactiva",
+      materia.grupo === "electiva-gestion" || materia.grupo === "electiva-sistemas-tecnologia",
   );
 
   const materiasDelMinor = electivasActivas.filter((materia) =>
@@ -153,7 +152,7 @@ export function calcularProgresoSlots8Cuat(
 ): Record<SlotElectiva8Cuat, { aprobado: number; objetivo: number }> {
   const sumByGrupo = (grupo: MateriaPlan["grupo"]) =>
     materias
-      .filter((materia) => materia.grupo === grupo && materia.estadoOferta !== "inactiva")
+      .filter((materia) => materia.grupo === grupo)
       .reduce((acc, materia) => {
         return getEstadoPersistido(progreso, materia.id) === "aprobada"
           ? acc + materia.creditos

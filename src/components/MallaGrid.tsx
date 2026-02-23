@@ -135,8 +135,6 @@ export function MallaGrid({
                             : "",
                         ].join(" ")
                       }
-                      disabled={materia.estadoOferta === "inactiva"}
-                      etiquetaExtra={materia.estadoOferta === "inactiva" ? "No disponible" : undefined}
                       selectedMinors={selectedMinors}
                       mostrarDetalleMinors
                     />
@@ -225,8 +223,6 @@ export function MallaGrid({
                           : "",
                       ].join(" ")
                     }
-                    disabled={materia.estadoOferta === "inactiva"}
-                    etiquetaExtra={materia.estadoOferta === "inactiva" ? "No disponible" : undefined}
                     selectedMinors={selectedMinors}
                     mostrarDetalleMinors
                   />
@@ -268,8 +264,6 @@ export function MallaGrid({
                           : "",
                       ].join(" ")
                     }
-                    disabled={materia.estadoOferta === "inactiva"}
-                    etiquetaExtra={materia.estadoOferta === "inactiva" ? "No disponible" : undefined}
                     selectedMinors={selectedMinors}
                     mostrarDetalleMinors
                   />
@@ -310,8 +304,6 @@ export function MallaGrid({
                           : "",
                       ].join(" ")
                     }
-                    disabled={materia.estadoOferta === "inactiva"}
-                    etiquetaExtra={materia.estadoOferta === "inactiva" ? "No disponible" : undefined}
                     selectedMinors={selectedMinors}
                     mostrarDetalleMinors
                   />

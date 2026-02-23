@@ -70,6 +70,19 @@ export function MallaApp() {
     return acumulado;
   }, [materias, progreso]);
 
+  const creditosProyectados = useMemo(() => {
+    let total = creditosAprobados;
+
+    for (const materia of materias) {
+      const estado = progreso[materia.id] ?? "pendiente";
+      if (estado === "cursando") {
+        total += materia.creditos;
+      }
+    }
+
+    return Math.min(total, plan.creditosTitulo);
+  }, [materias, progreso, creditosAprobados]);
+
   const handleToggleMinor = (minor: MinorTag) => {
     setSelectedMinors((actual) =>
       actual.includes(minor) ? actual.filter((item) => item !== minor) : [...actual, minor],
@@ -104,6 +117,7 @@ export function MallaApp() {
     <div className="flex h-screen flex-col overflow-hidden bg-slate-950 text-slate-50">
       <LeyendaEstados
         creditosAprobados={creditosAprobados}
+        creditosProyectados={creditosProyectados}
         creditosTitulo={plan.creditosTitulo}
         selectedMinors={selectedMinors}
         onToggleMinor={handleToggleMinor}

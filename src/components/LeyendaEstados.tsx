@@ -5,6 +5,7 @@ import type { MinorTag } from "@/types/plan";
 
 interface LeyendaEstadosProps {
   creditosAprobados: number;
+  creditosProyectados: number;
   creditosTitulo: number;
   onReset: () => void;
   onAprobarCursadas: () => void;
@@ -38,6 +39,7 @@ const items = [
 
 export function LeyendaEstados({
   creditosAprobados,
+  creditosProyectados,
   creditosTitulo,
   onReset,
   onAprobarCursadas,
@@ -77,6 +79,26 @@ export function LeyendaEstados({
               style={{ width: `${Math.min(100, (creditosAprobados / creditosTitulo) * 100)}%` }}
             />
           </div>
+          <div className="mt-2 mb-1 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Progreso proyectado (si aprobas lo cursando)</span>
+            <span>
+              {creditosProyectados}/{creditosTitulo} cr
+            </span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+            <div
+              className="h-full rounded-full"
+              style={{
+                width: `${Math.min(100, (creditosProyectados / creditosTitulo) * 100)}%`,
+                backgroundImage:
+                  "repeating-linear-gradient(135deg, rgba(56,189,248,0.9) 0px, rgba(56,189,248,0.9) 8px, rgba(14,116,144,0.95) 8px, rgba(14,116,144,0.95) 16px)",
+              }}
+            />
+          </div>
+          <p className="mt-1 text-[11px] text-slate-500">
+            Te faltan {Math.max(0, creditosTitulo - creditosProyectados)} cr para llegar al total del
+            plan ({creditosTitulo} cr).
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 text-xs">
