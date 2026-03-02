@@ -1,8 +1,5 @@
 import { BookOpen, GraduationCap, RefreshCcw } from "lucide-react";
 
-import { MINOR_LABELS } from "@/data/minorsMetadata";
-import type { MinorTag } from "@/types/plan";
-
 interface LeyendaEstadosProps {
   creditosAprobados: number;
   creditosCursando: number;
@@ -10,19 +7,6 @@ interface LeyendaEstadosProps {
   creditosTitulo: number;
   onReset: () => void;
   onAprobarCursadas: () => void;
-  selectedMinors: MinorTag[];
-  onToggleMinor: (minor: MinorTag) => void;
-  progresosMinors: Array<{
-    minorTag: MinorTag;
-    minorAprobado: number;
-    objetivoMinor: number;
-    gestionAprobado: number;
-    objetivoGestion: number;
-    tecnologiaAprobado: number;
-    objetivoTecnologia: number;
-    libresAprobado: number;
-    objetivoLibres: number;
-  }>;
 }
 
 const items = [
@@ -45,19 +29,9 @@ export function LeyendaEstados({
   creditosTitulo,
   onReset,
   onAprobarCursadas,
-  selectedMinors,
-  onToggleMinor,
-  progresosMinors,
 }: LeyendaEstadosProps) {
   const porcentajeCompletado = Math.min(100, (creditosAprobados / creditosTitulo) * 100);
   const porcentajeProyectado = Math.min(100, (creditosProyectados / creditosTitulo) * 100);
-
-  const minors: MinorTag[] = [
-    "finanzas-cripto",
-    "tecnologia-datos",
-    "innovacion-empresarial",
-    "gestion-comercial",
-  ];
 
   return (
     <header className="sticky top-0 z-40 shrink-0 border-b border-slate-800/90 bg-slate-950/95 backdrop-blur">
@@ -142,64 +116,14 @@ export function LeyendaEstados({
             <RefreshCcw className="h-3.5 w-3.5" />
             Reiniciar progreso
           </button>
+
+          <a
+            href="#minors"
+            className="inline-flex items-center gap-2 rounded-full border border-violet-500/70 px-3 py-1 text-violet-200 transition-colors hover:border-violet-300 hover:bg-violet-950/30"
+          >
+            Planificar Minors
+          </a>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {minors.map((minor) => {
-            const checked = selectedMinors.includes(minor);
-            return (
-              <label
-                key={minor}
-                className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-xs transition-colors ${
-                  checked
-                    ? "border-sky-400 bg-sky-900/25 text-sky-100"
-                    : "border-slate-700 text-slate-300 hover:border-slate-500"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  className="h-3.5 w-3.5 accent-sky-400"
-                  checked={checked}
-                  onChange={() => onToggleMinor(minor)}
-                />
-                {MINOR_LABELS[minor]}
-              </label>
-            );
-          })}
-        </div>
-
-        {progresosMinors.length > 0 ? (
-          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-            {progresosMinors.map((progresoMinor) => {
-              const pctMinor = Math.min(
-                100,
-                (progresoMinor.minorAprobado / progresoMinor.objetivoMinor) * 100,
-              );
-
-              return (
-                <div
-                  key={progresoMinor.minorTag}
-                  className="rounded-xl border border-slate-800 bg-slate-900/60 px-3 py-2"
-                >
-                  <p className="text-xs font-medium text-slate-200">
-                    {MINOR_LABELS[progresoMinor.minorTag]}
-                  </p>
-                  <p className="mt-1 text-[11px] text-slate-400">
-                    Minor {progresoMinor.minorAprobado}/{progresoMinor.objetivoMinor} cr
-                  </p>
-                  <div className="mt-1 h-1.5 w-full rounded-full bg-slate-800">
-                    <div className="h-full rounded-full bg-sky-400" style={{ width: `${pctMinor}%` }} />
-                  </div>
-                  <p className="mt-1 text-[10px] text-slate-400">
-                    G: {progresoMinor.gestionAprobado}/{progresoMinor.objetivoGestion} · T:{" "}
-                    {progresoMinor.tecnologiaAprobado}/{progresoMinor.objetivoTecnologia} · Libres:{" "}
-                    {progresoMinor.libresAprobado}/{progresoMinor.objetivoLibres}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
       </div>
     </header>
   );

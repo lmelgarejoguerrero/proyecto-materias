@@ -8,7 +8,6 @@ import type {
   EstadoVisualMateria,
   GrupoMateria,
   MateriaPlan,
-  MinorTag,
   SlotElectiva8Cuat,
 } from "@/types/plan";
 
@@ -16,8 +15,6 @@ interface MallaGridProps {
   materias: MateriaPlan[];
   estadoVisualPorMateria: Record<string, EstadoVisualMateria>;
   onMateriaClick: (materiaId: string) => void;
-  selectedMinors: MinorTag[];
-  interseccionMateriaIds: Set<string>;
   progresoSlots8Cuat: Record<SlotElectiva8Cuat, { aprobado: number; objetivo: number }>;
   onSeleccionarSlot: (slot: SlotElectiva8Cuat) => void;
   slotActivo: SlotElectiva8Cuat | null;
@@ -41,8 +38,6 @@ export function MallaGrid({
   materias,
   estadoVisualPorMateria,
   onMateriaClick,
-  selectedMinors,
-  interseccionMateriaIds,
   progresoSlots8Cuat,
   onSeleccionarSlot,
   slotActivo,
@@ -123,20 +118,6 @@ export function MallaGrid({
                       materia={materia}
                       estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
                       onClick={onMateriaClick}
-                      className={
-                        [
-                          interseccionMateriaIds.has(materia.id)
-                            ? "bg-gradient-to-r from-violet-950/30 to-cyan-950/30 ring-1 ring-violet-400/70"
-                            : "",
-                          selectedMinors.length > 0 &&
-                          !interseccionMateriaIds.has(materia.id) &&
-                          (materia.minorTags ?? []).some((minor) => selectedMinors.includes(minor))
-                            ? "ring-1 ring-sky-400/50"
-                            : "",
-                        ].join(" ")
-                      }
-                      selectedMinors={selectedMinors}
-                      mostrarDetalleMinors
                     />
                   </div>
                 ))}
@@ -211,20 +192,6 @@ export function MallaGrid({
                     materia={materia}
                     estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
                     onClick={onMateriaClick}
-                    className={
-                      [
-                        interseccionMateriaIds.has(materia.id)
-                          ? "bg-gradient-to-r from-violet-950/30 to-cyan-950/30 ring-1 ring-violet-400/70"
-                          : "",
-                        selectedMinors.length > 0 &&
-                        !interseccionMateriaIds.has(materia.id) &&
-                        (materia.minorTags ?? []).some((minor) => selectedMinors.includes(minor))
-                          ? "ring-1 ring-sky-400/50"
-                          : "",
-                      ].join(" ")
-                    }
-                    selectedMinors={selectedMinors}
-                    mostrarDetalleMinors
                   />
                 </div>
               ))}
@@ -252,20 +219,6 @@ export function MallaGrid({
                     materia={materia}
                     estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
                     onClick={onMateriaClick}
-                    className={
-                      [
-                        interseccionMateriaIds.has(materia.id)
-                          ? "bg-gradient-to-r from-violet-950/30 to-cyan-950/30 ring-1 ring-violet-400/70"
-                          : "",
-                        selectedMinors.length > 0 &&
-                        !interseccionMateriaIds.has(materia.id) &&
-                        (materia.minorTags ?? []).some((minor) => selectedMinors.includes(minor))
-                          ? "ring-1 ring-sky-400/50"
-                          : "",
-                      ].join(" ")
-                    }
-                    selectedMinors={selectedMinors}
-                    mostrarDetalleMinors
                   />
                 </div>
               ))}
@@ -292,20 +245,6 @@ export function MallaGrid({
                     materia={materia}
                     estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
                     onClick={onMateriaClick}
-                    className={
-                      [
-                        interseccionMateriaIds.has(materia.id)
-                          ? "bg-gradient-to-r from-violet-950/30 to-cyan-950/30 ring-1 ring-violet-400/70"
-                          : "",
-                        selectedMinors.length > 0 &&
-                        !interseccionMateriaIds.has(materia.id) &&
-                        (materia.minorTags ?? []).some((minor) => selectedMinors.includes(minor))
-                          ? "ring-1 ring-sky-400/50"
-                          : "",
-                      ].join(" ")
-                    }
-                    selectedMinors={selectedMinors}
-                    mostrarDetalleMinors
                   />
                 </div>
               ))}

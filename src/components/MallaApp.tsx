@@ -7,13 +7,10 @@ import { enriquecerMateriasConMinors } from "@/data/minorsMetadata";
 import planRaw from "@/data/planDeEstudio.json";
 import { LeyendaEstados } from "@/components/LeyendaEstados";
 import { MallaGrid } from "@/components/MallaGrid";
-import {
-  calcularProgresoMinor,
-  getInterseccionMaterias,
-  validarPlan,
-} from "@/lib/planUtils";
+import { SeccionMinors } from "@/components/SeccionMinors";
+import { validarPlan } from "@/lib/planUtils";
 import { useProgreso } from "@/hooks/useProgreso";
-import type { MinorTag, PlanDeEstudio, SlotElectiva8Cuat } from "@/types/plan";
+import type { PlanDeEstudio, SlotElectiva8Cuat } from "@/types/plan";
 
 const plan = planRaw as PlanDeEstudio;
 const ONBOARDING_STORAGE_KEY = "tablero-materias:onboarding-v1";
@@ -21,7 +18,6 @@ const ONBOARDING_STORAGE_KEY = "tablero-materias:onboarding-v1";
 export function MallaApp() {
   const materias = useMemo(() => enriquecerMateriasConMinors(plan.materias), []);
   const validacion = useMemo(() => validarPlan(materias), [materias]);
-  const [selectedMinors, setSelectedMinors] = useState<MinorTag[]>([]);
   const [slotActivo, setSlotActivo] = useState<SlotElectiva8Cuat>("gestion");
   const [mostrarOnboarding, setMostrarOnboarding] = useState(false);
 
@@ -37,16 +33,6 @@ export function MallaApp() {
 
   const hayInconsistencias =
     validacion.idsDuplicados.length > 0 || validacion.correlativasInexistentes.length > 0;
-
-  const interseccionMateriaIds = useMemo(
-    () => new Set(getInterseccionMaterias(materias, selectedMinors)),
-    [materias, selectedMinors],
-  );
-
-  const progresosMinors = useMemo(
-    () => selectedMinors.map((minor) => calcularProgresoMinor(materias, progreso, minor)),
-    [selectedMinors, materias, progreso],
-  );
 
   const progresoSlots8Cuat = useMemo(() => {
     const acumulado: Record<SlotElectiva8Cuat, { aprobado: number; objetivo: number }> = {
@@ -84,12 +70,6 @@ export function MallaApp() {
     return Math.min(total, plan.creditosTitulo);
   }, [materias, progreso, creditosAprobados]);
 
-  const handleToggleMinor = (minor: MinorTag) => {
-    setSelectedMinors((actual) =>
-      actual.includes(minor) ? actual.filter((item) => item !== minor) : [...actual, minor],
-    );
-  };
-
   const handleSeleccionarSlot = (slot: SlotElectiva8Cuat) => {
     setSlotActivo(slot);
   };
@@ -115,15 +95,12 @@ export function MallaApp() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-slate-950 text-slate-50">
+    <div className="flex min-h-screen flex-col overflow-y-auto bg-slate-950 text-slate-50">
       <LeyendaEstados
         creditosAprobados={creditosAprobados}
         creditosCursando={creditosCursando}
         creditosProyectados={creditosProyectados}
         creditosTitulo={plan.creditosTitulo}
-        selectedMinors={selectedMinors}
-        onToggleMinor={handleToggleMinor}
-        progresosMinors={progresosMinors}
         onAprobarCursadas={aprobarCursadas}
         onReset={() => {
           if (window.confirm("Se va a borrar todo el progreso guardado. ¿Continuar?")) {
@@ -145,20 +122,18 @@ export function MallaApp() {
         </div>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <div className="min-w-0 flex-1">
-          <MallaGrid
-            materias={materias}
-            estadoVisualPorMateria={estadoVisualPorMateria}
-            onMateriaClick={handleCardClick}
-            selectedMinors={selectedMinors}
-            interseccionMateriaIds={interseccionMateriaIds}
-            progresoSlots8Cuat={progresoSlots8Cuat}
-            onSeleccionarSlot={handleSeleccionarSlot}
-            slotActivo={slotActivo}
-          />
-        </div>
+      <div className="h-[70vh] shrink-0 overflow-hidden">
+        <MallaGrid
+          materias={materias}
+          estadoVisualPorMateria={estadoVisualPorMateria}
+          onMateriaClick={handleCardClick}
+          progresoSlots8Cuat={progresoSlots8Cuat}
+          onSeleccionarSlot={handleSeleccionarSlot}
+          slotActivo={slotActivo}
+        />
       </div>
+
+      <SeccionMinors />
 
       {mostrarOnboarding ? (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
@@ -203,7 +178,7 @@ export function MallaApp() {
                   <br />
                   <span className="text-slate-200">Reiniciar progreso</span>: borra tu avance guardado.
                   <br />
-                  <span className="text-slate-200">Minors</span>: filtran y resaltan materias por camino.
+                  <span className="text-slate-200">Planificar Minors</span>: en la sección inferior puedes elegir minors y armar tu plan.
                 </p>
               </div>
             </div>
