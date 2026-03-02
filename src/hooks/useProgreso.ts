@@ -23,6 +23,7 @@ interface UseProgresoResult {
   materiasHabilitadas: MapaHabilitadas;
   materiasPreview: Record<string, boolean>;
   creditosAprobados: number;
+  creditosCursando: number;
   actualizarEstado: (materiaId: string) => void;
   aprobarCursadas: () => void;
   resetearProgreso: () => void;
@@ -72,6 +73,15 @@ export function useProgreso(materias: MateriaPlan[]): UseProgresoResult {
 
   const creditosAprobados = useMemo(
     () => sumarCreditosAprobados(materias, progreso),
+    [materias, progreso],
+  );
+
+  const creditosCursando = useMemo(
+    () =>
+      materias.reduce((total, materia) => {
+        const estado = progreso[materia.id] ?? "pendiente";
+        return estado === "cursando" ? total + materia.creditos : total;
+      }, 0),
     [materias, progreso],
   );
 
@@ -185,6 +195,7 @@ export function useProgreso(materias: MateriaPlan[]): UseProgresoResult {
     materiasHabilitadas,
     materiasPreview,
     creditosAprobados,
+    creditosCursando,
     actualizarEstado,
     aprobarCursadas,
     resetearProgreso,

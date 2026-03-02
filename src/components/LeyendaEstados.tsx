@@ -1,10 +1,11 @@
-import { GraduationCap, RefreshCcw } from "lucide-react";
+import { BookOpen, GraduationCap, RefreshCcw } from "lucide-react";
 
 import { MINOR_LABELS } from "@/data/minorsMetadata";
 import type { MinorTag } from "@/types/plan";
 
 interface LeyendaEstadosProps {
   creditosAprobados: number;
+  creditosCursando: number;
   creditosProyectados: number;
   creditosTitulo: number;
   onReset: () => void;
@@ -39,6 +40,7 @@ const items = [
 
 export function LeyendaEstados({
   creditosAprobados,
+  creditosCursando,
   creditosProyectados,
   creditosTitulo,
   onReset,
@@ -117,6 +119,11 @@ export function LeyendaEstados({
           <div className="ml-0 inline-flex items-center gap-2 rounded-full border border-indigo-500/60 bg-indigo-950/30 px-3 py-1 text-indigo-100 md:ml-2">
             <GraduationCap className="h-4 w-4" />
             {creditosAprobados} / {creditosTitulo} creditos aprobados
+          </div>
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/60 bg-sky-950/30 px-3 py-1 text-sky-100">
+            <BookOpen className="h-4 w-4" />
+            {creditosCursando} {creditosCursando === 1 ? "credito" : "creditos"} cursando
           </div>
 
           <button

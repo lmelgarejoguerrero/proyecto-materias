@@ -29,6 +29,7 @@ export function MallaApp() {
     progreso,
     estadoVisualPorMateria,
     creditosAprobados,
+    creditosCursando,
     actualizarEstado,
     aprobarCursadas,
     resetearProgreso,
@@ -117,6 +118,7 @@ export function MallaApp() {
     <div className="flex h-screen flex-col overflow-hidden bg-slate-950 text-slate-50">
       <LeyendaEstados
         creditosAprobados={creditosAprobados}
+        creditosCursando={creditosCursando}
         creditosProyectados={creditosProyectados}
         creditosTitulo={plan.creditosTitulo}
         selectedMinors={selectedMinors}
