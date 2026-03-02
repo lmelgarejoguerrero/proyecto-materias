@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Laptop, MousePointerClick } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AlertTriangle, Download, Laptop, MousePointerClick, Upload } from "lucide-react";
 
 import { enriquecerMateriasConMinors } from "@/data/minorsMetadata";
 import planRaw from "@/data/planDeEstudio.json";
@@ -14,6 +14,9 @@ import type { PlanDeEstudio, SlotElectiva8Cuat } from "@/types/plan";
 
 const plan = planRaw as PlanDeEstudio;
 const ONBOARDING_STORAGE_KEY = "tablero-materias:onboarding-v1";
+const STORAGE_PROGRESO_KEY = "malla-curricular:progreso:v1";
+const STORAGE_MINORS_KEY = "malla-curricular:minors:v1";
+const STORAGE_PLAN_MINORS_KEY = "malla-curricular:plan-minors:v1";
 
 export function MallaApp() {
   const materias = useMemo(() => enriquecerMateriasConMinors(plan.materias), []);
@@ -33,6 +36,78 @@ export function MallaApp() {
 
   const hayInconsistencias =
     validacion.idsDuplicados.length > 0 || validacion.correlativasInexistentes.length > 0;
+
+  const inputImportRef = useRef<HTMLInputElement | null>(null);
+
+  const handleExportJson = () => {
+    if (typeof window === "undefined") return;
+
+    const progresoRaw = window.localStorage.getItem(STORAGE_PROGRESO_KEY);
+    const minorsRaw = window.localStorage.getItem(STORAGE_MINORS_KEY);
+    const planMinorsRaw = window.localStorage.getItem(STORAGE_PLAN_MINORS_KEY);
+
+    const payload = {
+      version: 1,
+      generadoEn: new Date().toISOString(),
+      progreso: progresoRaw ? JSON.parse(progresoRaw) : {},
+      minors: minorsRaw ? JSON.parse(minorsRaw) : [],
+      materiasPlanMinors: planMinorsRaw ? JSON.parse(planMinorsRaw) : [],
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "plan-materias.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleClickImport = () => {
+    inputImportRef.current?.click();
+  };
+
+  const handleImportChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result as string) as {
+          progreso?: unknown;
+          minors?: unknown;
+          materiasPlanMinors?: unknown;
+        };
+
+        if (parsed.progreso && typeof parsed.progreso === "object") {
+          window.localStorage.setItem(STORAGE_PROGRESO_KEY, JSON.stringify(parsed.progreso));
+        }
+        if (parsed.minors && Array.isArray(parsed.minors)) {
+          window.localStorage.setItem(STORAGE_MINORS_KEY, JSON.stringify(parsed.minors));
+        }
+        if (parsed.materiasPlanMinors && Array.isArray(parsed.materiasPlanMinors)) {
+          window.localStorage.setItem(
+            STORAGE_PLAN_MINORS_KEY,
+            JSON.stringify(parsed.materiasPlanMinors),
+          );
+        }
+
+        // Recargar para que los hooks lean el nuevo estado
+        window.location.reload();
+      } catch {
+        // Silencioso: si falla el parseo no hacemos nada
+      }
+    };
+    reader.readAsText(file);
+    // limpiar valor para permitir volver a importar el mismo archivo
+    event.target.value = "";
+  };
 
   const progresoSlots8Cuat = useMemo(() => {
     const acumulado: Record<SlotElectiva8Cuat, { aprobado: number; objetivo: number }> = {
@@ -121,6 +196,39 @@ export function MallaApp() {
           </div>
         </div>
       ) : null}
+
+      <section className="mx-auto mt-3 flex w-full max-w-[1800px] items-center justify-between gap-3 px-4 text-xs text-slate-300">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[11px] text-slate-500">
+            Podés exportar tu progreso y plan de minors para usarlo en otro dispositivo.
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleExportJson}
+            className="inline-flex items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 hover:border-slate-300"
+          >
+            <Download className="h-3 w-3" />
+            Exportar JSON
+          </button>
+          <button
+            type="button"
+            onClick={handleClickImport}
+            className="inline-flex items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 hover:border-slate-300"
+          >
+            <Upload className="h-3 w-3" />
+            Importar JSON
+          </button>
+          <input
+            ref={inputImportRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={handleImportChange}
+          />
+        </div>
+      </section>
 
       <div className="h-[70vh] shrink-0 overflow-hidden">
         <MallaGrid
