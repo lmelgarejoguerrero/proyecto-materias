@@ -99,6 +99,12 @@ export function MallaGrid({
     return [...agrupadas.entries()];
   }, [materiasTroncales]);
 
+  const renderEmptyState = (mensaje: string) => (
+    <div className="rounded-xl border border-dashed border-slate-700 bg-slate-950/30 px-3 py-6 text-center text-xs text-slate-500">
+      {mensaje}
+    </div>
+  );
+
   return (
     <div className="h-full overflow-x-auto overflow-y-hidden pb-2">
       <div className="relative h-full min-w-max px-4 py-4">
@@ -118,20 +124,22 @@ export function MallaGrid({
               </header>
 
               <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-1">
-                {materiasColumna.map((materia) => (
-                  <div key={materia.id}>
-                    <MateriaCard
-                      materia={materia}
-                      estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
-                      onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
-                      className={
-                        seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
-                          ? "ring-2 ring-cyan-400"
-                          : undefined
-                      }
-                    />
-                  </div>
-                ))}
+                {materiasColumna.length > 0
+                  ? materiasColumna.map((materia) => (
+                      <div key={materia.id}>
+                        <MateriaCard
+                          materia={materia}
+                          estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
+                          onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+                          className={
+                            seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
+                              ? "ring-2 ring-cyan-400"
+                              : undefined
+                          }
+                        />
+                      </div>
+                    ))
+                  : renderEmptyState("No hay materias que coincidan en este cuatrimestre.")}
               </div>
             </section>
           ))}
@@ -197,20 +205,22 @@ export function MallaGrid({
               </p>
             </header>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-              {poolGestion.map((materia) => (
-                <div key={materia.id}>
-                  <MateriaCard
-                    materia={materia}
-                    estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
-                    onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
-                    className={
-                      seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
-                        ? "ring-2 ring-cyan-400"
-                        : undefined
-                    }
-                  />
-                </div>
-              ))}
+              {poolGestion.length > 0
+                ? poolGestion.map((materia) => (
+                    <div key={materia.id}>
+                      <MateriaCard
+                        materia={materia}
+                        estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
+                        onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+                        className={
+                          seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
+                            ? "ring-2 ring-cyan-400"
+                            : undefined
+                        }
+                      />
+                    </div>
+                  ))
+                : renderEmptyState("No hay electivas de gestión con los filtros actuales.")}
             </div>
           </section>
 
@@ -229,20 +239,22 @@ export function MallaGrid({
               </p>
             </header>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-              {poolTecnologia.map((materia) => (
-                <div key={materia.id}>
-                  <MateriaCard
-                    materia={materia}
-                    estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
-                    onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
-                    className={
-                      seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
-                        ? "ring-2 ring-cyan-400"
-                        : undefined
-                    }
-                  />
-                </div>
-              ))}
+              {poolTecnologia.length > 0
+                ? poolTecnologia.map((materia) => (
+                    <div key={materia.id}>
+                      <MateriaCard
+                        materia={materia}
+                        estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
+                        onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+                        className={
+                          seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
+                            ? "ring-2 ring-cyan-400"
+                            : undefined
+                        }
+                      />
+                    </div>
+                  ))
+                : renderEmptyState("No hay electivas de tecnología con los filtros actuales.")}
             </div>
           </section>
 
@@ -260,20 +272,22 @@ export function MallaGrid({
               </p>
             </header>
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-              {poolProyectoFinalYOtros.map((materia) => (
-                <div key={materia.id}>
-                  <MateriaCard
-                    materia={materia}
-                    estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
-                    onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
-                    className={
-                      seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
-                        ? "ring-2 ring-cyan-400"
-                        : undefined
-                    }
-                  />
-                </div>
-              ))}
+              {poolProyectoFinalYOtros.length > 0
+                ? poolProyectoFinalYOtros.map((materia) => (
+                    <div key={materia.id}>
+                      <MateriaCard
+                        materia={materia}
+                        estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
+                        onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+                        className={
+                          seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
+                            ? "ring-2 ring-cyan-400"
+                            : undefined
+                        }
+                      />
+                    </div>
+                  ))
+                : renderEmptyState("No hay materias en este pool con los filtros actuales.")}
             </div>
           </section>
         </div>

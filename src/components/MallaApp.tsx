@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, Download, Laptop, MousePointerClick, Upload } from "lucide-react";
+import {
+  AlertTriangle,
+  Download,
+  Filter,
+  Laptop,
+  MousePointerClick,
+  Search,
+  Upload,
+  X,
+} from "lucide-react";
 
 import { enriquecerMateriasConMinors } from "@/data/minorsMetadata";
 import planRaw from "@/data/planDeEstudio.json";
@@ -19,6 +28,21 @@ const STORAGE_MINORS_KEY = "malla-curricular:minors:v1";
 const STORAGE_PLAN_MINORS_KEY = "malla-curricular:plan-minors:v1";
 
 type VistaActiva = "malla" | "minors";
+type FiltroEstadoTablero =
+  | "todas"
+  | "pendiente"
+  | "cursando"
+  | "regular"
+  | "aprobada"
+  | "puedo_cursar"
+  | "habilitable_preview";
+type FiltroGrupoTablero =
+  | "todos"
+  | "troncales"
+  | "gestion"
+  | "tecnologia"
+  | "proyecto-final"
+  | "skills";
 
 export function MallaApp() {
   const materias = useMemo(() => enriquecerMateriasConMinors(plan.materias), []);
@@ -26,6 +50,9 @@ export function MallaApp() {
   const [slotActivo, setSlotActivo] = useState<SlotElectiva8Cuat>("gestion");
   const [mostrarOnboarding, setMostrarOnboarding] = useState(false);
   const [vistaActiva, setVistaActiva] = useState<VistaActiva>("malla");
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState<FiltroEstadoTablero>("todas");
+  const [filtroGrupo, setFiltroGrupo] = useState<FiltroGrupoTablero>("todos");
 
   const {
     progreso,
@@ -178,6 +205,54 @@ export function MallaApp() {
     return Math.min(total, plan.creditosTitulo);
   }, [materias, progreso, creditosAprobados]);
 
+  const materiasFiltradas = useMemo(() => {
+    const termino = busqueda.trim().toLowerCase();
+
+    return materias.filter((materia) => {
+      const coincideBusqueda =
+        termino.length === 0 ||
+        materia.id.toLowerCase().includes(termino) ||
+        materia.nombre.toLowerCase().includes(termino);
+
+      const estadoVisual = estadoVisualPorMateria[materia.id] ?? "pendiente";
+      const coincideEstado = filtroEstado === "todas" || estadoVisual === filtroEstado;
+
+      const coincideGrupo = (() => {
+        if (filtroGrupo === "todos") return true;
+        if (filtroGrupo === "troncales") return materia.cuatrimestre <= 7;
+        if (filtroGrupo === "gestion") return materia.grupo === "electiva-gestion";
+        if (filtroGrupo === "tecnologia") return materia.grupo === "electiva-sistemas-tecnologia";
+        if (filtroGrupo === "proyecto-final") return materia.grupo === "electiva-proyecto-final";
+        return materia.grupo === "skills-complementarias";
+      })();
+
+      return coincideBusqueda && coincideEstado && coincideGrupo;
+    });
+  }, [busqueda, estadoVisualPorMateria, filtroEstado, filtroGrupo, materias]);
+
+  const resumenFiltros = useMemo(() => {
+    return {
+      visibles: materiasFiltradas.length,
+      total: materias.length,
+      aprobadas: materiasFiltradas.filter(
+        (materia) => (progreso[materia.id] ?? "pendiente") === "aprobada",
+      ).length,
+      cursables: materiasFiltradas.filter(
+        (materia) => (estadoVisualPorMateria[materia.id] ?? "pendiente") === "puedo_cursar",
+      ).length,
+      seleccionadas: materiasFiltradas.filter((materia) => materiasSeleccionadas.has(materia.id)).length,
+    };
+  }, [estadoVisualPorMateria, materias, materiasFiltradas, materiasSeleccionadas, progreso]);
+
+  const filtrosActivos =
+    busqueda.trim().length > 0 || filtroEstado !== "todas" || filtroGrupo !== "todos";
+
+  const limpiarFiltros = () => {
+    setBusqueda("");
+    setFiltroEstado("todas");
+    setFiltroGrupo("todos");
+  };
+
   const handleSeleccionarSlot = (slot: SlotElectiva8Cuat) => {
     setSlotActivo(slot);
   };
@@ -280,93 +355,184 @@ export function MallaApp() {
 
       {vistaActiva === "malla" ? (
         <>
-          <section className="mx-auto flex w-full max-w-[1800px] flex-wrap items-center justify-between gap-3 px-4 text-xs text-slate-300">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleSeleccionMultiple}
-            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] ${
-              seleccionMultipleActiva
-                ? "border-cyan-400 bg-cyan-900/40 text-cyan-100"
-                : "border-slate-600 text-slate-200 hover:border-slate-300"
-            }`}
-          >
-            <span>
-              {seleccionMultipleActiva ? "Selección múltiple: activa" : "Selección múltiple"}
-            </span>
-          </button>
-          {seleccionMultipleActiva ? (
-            <>
-              <span className="text-[11px] text-slate-400">
-                {materiasSeleccionadas.size} materia
-                {materiasSeleccionadas.size === 1 ? "" : "s"} seleccionada
-                {materiasSeleccionadas.size === 1 ? "" : "s"}.
-              </span>
-              <button
-                type="button"
-                onClick={() => handleMarcarSeleccionadas("cursando")}
-                className="inline-flex items-center gap-1 rounded-full border border-sky-500/70 px-2 py-0.5 text-[11px] text-sky-100 hover:border-sky-300"
-              >
-                Cursando
-              </button>
-              <button
-                type="button"
-                onClick={() => handleMarcarSeleccionadas("regular")}
-                className="inline-flex items-center gap-1 rounded-full border border-amber-500/70 px-2 py-0.5 text-[11px] text-amber-100 hover:border-amber-300"
-              >
-                Regular
-              </button>
-              <button
-                type="button"
-                onClick={() => handleMarcarSeleccionadas("aprobada")}
-                className="inline-flex items-center gap-1 rounded-full border border-emerald-500/70 px-2 py-0.5 text-[11px] text-emerald-100 hover:border-emerald-300"
-              >
-                Aprobada
-              </button>
-              <button
-                type="button"
-                onClick={() => handleMarcarSeleccionadas("pendiente")}
-                className="inline-flex items-center gap-1 rounded-full border border-slate-500/70 px-2 py-0.5 text-[11px] text-slate-100 hover:border-slate-300"
-              >
-                Volver a pendiente
-              </button>
-            </>
-          ) : (
-            <span className="text-[11px] text-slate-500">
-              Activá la selección múltiple para “pintar” varias materias y marcarles un estado.
-            </span>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={handleExportJson}
-            className="inline-flex items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 hover:border-slate-300"
-          >
-            <Download className="h-3 w-3" />
-            Exportar JSON
-          </button>
-          <button
-            type="button"
-            onClick={handleClickImport}
-            className="inline-flex items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 hover:border-slate-300"
-          >
-            <Upload className="h-3 w-3" />
-            Importar JSON
-          </button>
-          <input
-            ref={inputImportRef}
-            type="file"
-            accept="application/json,.json"
-            className="hidden"
-            onChange={handleImportChange}
-          />
-        </div>
-      </section>
+          <section className="mx-auto flex w-full max-w-[1800px] flex-col gap-3 px-4 text-xs text-slate-300">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={toggleSeleccionMultiple}
+                  className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] ${
+                    seleccionMultipleActiva
+                      ? "border-cyan-400 bg-cyan-900/40 text-cyan-100"
+                      : "border-slate-600 text-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  <span>
+                    {seleccionMultipleActiva ? "Selección múltiple: activa" : "Selección múltiple"}
+                  </span>
+                </button>
+                {seleccionMultipleActiva ? (
+                  <>
+                    <span className="text-[11px] text-slate-400">
+                      {materiasSeleccionadas.size} materia
+                      {materiasSeleccionadas.size === 1 ? "" : "s"} seleccionada
+                      {materiasSeleccionadas.size === 1 ? "" : "s"}.
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleMarcarSeleccionadas("cursando")}
+                      className="inline-flex items-center gap-1 rounded-full border border-sky-500/70 px-2 py-0.5 text-[11px] text-sky-100 hover:border-sky-300"
+                    >
+                      Cursando
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMarcarSeleccionadas("regular")}
+                      className="inline-flex items-center gap-1 rounded-full border border-amber-500/70 px-2 py-0.5 text-[11px] text-amber-100 hover:border-amber-300"
+                    >
+                      Regular
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMarcarSeleccionadas("aprobada")}
+                      className="inline-flex items-center gap-1 rounded-full border border-emerald-500/70 px-2 py-0.5 text-[11px] text-emerald-100 hover:border-emerald-300"
+                    >
+                      Aprobada
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMarcarSeleccionadas("pendiente")}
+                      className="inline-flex items-center gap-1 rounded-full border border-slate-500/70 px-2 py-0.5 text-[11px] text-slate-100 hover:border-slate-300"
+                    >
+                      Volver a pendiente
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-[11px] text-slate-500">
+                    Activá la selección múltiple para marcar varias materias rápido.
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportJson}
+                  className="inline-flex items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 hover:border-slate-300"
+                >
+                  <Download className="h-3 w-3" />
+                  Exportar JSON
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClickImport}
+                  className="inline-flex items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 hover:border-slate-300"
+                >
+                  <Upload className="h-3 w-3" />
+                  Importar JSON
+                </button>
+                <input
+                  ref={inputImportRef}
+                  type="file"
+                  accept="application/json,.json"
+                  className="hidden"
+                  onChange={handleImportChange}
+                />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-3">
+              <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center">
+                  <label className="relative block flex-1 min-w-[16rem]">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type="text"
+                      value={busqueda}
+                      onChange={(event) => setBusqueda(event.target.value)}
+                      placeholder="Buscar por código o nombre"
+                      className="h-10 w-full rounded-xl border border-slate-700 bg-slate-950/70 pl-9 pr-9 text-sm text-slate-100 outline-none transition-colors focus:border-cyan-400"
+                    />
+                    {busqueda ? (
+                      <button
+                        type="button"
+                        onClick={() => setBusqueda("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition-colors hover:text-slate-200"
+                        aria-label="Limpiar búsqueda"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    ) : null}
+                  </label>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2">
+                      <Filter className="h-4 w-4 text-slate-500" />
+                      <select
+                        value={filtroEstado}
+                        onChange={(event) => setFiltroEstado(event.target.value as FiltroEstadoTablero)}
+                        className="bg-transparent text-[12px] text-slate-200 outline-none"
+                      >
+                        <option value="todas">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="puedo_cursar">Puedo cursar</option>
+                        <option value="habilitable_preview">Habilitable</option>
+                        <option value="cursando">Cursando</option>
+                        <option value="regular">Regular</option>
+                        <option value="aprobada">Aprobada</option>
+                      </select>
+                    </div>
+
+                    <div className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2">
+                      <select
+                        value={filtroGrupo}
+                        onChange={(event) => setFiltroGrupo(event.target.value as FiltroGrupoTablero)}
+                        className="bg-transparent text-[12px] text-slate-200 outline-none"
+                      >
+                        <option value="todos">Todo el plan</option>
+                        <option value="troncales">Solo troncales</option>
+                        <option value="gestion">Electivas de gestión</option>
+                        <option value="tecnologia">Electivas de tecnología</option>
+                        <option value="proyecto-final">Proyecto final</option>
+                        <option value="skills">Skills complementarias</option>
+                      </select>
+                    </div>
+
+                    {filtrosActivos ? (
+                      <button
+                        type="button"
+                        onClick={limpiarFiltros}
+                        className="inline-flex items-center gap-1 rounded-xl border border-slate-600 px-3 py-2 text-[11px] text-slate-200 hover:border-slate-400"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Limpiar filtros
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                  <span className="rounded-full border border-slate-700 bg-slate-950/70 px-3 py-1 text-slate-300">
+                    {resumenFiltros.visibles} / {resumenFiltros.total} visibles
+                  </span>
+                  <span className="rounded-full border border-emerald-500/40 bg-emerald-950/20 px-3 py-1 text-emerald-200">
+                    {resumenFiltros.aprobadas} aprobadas
+                  </span>
+                  <span className="rounded-full border border-slate-200/30 bg-slate-900 px-3 py-1 text-slate-200">
+                    {resumenFiltros.cursables} cursables
+                  </span>
+                  {seleccionMultipleActiva ? (
+                    <span className="rounded-full border border-cyan-500/40 bg-cyan-950/20 px-3 py-1 text-cyan-200">
+                      {resumenFiltros.seleccionadas} visibles seleccionadas
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </section>
 
           <div className="h-[70vh] shrink-0 overflow-hidden">
             <MallaGrid
-              materias={materias}
+              materias={materiasFiltradas}
               estadoVisualPorMateria={estadoVisualPorMateria}
               onMateriaClick={handleCardClick}
               progresoSlots8Cuat={progresoSlots8Cuat}
