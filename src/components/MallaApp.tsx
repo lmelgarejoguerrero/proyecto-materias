@@ -16,6 +16,7 @@ import { enriquecerMateriasConMinors } from "@/data/minorsMetadata";
 import planRaw from "@/data/planDeEstudio.json";
 import { LeyendaEstados } from "@/components/LeyendaEstados";
 import { MallaGrid } from "@/components/MallaGrid";
+import { PlanificadorCuatris } from "@/components/PlanificadorCuatris";
 import { SeccionMinors } from "@/components/SeccionMinors";
 import { validarPlan } from "@/lib/planUtils";
 import { useProgreso } from "@/hooks/useProgreso";
@@ -27,7 +28,7 @@ const STORAGE_PROGRESO_KEY = "malla-curricular:progreso:v1";
 const STORAGE_MINORS_KEY = "malla-curricular:minors:v1";
 const STORAGE_PLAN_MINORS_KEY = "malla-curricular:plan-minors:v1";
 
-type VistaActiva = "malla" | "minors";
+type VistaActiva = "malla" | "minors" | "planificador";
 type FiltroEstadoTablero =
   | "todas"
   | "pendiente"
@@ -43,6 +44,7 @@ type FiltroGrupoTablero =
   | "tecnologia"
   | "proyecto-final"
   | "skills";
+type ModoVistaTablero = "anios" | "columnas";
 
 export function MallaApp() {
   const materias = useMemo(() => enriquecerMateriasConMinors(plan.materias), []);
@@ -51,14 +53,18 @@ export function MallaApp() {
   const [slotActivo, setSlotActivo] = useState<SlotElectiva8Cuat>("gestion");
   const [mostrarOnboarding, setMostrarOnboarding] = useState(false);
   const [vistaActiva, setVistaActiva] = useState<VistaActiva>("malla");
+  const [headerCompacto, setHeaderCompacto] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstadoTablero>("todas");
   const [filtroGrupo, setFiltroGrupo] = useState<FiltroGrupoTablero>("todos");
   const [topBarHeight, setTopBarHeight] = useState(0);
+  const [modoVista, setModoVista] = useState<ModoVistaTablero>("anios");
+  const [usarCardsCompactas, setUsarCardsCompactas] = useState(true);
 
   const {
     progreso,
     estadoVisualPorMateria,
+    materiasHabilitadas,
     creditosAprobados,
     creditosCursando,
     actualizarEstado,
@@ -331,10 +337,23 @@ export function MallaApp() {
   }, []);
 
   useEffect(() => {
+    const actualizarCompacto = () => {
+      setHeaderCompacto(window.scrollY > 72);
+    };
+
+    actualizarCompacto();
+    window.addEventListener("scroll", actualizarCompacto, { passive: true });
+
+    return () => window.removeEventListener("scroll", actualizarCompacto);
+  }, []);
+
+  useEffect(() => {
     const actualizarVista = () => {
       const hash = window.location.hash.slice(1);
       if (hash === "minors") {
         setVistaActiva("minors");
+      } else if (hash === "planificador") {
+        setVistaActiva("planificador");
       } else {
         setVistaActiva("malla");
       }
@@ -347,7 +366,8 @@ export function MallaApp() {
   }, []);
 
   const cambiarVista = (vista: VistaActiva) => {
-    window.location.hash = vista === "minors" ? "minors" : "";
+    window.location.hash =
+      vista === "minors" ? "minors" : vista === "planificador" ? "planificador" : "";
     setVistaActiva(vista);
   };
 
@@ -365,6 +385,8 @@ export function MallaApp() {
           creditosProyectados={creditosProyectados}
           creditosTitulo={plan.creditosTitulo}
           proyeccionGraduacion={proyeccionGraduacion}
+          compacta={headerCompacto}
+          vistaActiva={vistaActiva}
           onAprobarCursadas={aprobarCursadas}
           onReset={() => {
             if (window.confirm("Se va a borrar todo el progreso guardado. ¿Continuar?")) {
@@ -396,6 +418,17 @@ export function MallaApp() {
               }`}
             >
               Minors
+            </button>
+            <button
+              type="button"
+              onClick={() => cambiarVista("planificador")}
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                vistaActiva === "planificador"
+                  ? "bg-emerald-500/20 text-emerald-100"
+                  : "text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+              }`}
+            >
+              Planificador
             </button>
           </nav>
         </div>
@@ -530,6 +563,43 @@ export function MallaApp() {
                   </label>
 
                   <div className="flex flex-wrap items-center gap-2">
+                    <div className="inline-flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-950/70 p-1">
+                      <button
+                        type="button"
+                        onClick={() => setModoVista("anios")}
+                        className={`rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors ${
+                          modoVista === "anios"
+                            ? "bg-cyan-500/20 text-cyan-100"
+                            : "text-slate-300 hover:bg-slate-800"
+                        }`}
+                      >
+                        Por años
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setModoVista("columnas")}
+                        className={`rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors ${
+                          modoVista === "columnas"
+                            ? "bg-cyan-500/20 text-cyan-100"
+                            : "text-slate-300 hover:bg-slate-800"
+                        }`}
+                      >
+                        Columnas
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setUsarCardsCompactas((actual) => !actual)}
+                      className={`inline-flex items-center gap-1 rounded-xl border px-3 py-2 text-[11px] transition-colors ${
+                        usarCardsCompactas
+                          ? "border-cyan-500/50 bg-cyan-950/20 text-cyan-100"
+                          : "border-slate-700 text-slate-300 hover:border-slate-500 hover:bg-slate-900"
+                      }`}
+                    >
+                      {usarCardsCompactas ? "Cards compactas" : "Cards cómodas"}
+                    </button>
+
                     <div className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2">
                       <Filter className="h-4 w-4 text-slate-500" />
                       <select
@@ -595,7 +665,7 @@ export function MallaApp() {
             </div>
           </section>
 
-          <div className="h-[70vh] shrink-0 overflow-hidden px-4 pb-4">
+          <div className="px-4 pb-8">
             <MallaGrid
               materias={materiasFiltradas}
               estadoVisualPorMateria={estadoVisualPorMateria}
@@ -606,9 +676,19 @@ export function MallaApp() {
               seleccionMultipleActiva={seleccionMultipleActiva}
               materiasSeleccionadas={materiasSeleccionadas}
               onToggleSeleccion={handleToggleSeleccionMateria}
+              modoVista={modoVista}
+              compacta={usarCardsCompactas}
             />
           </div>
         </>
+      ) : vistaActiva === "planificador" ? (
+        <div className="px-4 pb-8 pt-2">
+          <PlanificadorCuatris
+            materias={materias}
+            progreso={progreso}
+            materiasHabilitadas={materiasHabilitadas}
+          />
+        </div>
       ) : (
         <div className="flex-1 px-4 pb-8">
           <SeccionMinors />
@@ -659,6 +739,8 @@ export function MallaApp() {
                   <span className="text-slate-200">Reiniciar progreso</span>: borra tu avance guardado.
                   <br />
                   <span className="text-slate-200">Minors</span>: accede a la pestaña de Minors para planificar tus electivas.
+                  <br />
+                  <span className="text-slate-200">Planificador</span>: armá cuatrimestres futuros sin mezclarlo con el tablero.
                 </p>
               </div>
             </div>

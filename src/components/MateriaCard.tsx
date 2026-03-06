@@ -20,6 +20,7 @@ interface MateriaCardProps {
   selectedMinors?: MinorTag[];
   mostrarDetalleMinors?: boolean;
   style?: CSSProperties;
+  compacta?: boolean;
 }
 
 const estilosEstado: Record<EstadoVisualMateria, string> = {
@@ -67,6 +68,7 @@ export function MateriaCard({
   selectedMinors = [],
   mostrarDetalleMinors = false,
   style,
+  compacta = false,
 }: MateriaCardProps) {
   const minorTags = materia.minorTags ?? [];
   const minorTagsActivos =
@@ -97,7 +99,7 @@ export function MateriaCard({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       disabled={disabled}
-      className={`w-full rounded-xl border p-2.5 text-left transition-colors ${estilosEstado[estadoVisual]} ${disabled ? "cursor-not-allowed opacity-60 saturate-50" : "cursor-pointer hover:shadow-[0_8px_24px_rgba(15,23,42,0.35)]"} ${className ?? ""}`}
+      className={`w-full rounded-xl border text-left transition-colors ${compacta ? "p-2" : "p-2.5"} ${estilosEstado[estadoVisual]} ${disabled ? "cursor-not-allowed opacity-60 saturate-50" : "cursor-pointer hover:shadow-[0_8px_24px_rgba(15,23,42,0.35)]"} ${className ?? ""}`}
       style={{
         ...gradienteMinors,
         ...(colorMinorUnico ? { borderColor: `${colorMinorUnico}` } : {}),
@@ -106,7 +108,9 @@ export function MateriaCard({
       aria-label={`${materia.id} ${materia.nombre}`}
     >
       <div className="mb-0.5 flex items-center justify-between gap-2">
-        <span className="font-mono text-[11px] tracking-wide text-slate-300">{materia.id}</span>
+        <span className={`font-mono tracking-wide text-slate-300 ${compacta ? "text-[10px]" : "text-[11px]"}`}>
+          {materia.id}
+        </span>
         <div className="flex items-center gap-1">
           {etiquetaExtra ? (
             <span className="rounded-full border border-slate-500/70 px-1.5 py-0.5 text-[8px] uppercase tracking-wider text-slate-300">
@@ -120,9 +124,11 @@ export function MateriaCard({
         </div>
       </div>
 
-      <p className="text-[13px] font-semibold leading-tight">{materia.nombre}</p>
+      <p className={`${compacta ? "text-[12px]" : "text-[13px]"} font-semibold leading-tight`}>
+        {materia.nombre}
+      </p>
 
-      <div className="mt-2 flex items-center justify-between text-[10px] text-slate-300">
+      <div className={`flex items-center justify-between text-slate-300 ${compacta ? "mt-1.5 text-[9px]" : "mt-2 text-[10px]"}`}>
         <span>{materia.creditos} cr</span>
         <span>Req: {materia.creditosRequeridos}</span>
       </div>
