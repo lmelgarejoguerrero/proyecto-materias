@@ -47,12 +47,14 @@ type FiltroGrupoTablero =
 export function MallaApp() {
   const materias = useMemo(() => enriquecerMateriasConMinors(plan.materias), []);
   const validacion = useMemo(() => validarPlan(materias), [materias]);
+  const topBarRef = useRef<HTMLDivElement | null>(null);
   const [slotActivo, setSlotActivo] = useState<SlotElectiva8Cuat>("gestion");
   const [mostrarOnboarding, setMostrarOnboarding] = useState(false);
   const [vistaActiva, setVistaActiva] = useState<VistaActiva>("malla");
   const [busqueda, setBusqueda] = useState("");
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstadoTablero>("todas");
   const [filtroGrupo, setFiltroGrupo] = useState<FiltroGrupoTablero>("todos");
+  const [topBarHeight, setTopBarHeight] = useState(0);
 
   const {
     progreso,
@@ -205,6 +207,42 @@ export function MallaApp() {
     return Math.min(total, plan.creditosTitulo);
   }, [materias, progreso, creditosAprobados]);
 
+  const proyeccionGraduacion = useMemo(() => {
+    const hoy = new Date();
+    const anioActual = hoy.getFullYear();
+    const mesActual = hoy.getMonth() + 1;
+    const creditosRestantes = Math.max(0, plan.creditosTitulo - creditosProyectados);
+    const creditosPorCuatrimestre = 24;
+
+    const formatear = (mes: "julio" | "diciembre", anio: number) => `${mes} de ${anio}`;
+
+    if (creditosRestantes === 0) {
+      return mesActual >= 8 ? formatear("diciembre", anioActual) : formatear("julio", anioActual);
+    }
+
+    let etapa: 0 | 1 | 2;
+    let anio = anioActual;
+
+    if (mesActual <= 2) etapa = 0;
+    else if (mesActual <= 7) etapa = 1;
+    else etapa = 2;
+
+    const cuatrimestresNecesarios = Math.ceil(creditosRestantes / creditosPorCuatrimestre);
+
+    for (let index = 0; index < cuatrimestresNecesarios; index += 1) {
+      if (etapa === 0) {
+        etapa = 1;
+      } else if (etapa === 1) {
+        etapa = 2;
+      } else {
+        anio += 1;
+        etapa = 1;
+      }
+    }
+
+    return formatear(etapa === 2 ? "diciembre" : "julio", anio);
+  }, [creditosProyectados]);
+
   const materiasFiltradas = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
 
@@ -273,6 +311,26 @@ export function MallaApp() {
   }, []);
 
   useEffect(() => {
+    const actualizarAltura = () => {
+      setTopBarHeight(topBarRef.current?.getBoundingClientRect().height ?? 0);
+    };
+
+    actualizarAltura();
+
+    const observer = new ResizeObserver(() => actualizarAltura());
+    if (topBarRef.current) {
+      observer.observe(topBarRef.current);
+    }
+
+    window.addEventListener("resize", actualizarAltura);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", actualizarAltura);
+    };
+  }, []);
+
+  useEffect(() => {
     const actualizarVista = () => {
       const hash = window.location.hash.slice(1);
       if (hash === "minors") {
@@ -299,21 +357,52 @@ export function MallaApp() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col overflow-y-auto bg-slate-950 text-slate-50">
-      <LeyendaEstados
-        creditosAprobados={creditosAprobados}
-        creditosCursando={creditosCursando}
-        creditosProyectados={creditosProyectados}
-        creditosTitulo={plan.creditosTitulo}
-        onAprobarCursadas={aprobarCursadas}
-        onReset={() => {
-          if (window.confirm("Se va a borrar todo el progreso guardado. ¿Continuar?")) {
-            resetearProgreso();
-          }
-        }}
-      />
+    <div className="min-h-screen bg-slate-950 text-slate-50">
+      <div ref={topBarRef} className="fixed inset-x-0 top-0 z-50 bg-slate-950/96 backdrop-blur">
+        <LeyendaEstados
+          creditosAprobados={creditosAprobados}
+          creditosCursando={creditosCursando}
+          creditosProyectados={creditosProyectados}
+          creditosTitulo={plan.creditosTitulo}
+          proyeccionGraduacion={proyeccionGraduacion}
+          onAprobarCursadas={aprobarCursadas}
+          onReset={() => {
+            if (window.confirm("Se va a borrar todo el progreso guardado. ¿Continuar?")) {
+              resetearProgreso();
+            }
+          }}
+        />
 
-      {hayInconsistencias ? (
+        <div className="mx-auto flex w-full max-w-[1800px] items-center justify-between gap-4 border-b border-slate-800/80 px-4 py-3">
+          <nav className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 p-1">
+            <button
+              type="button"
+              onClick={() => cambiarVista("malla")}
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                vistaActiva === "malla"
+                  ? "bg-cyan-500/20 text-cyan-100"
+                  : "text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+              }`}
+            >
+              Tablero
+            </button>
+            <button
+              type="button"
+              onClick={() => cambiarVista("minors")}
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                vistaActiva === "minors"
+                  ? "bg-violet-500/20 text-violet-100"
+                  : "text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+              }`}
+            >
+              Minors
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <div style={{ paddingTop: topBarHeight > 0 ? topBarHeight + 12 : undefined }}>
+        {hayInconsistencias ? (
         <div className="mx-auto my-2 flex w-full max-w-[1800px] items-start gap-3 rounded-xl border border-rose-500/40 bg-rose-950/20 px-4 py-3 text-sm text-rose-100">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
@@ -326,45 +415,21 @@ export function MallaApp() {
         </div>
       ) : null}
 
-      <div className="mx-auto mb-4 mt-3 flex w-full max-w-[1800px] items-center justify-between gap-4 px-4">
-        <nav className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 p-1">
-          <button
-            type="button"
-            onClick={() => cambiarVista("malla")}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-              vistaActiva === "malla"
-                ? "bg-cyan-500/20 text-cyan-100"
-                : "text-slate-300 hover:text-slate-100"
-            }`}
-          >
-            Malla Curricular
-          </button>
-          <button
-            type="button"
-            onClick={() => cambiarVista("minors")}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-              vistaActiva === "minors"
-                ? "bg-violet-500/20 text-violet-100"
-                : "text-slate-300 hover:text-slate-100"
-            }`}
-          >
-            Minors
-          </button>
-        </nav>
-      </div>
-
       {vistaActiva === "malla" ? (
         <>
-          <section className="mx-auto flex w-full max-w-[1800px] flex-col gap-3 px-4 text-xs text-slate-300">
+          <section
+            className="sticky z-40 mx-auto flex w-full max-w-[1800px] flex-col gap-3 bg-slate-950/95 px-4 py-2 text-xs text-slate-300 backdrop-blur"
+            style={{ top: topBarHeight > 0 ? topBarHeight : 0 }}
+          >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={toggleSeleccionMultiple}
-                  className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] ${
+                  className={`inline-flex cursor-pointer items-center gap-1 rounded-full border px-3 py-1 text-[11px] transition-colors ${
                     seleccionMultipleActiva
                       ? "border-cyan-400 bg-cyan-900/40 text-cyan-100"
-                      : "border-slate-600 text-slate-200 hover:border-slate-300"
+                      : "border-slate-600 text-slate-200 hover:border-slate-300 hover:bg-slate-900"
                   }`}
                 >
                   <span>
@@ -381,28 +446,28 @@ export function MallaApp() {
                     <button
                       type="button"
                       onClick={() => handleMarcarSeleccionadas("cursando")}
-                      className="inline-flex items-center gap-1 rounded-full border border-sky-500/70 px-2 py-0.5 text-[11px] text-sky-100 hover:border-sky-300"
+                      className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-sky-500/70 px-2 py-0.5 text-[11px] text-sky-100 transition-colors hover:border-sky-300 hover:bg-sky-950/30"
                     >
                       Cursando
                     </button>
                     <button
                       type="button"
                       onClick={() => handleMarcarSeleccionadas("regular")}
-                      className="inline-flex items-center gap-1 rounded-full border border-amber-500/70 px-2 py-0.5 text-[11px] text-amber-100 hover:border-amber-300"
+                      className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-amber-500/70 px-2 py-0.5 text-[11px] text-amber-100 transition-colors hover:border-amber-300 hover:bg-amber-950/30"
                     >
                       Regular
                     </button>
                     <button
                       type="button"
                       onClick={() => handleMarcarSeleccionadas("aprobada")}
-                      className="inline-flex items-center gap-1 rounded-full border border-emerald-500/70 px-2 py-0.5 text-[11px] text-emerald-100 hover:border-emerald-300"
+                      className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-emerald-500/70 px-2 py-0.5 text-[11px] text-emerald-100 transition-colors hover:border-emerald-300 hover:bg-emerald-950/30"
                     >
                       Aprobada
                     </button>
                     <button
                       type="button"
                       onClick={() => handleMarcarSeleccionadas("pendiente")}
-                      className="inline-flex items-center gap-1 rounded-full border border-slate-500/70 px-2 py-0.5 text-[11px] text-slate-100 hover:border-slate-300"
+                      className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-slate-500/70 px-2 py-0.5 text-[11px] text-slate-100 transition-colors hover:border-slate-300 hover:bg-slate-900"
                     >
                       Volver a pendiente
                     </button>
@@ -417,7 +482,7 @@ export function MallaApp() {
                 <button
                   type="button"
                   onClick={handleExportJson}
-                  className="inline-flex items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 hover:border-slate-300"
+                  className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 transition-colors hover:border-slate-300 hover:bg-slate-900"
                 >
                   <Download className="h-3 w-3" />
                   Exportar JSON
@@ -425,7 +490,7 @@ export function MallaApp() {
                 <button
                   type="button"
                   onClick={handleClickImport}
-                  className="inline-flex items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 hover:border-slate-300"
+                  className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-100 transition-colors hover:border-slate-300 hover:bg-slate-900"
                 >
                   <Upload className="h-3 w-3" />
                   Importar JSON
@@ -440,7 +505,7 @@ export function MallaApp() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-3">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-3 shadow-[0_10px_24px_rgba(2,6,23,0.35)]">
               <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center">
                   <label className="relative block flex-1 min-w-[16rem]">
@@ -456,7 +521,7 @@ export function MallaApp() {
                       <button
                         type="button"
                         onClick={() => setBusqueda("")}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition-colors hover:text-slate-200"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-500 transition-colors hover:text-slate-200"
                         aria-label="Limpiar búsqueda"
                       >
                         <X className="h-4 w-4" />
@@ -470,7 +535,7 @@ export function MallaApp() {
                       <select
                         value={filtroEstado}
                         onChange={(event) => setFiltroEstado(event.target.value as FiltroEstadoTablero)}
-                        className="bg-transparent text-[12px] text-slate-200 outline-none"
+                        className="cursor-pointer bg-transparent text-[12px] text-slate-200 outline-none"
                       >
                         <option value="todas">Todos los estados</option>
                         <option value="pendiente">Pendiente</option>
@@ -486,7 +551,7 @@ export function MallaApp() {
                       <select
                         value={filtroGrupo}
                         onChange={(event) => setFiltroGrupo(event.target.value as FiltroGrupoTablero)}
-                        className="bg-transparent text-[12px] text-slate-200 outline-none"
+                        className="cursor-pointer bg-transparent text-[12px] text-slate-200 outline-none"
                       >
                         <option value="todos">Todo el plan</option>
                         <option value="troncales">Solo troncales</option>
@@ -501,7 +566,7 @@ export function MallaApp() {
                       <button
                         type="button"
                         onClick={limpiarFiltros}
-                        className="inline-flex items-center gap-1 rounded-xl border border-slate-600 px-3 py-2 text-[11px] text-slate-200 hover:border-slate-400"
+                        className="inline-flex cursor-pointer items-center gap-1 rounded-xl border border-slate-600 px-3 py-2 text-[11px] text-slate-200 transition-colors hover:border-slate-400 hover:bg-slate-900"
                       >
                         <X className="h-3.5 w-3.5" />
                         Limpiar filtros
@@ -530,7 +595,7 @@ export function MallaApp() {
             </div>
           </section>
 
-          <div className="h-[70vh] shrink-0 overflow-hidden">
+          <div className="h-[70vh] shrink-0 overflow-hidden px-4 pb-4">
             <MallaGrid
               materias={materiasFiltradas}
               estadoVisualPorMateria={estadoVisualPorMateria}
@@ -603,7 +668,7 @@ export function MallaApp() {
               <button
                 type="button"
                 onClick={handleCerrarOnboarding}
-                className="rounded-lg border border-cyan-400 bg-cyan-500/20 px-4 py-2 text-sm font-medium text-cyan-100 transition-colors hover:border-cyan-300 hover:bg-cyan-500/30"
+                className="cursor-pointer rounded-lg border border-cyan-400 bg-cyan-500/20 px-4 py-2 text-sm font-medium text-cyan-100 transition-colors hover:border-cyan-300 hover:bg-cyan-500/30"
               >
                 Entendido
               </button>
@@ -611,6 +676,7 @@ export function MallaApp() {
           </div>
         </div>
       ) : null}
+      </div>
     </div>
   );
 }

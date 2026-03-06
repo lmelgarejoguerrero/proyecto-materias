@@ -5,6 +5,7 @@ interface LeyendaEstadosProps {
   creditosCursando: number;
   creditosProyectados: number;
   creditosTitulo: number;
+  proyeccionGraduacion: string;
   onReset: () => void;
   onAprobarCursadas: () => void;
 }
@@ -27,6 +28,7 @@ export function LeyendaEstados({
   creditosCursando,
   creditosProyectados,
   creditosTitulo,
+  proyeccionGraduacion,
   onReset,
   onAprobarCursadas,
 }: LeyendaEstadosProps) {
@@ -34,7 +36,7 @@ export function LeyendaEstados({
   const porcentajeProyectado = Math.min(100, (creditosProyectados / creditosTitulo) * 100);
 
   return (
-    <header className="sticky top-0 z-40 shrink-0 border-b border-slate-800/90 bg-slate-950/95 backdrop-blur">
+    <header className="shrink-0 border-b border-slate-800/90 bg-slate-950/95 backdrop-blur">
       <div className="mx-auto flex max-w-[1800px] flex-col gap-3 px-4 py-3">
         <div>
           <h1 className="text-xl font-semibold text-slate-100 md:text-2xl">
@@ -78,6 +80,10 @@ export function LeyendaEstados({
             Te faltan {Math.max(0, creditosTitulo - creditosProyectados)} cr para llegar al total del
             plan ({creditosTitulo} cr).
           </p>
+          <p className="mt-1 text-[11px] text-cyan-200/85">
+            Según la proyección, te recibirías en {proyeccionGraduacion} si todo sigue según lo
+            planeado.
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 text-xs">
@@ -103,7 +109,7 @@ export function LeyendaEstados({
           <button
             type="button"
             onClick={onAprobarCursadas}
-            className="inline-flex items-center gap-2 rounded-full border border-sky-500/70 px-3 py-1 text-sky-200 transition-colors hover:border-sky-300"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-sky-500/70 px-3 py-1 text-sky-200 transition-colors hover:border-sky-300 hover:bg-sky-950/30"
           >
             Aprobe cursadas
           </button>
@@ -111,7 +117,7 @@ export function LeyendaEstados({
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-600 px-3 py-1 text-slate-200 transition-colors hover:border-slate-300"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-600 px-3 py-1 text-slate-200 transition-colors hover:border-slate-300 hover:bg-slate-900"
           >
             <RefreshCcw className="h-3.5 w-3.5" />
             Reiniciar progreso
@@ -119,7 +125,7 @@ export function LeyendaEstados({
 
           <a
             href="#minors"
-            className="inline-flex items-center gap-2 rounded-full border border-violet-500/70 px-3 py-1 text-violet-200 transition-colors hover:border-violet-300 hover:bg-violet-950/30"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-violet-500/70 px-3 py-1 text-violet-200 transition-colors hover:border-violet-300 hover:bg-violet-950/30"
           >
             Planificar Minors
           </a>

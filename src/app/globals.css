@@ -22,3 +22,13 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #334155 #020617;
 }
+
+button:not(:disabled),
+a[href],
+select {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}

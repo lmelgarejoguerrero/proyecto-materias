@@ -99,7 +99,7 @@ function MateriaMinorRow({
     <label
       className={`flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 text-xs transition-colors ${
         checked ? "border-violet-500/50 bg-violet-950/20" : "border-slate-800 bg-slate-950/45"
-      } ${disabled ? "cursor-default" : "hover:border-slate-700"}`}
+      } ${disabled ? "cursor-not-allowed" : "hover:border-slate-700 hover:bg-slate-950/70"}`}
     >
       <input
         type="checkbox"
@@ -294,7 +294,7 @@ export function SeccionMinors() {
       }
 
       if (materiasConEstadoIds.has(codigo)) {
-        setErrorCodigo("Esa materia ya cuenta automáticamente porque ya la marcaste en la malla.");
+        setErrorCodigo("Esa materia ya cuenta automáticamente porque ya la marcaste en el tablero.");
         return;
       }
 
@@ -322,14 +322,9 @@ export function SeccionMinors() {
             </div>
             <p className="max-w-3xl text-sm text-slate-400">
               Esta pestaña te deja ver tu avance real, planificar electivas y comparar varios minors
-              al mismo tiempo. Las materias que ya marcaste en la malla se cuentan solas; acá solo
+              al mismo tiempo. Las materias que ya marcaste en el tablero se cuentan solas; acá solo
               sumás o sacás materias que querés considerar en tu plan.
             </p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-xs text-slate-400">
-            <span className="font-medium text-slate-200">Tip:</span> podés entrar directo con
-            `#minors` y compartir ese link.
           </div>
         </div>
 
@@ -343,7 +338,7 @@ export function SeccionMinors() {
                 type="button"
                 aria-pressed={checked}
                 onClick={() => handleToggleMinor(minor)}
-                className={`rounded-2xl border p-4 text-left transition-all ${
+                className={`cursor-pointer rounded-2xl border p-4 text-left transition-all ${
                   checked
                     ? "border-slate-500 bg-slate-950/90 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
                     : "border-slate-800 bg-slate-950/45 hover:border-slate-700 hover:bg-slate-950/70"
@@ -393,7 +388,7 @@ export function SeccionMinors() {
             </div>
             <p className="text-3xl font-semibold text-slate-100">{creditosVisiblesEnPlan}</p>
             <p className="mt-2 text-xs text-slate-500">
-              Créditos visibles que ya cuentan por malla o por selección manual.
+              Créditos visibles que ya cuentan por tablero o por selección manual.
             </p>
           </div>
 
@@ -425,7 +420,7 @@ export function SeccionMinors() {
             <div>
               <h3 className="text-sm font-semibold text-slate-100">Planificación manual</h3>
               <p className="mt-1 text-xs text-slate-500">
-                Sumá electivas por código para proyectar minors antes de marcarlas en la malla.
+                Sumá electivas por código para proyectar minors antes de marcarlas en el tablero.
               </p>
             </div>
 
@@ -442,14 +437,14 @@ export function SeccionMinors() {
               />
               <button
                 type="submit"
-                className="h-9 rounded-lg border border-violet-500/70 bg-violet-500/10 px-3 text-xs font-medium text-violet-100 transition-colors hover:border-violet-300"
+                className="h-9 cursor-pointer rounded-lg border border-violet-500/70 bg-violet-500/10 px-3 text-xs font-medium text-violet-100 transition-colors hover:border-violet-300 hover:bg-violet-500/20"
               >
                 Agregar al plan
               </button>
               <button
                 type="button"
                 onClick={limpiarPlanManual}
-                className="h-9 rounded-lg border border-slate-700 px-3 text-xs font-medium text-slate-300 transition-colors hover:border-slate-500 hover:text-slate-100"
+                className="h-9 cursor-pointer rounded-lg border border-slate-700 px-3 text-xs font-medium text-slate-300 transition-colors hover:border-slate-500 hover:bg-slate-900 hover:text-slate-100"
               >
                 Limpiar manuales
               </button>

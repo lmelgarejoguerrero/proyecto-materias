@@ -97,7 +97,7 @@ export function MateriaCard({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       disabled={disabled}
-      className={`w-full rounded-xl border p-2.5 text-left transition-colors ${estilosEstado[estadoVisual]} ${disabled ? "cursor-not-allowed opacity-60 saturate-50" : ""} ${className ?? ""}`}
+      className={`w-full rounded-xl border p-2.5 text-left transition-colors ${estilosEstado[estadoVisual]} ${disabled ? "cursor-not-allowed opacity-60 saturate-50" : "cursor-pointer hover:shadow-[0_8px_24px_rgba(15,23,42,0.35)]"} ${className ?? ""}`}
       style={{
         ...gradienteMinors,
         ...(colorMinorUnico ? { borderColor: `${colorMinorUnico}` } : {}),
