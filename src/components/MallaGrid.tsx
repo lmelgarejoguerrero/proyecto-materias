@@ -18,6 +18,9 @@ interface MallaGridProps {
   progresoSlots8Cuat: Record<SlotElectiva8Cuat, { aprobado: number; objetivo: number }>;
   onSeleccionarSlot: (slot: SlotElectiva8Cuat) => void;
   slotActivo: SlotElectiva8Cuat | null;
+  seleccionMultipleActiva: boolean;
+  materiasSeleccionadas: Set<string>;
+  onToggleSeleccion: (materiaId: string) => void;
 }
 
 const ORDEN_GRUPO: Record<GrupoMateria, number> = {
@@ -41,6 +44,9 @@ export function MallaGrid({
   progresoSlots8Cuat,
   onSeleccionarSlot,
   slotActivo,
+  seleccionMultipleActiva,
+  materiasSeleccionadas,
+  onToggleSeleccion,
 }: MallaGridProps) {
   const materiasOrdenadas = useMemo(() => {
     return [...materias].sort((a, b) => {
@@ -117,7 +123,12 @@ export function MallaGrid({
                     <MateriaCard
                       materia={materia}
                       estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
-                      onClick={onMateriaClick}
+                      onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+                      className={
+                        seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
+                          ? "ring-2 ring-cyan-400"
+                          : undefined
+                      }
                     />
                   </div>
                 ))}
@@ -191,7 +202,12 @@ export function MallaGrid({
                   <MateriaCard
                     materia={materia}
                     estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
-                    onClick={onMateriaClick}
+                    onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+                    className={
+                      seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
+                        ? "ring-2 ring-cyan-400"
+                        : undefined
+                    }
                   />
                 </div>
               ))}
@@ -218,7 +234,12 @@ export function MallaGrid({
                   <MateriaCard
                     materia={materia}
                     estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
-                    onClick={onMateriaClick}
+                    onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+                    className={
+                      seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
+                        ? "ring-2 ring-cyan-400"
+                        : undefined
+                    }
                   />
                 </div>
               ))}
@@ -244,7 +265,12 @@ export function MallaGrid({
                   <MateriaCard
                     materia={materia}
                     estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
-                    onClick={onMateriaClick}
+                    onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+                    className={
+                      seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)
+                        ? "ring-2 ring-cyan-400"
+                        : undefined
+                    }
                   />
                 </div>
               ))}

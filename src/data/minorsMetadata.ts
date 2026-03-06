@@ -1,10 +1,24 @@
 import type { EstadoOferta, MateriaPlan, MinorTag } from "@/types/plan";
 
+export const MINOR_OPTIONS = [
+  "finanzas-cripto",
+  "tecnologia-datos",
+  "innovacion-empresarial",
+  "gestion-comercial",
+] as const satisfies readonly MinorTag[];
+
 export const MINOR_LABELS: Record<MinorTag, string> = {
   "finanzas-cripto": "Finanzas y Criptoeconomia",
   "tecnologia-datos": "Tecnologia y Datos",
   "innovacion-empresarial": "Innovacion Empresarial",
   "gestion-comercial": "Gestion Comercial",
+};
+
+export const MINOR_DESCRIPTIONS: Record<MinorTag, string> = {
+  "finanzas-cripto": "Enfoque en finanzas, mercados y herramientas para criptoeconomia.",
+  "tecnologia-datos": "Perfil orientado a sistemas, analitica, datos y herramientas digitales.",
+  "innovacion-empresarial": "Recorrido para emprendimiento, producto, innovacion y transformacion.",
+  "gestion-comercial": "Trayecto centrado en gestion, ventas, marketing y desarrollo comercial.",
 };
 
 export const MINOR_SIGLAS: Record<MinorTag, string> = {

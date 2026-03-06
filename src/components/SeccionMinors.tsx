@@ -1,27 +1,48 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, GraduationCap } from "lucide-react";
+import { GraduationCap, Layers3, ListChecks, Target } from "lucide-react";
 
-import { enriquecerMateriasConMinors } from "@/data/minorsMetadata";
-import { MINOR_COLORES, MINOR_LABELS } from "@/data/minorsMetadata";
+import {
+  enriquecerMateriasConMinors,
+  MINOR_COLORES,
+  MINOR_DESCRIPTIONS,
+  MINOR_LABELS,
+  MINOR_OPTIONS,
+} from "@/data/minorsMetadata";
 import planRaw from "@/data/planDeEstudio.json";
-import { getInterseccionMaterias, getMateriasMinor } from "@/lib/planUtils";
+import { getMateriasMinor } from "@/lib/planUtils";
 import { useProgreso } from "@/hooks/useProgreso";
-import type { MateriaPlan, MinorTag, PlanDeEstudio } from "@/types/plan";
+import type { EstadoMateria, MateriaPlan, MinorTag, PlanDeEstudio } from "@/types/plan";
 
 const plan = planRaw as PlanDeEstudio;
 const STORAGE_MINORS = "malla-curricular:minors:v1";
 const STORAGE_PLAN_MINORS = "malla-curricular:plan-minors:v1";
-const OBJETIVO_1_MINOR = 45;
-const OBJETIVO_2_MINORS = 90;
+const OBJETIVO_MINOR = 45;
+
+const ETIQUETA_ESTADO: Record<EstadoMateria, string> = {
+  pendiente: "Pendiente",
+  cursando: "Cursando",
+  regular: "Regular",
+  aprobada: "Aprobada",
+};
+
+const COLOR_ESTADO: Record<EstadoMateria, string> = {
+  pendiente: "text-slate-500",
+  cursando: "text-sky-400",
+  regular: "text-amber-400",
+  aprobada: "text-emerald-400",
+};
 
 function parseMinors(raw: string | null): MinorTag[] {
   if (!raw) return [];
+
   try {
     const arr = JSON.parse(raw) as unknown[];
-    const valid: MinorTag[] = ["finanzas-cripto", "tecnologia-datos", "innovacion-empresarial", "gestion-comercial"];
-    return arr.filter((m): m is MinorTag => typeof m === "string" && valid.includes(m as MinorTag));
+    return arr.filter(
+      (minor): minor is MinorTag =>
+        typeof minor === "string" && MINOR_OPTIONS.includes(minor as MinorTag),
+    );
   } catch {
     return [];
   }
@@ -29,6 +50,7 @@ function parseMinors(raw: string | null): MinorTag[] {
 
 function parsePlanMinors(raw: string | null): Set<string> {
   if (!raw) return new Set();
+
   try {
     const arr = JSON.parse(raw) as unknown[];
     return new Set(arr.filter((id): id is string => typeof id === "string"));
@@ -37,29 +59,112 @@ function parsePlanMinors(raw: string | null): Set<string> {
   }
 }
 
+function esElectivaMinor(materia: MateriaPlan): boolean {
+  return (
+    (materia.grupo === "electiva-gestion" || materia.grupo === "electiva-sistemas-tecnologia") &&
+    (materia.minorTags?.length ?? 0) > 0
+  );
+}
+
+function sumarCreditos(materias: MateriaPlan[]): number {
+  return materias.reduce((total, materia) => total + materia.creditos, 0);
+}
+
+function obtenerCantidadMinorsCompartidos(materia: MateriaPlan, selectedMinors: MinorTag[]): number {
+  return (materia.minorTags ?? []).filter((minor) => selectedMinors.includes(minor)).length;
+}
+
+interface MateriaMinorRowProps {
+  materia: MateriaPlan;
+  checked: boolean;
+  disabled: boolean;
+  estado: EstadoMateria;
+  esCompartida: boolean;
+  selectedMinors: MinorTag[];
+  onToggle: (id: string) => void;
+}
+
+function MateriaMinorRow({
+  materia,
+  checked,
+  disabled,
+  estado,
+  esCompartida,
+  selectedMinors,
+  onToggle,
+}: MateriaMinorRowProps) {
+  const minorsActivos = (materia.minorTags ?? []).filter((minor) => selectedMinors.includes(minor));
+
+  return (
+    <label
+      className={`flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 text-xs transition-colors ${
+        checked ? "border-violet-500/50 bg-violet-950/20" : "border-slate-800 bg-slate-950/45"
+      } ${disabled ? "cursor-default" : "hover:border-slate-700"}`}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={() => onToggle(materia.id)}
+        className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-violet-400 disabled:opacity-60"
+      />
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-mono text-[11px] text-slate-400">{materia.id}</span>
+          <span className="min-w-0 flex-1 truncate text-slate-100">{materia.nombre}</span>
+          <span className="shrink-0 text-slate-500">{materia.creditos} cr</span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`text-[10px] font-medium ${COLOR_ESTADO[estado]}`}>
+            {ETIQUETA_ESTADO[estado]}
+          </span>
+          {esCompartida ? (
+            <span className="rounded-full border border-cyan-500/40 bg-cyan-950/30 px-2 py-0.5 text-[10px] font-medium text-cyan-200">
+              Compartida
+            </span>
+          ) : null}
+          {minorsActivos.map((minor) => (
+            <span
+              key={`${materia.id}-${minor}`}
+              className="rounded-full border px-2 py-0.5 text-[10px] font-medium"
+              style={{
+                borderColor: `${MINOR_COLORES[minor]}55`,
+                color: MINOR_COLORES[minor],
+                backgroundColor: `${MINOR_COLORES[minor]}14`,
+              }}
+            >
+              {MINOR_LABELS[minor]}
+            </span>
+          ))}
+        </div>
+      </div>
+    </label>
+  );
+}
+
 export function SeccionMinors() {
   const materias = useMemo(() => enriquecerMateriasConMinors(plan.materias), []);
   const { progreso } = useProgreso(materias);
 
+  const electivasMinor = useMemo(() => materias.filter(esElectivaMinor), [materias]);
+  const mapaMaterias = useMemo(() => new Map(materias.map((materia) => [materia.id, materia])), [materias]);
+
   const [selectedMinors, setSelectedMinors] = useState<MinorTag[]>([]);
   const [materiasPlanIds, setMateriasPlanIds] = useState<Set<string>>(new Set());
-  const [expandidoGestion, setExpandidoGestion] = useState(true);
-  const [expandidoTecnologia, setExpandidoTecnologia] = useState(true);
   const [codigoInput, setCodigoInput] = useState("");
   const [errorCodigo, setErrorCodigo] = useState<string | null>(null);
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
-      const m = window.localStorage.getItem(STORAGE_MINORS);
-      const p = window.localStorage.getItem(STORAGE_PLAN_MINORS);
-      setSelectedMinors(parseMinors(m));
-      setMateriasPlanIds(parsePlanMinors(p));
+      setSelectedMinors(parseMinors(window.localStorage.getItem(STORAGE_MINORS)));
+      setMateriasPlanIds(parsePlanMinors(window.localStorage.getItem(STORAGE_PLAN_MINORS)));
     });
+
     return () => window.cancelAnimationFrame(frameId);
   }, []);
 
   useEffect(() => {
-    if (selectedMinors.length === 0) return;
     window.localStorage.setItem(STORAGE_MINORS, JSON.stringify(selectedMinors));
   }, [selectedMinors]);
 
@@ -67,70 +172,108 @@ export function SeccionMinors() {
     window.localStorage.setItem(STORAGE_PLAN_MINORS, JSON.stringify([...materiasPlanIds]));
   }, [materiasPlanIds]);
 
+  const materiasConEstadoIds = useMemo(
+    () =>
+      new Set(
+        electivasMinor
+          .filter((materia) => (progreso[materia.id] ?? "pendiente") !== "pendiente")
+          .map((materia) => materia.id),
+      ),
+    [electivasMinor, progreso],
+  );
+
+  const materiasEnPlanIds = useMemo(
+    () => new Set([...materiasPlanIds, ...materiasConEstadoIds]),
+    [materiasPlanIds, materiasConEstadoIds],
+  );
+
+  const materiasVisibles = useMemo(() => {
+    if (selectedMinors.length === 0) return electivasMinor;
+
+    return electivasMinor.filter((materia) =>
+      (materia.minorTags ?? []).some((minor) => selectedMinors.includes(minor)),
+    );
+  }, [electivasMinor, selectedMinors]);
+
+  const materiasCompartidas = useMemo(() => {
+    if (selectedMinors.length < 2) return [];
+
+    return electivasMinor.filter(
+      (materia) => obtenerCantidadMinorsCompartidos(materia, selectedMinors) >= 2,
+    );
+  }, [electivasMinor, selectedMinors]);
+
+  const materiasCompartidasEnPlan = useMemo(
+    () => materiasCompartidas.filter((materia) => materiasEnPlanIds.has(materia.id)),
+    [materiasCompartidas, materiasEnPlanIds],
+  );
+
+  const creditosVisiblesEnPlan = useMemo(
+    () => sumarCreditos(materiasVisibles.filter((materia) => materiasEnPlanIds.has(materia.id))),
+    [materiasVisibles, materiasEnPlanIds],
+  );
+
+  const creditosVisiblesAprobados = useMemo(
+    () =>
+      sumarCreditos(
+        materiasVisibles.filter((materia) => (progreso[materia.id] ?? "pendiente") === "aprobada"),
+      ),
+    [materiasVisibles, progreso],
+  );
+
+  const minorSummaries = useMemo(
+    () =>
+      selectedMinors.map((minor) => {
+        const materiasDelMinor = getMateriasMinor(electivasMinor, minor);
+        const materiasGestion = materiasDelMinor.filter((materia) => materia.grupo === "electiva-gestion");
+        const materiasTecnologia = materiasDelMinor.filter(
+          (materia) => materia.grupo === "electiva-sistemas-tecnologia",
+        );
+        const materiasPlanificadas = materiasDelMinor.filter((materia) => materiasEnPlanIds.has(materia.id));
+        const materiasAprobadas = materiasDelMinor.filter(
+          (materia) => (progreso[materia.id] ?? "pendiente") === "aprobada",
+        );
+        const materiasCompartidasMinor = materiasDelMinor.filter(
+          (materia) => obtenerCantidadMinorsCompartidos(materia, selectedMinors) >= 2,
+        );
+
+        return {
+          minor,
+          materiasGestion,
+          materiasTecnologia,
+          materiasCompartidas: materiasCompartidasMinor,
+          creditosPlanificados: sumarCreditos(materiasPlanificadas),
+          creditosAprobados: sumarCreditos(materiasAprobadas),
+          creditosGestionPlanificados: sumarCreditos(
+            materiasGestion.filter((materia) => materiasEnPlanIds.has(materia.id)),
+          ),
+          creditosTecnologiaPlanificados: sumarCreditos(
+            materiasTecnologia.filter((materia) => materiasEnPlanIds.has(materia.id)),
+          ),
+        };
+      }),
+    [electivasMinor, materiasEnPlanIds, progreso, selectedMinors],
+  );
+
   const handleToggleMinor = useCallback((minor: MinorTag) => {
-    setSelectedMinors((actual) => {
-      if (actual.includes(minor)) {
-        return actual.filter((m) => m !== minor);
-      }
-      if (actual.length >= 2) return actual;
-      return [...actual, minor];
-    });
+    setSelectedMinors((actual) =>
+      actual.includes(minor) ? actual.filter((item) => item !== minor) : [...actual, minor],
+    );
   }, []);
 
-  const materiasQueCuentan = useMemo(() => {
-    if (selectedMinors.length === 0) return [];
-    if (selectedMinors.length === 1) {
-      return getMateriasMinor(materias, selectedMinors[0]);
-    }
-    return materias.filter((m) => {
-      const tags = m.minorTags ?? [];
-      return selectedMinors.every((minor) => tags.includes(minor));
-    });
-  }, [materias, selectedMinors]);
+  const toggleMateriaPlan = useCallback(
+    (id: string) => {
+      if (materiasConEstadoIds.has(id)) return;
 
-  const electivasGestion = useMemo(
-    () => materiasQueCuentan.filter((m) => m.grupo === "electiva-gestion"),
-    [materiasQueCuentan],
+      setMateriasPlanIds((actual) => {
+        const next = new Set(actual);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      });
+    },
+    [materiasConEstadoIds],
   );
-  const electivasTecnologia = useMemo(
-    () => materiasQueCuentan.filter((m) => m.grupo === "electiva-sistemas-tecnologia"),
-    [materiasQueCuentan],
-  );
-
-  const materiasInterseccionIds = useMemo(
-    () => new Set(getInterseccionMaterias(materias, selectedMinors)),
-    [materias, selectedMinors],
-  );
-
-  const creditosEnPlan = useMemo(() => {
-    let total = 0;
-    const mapa = new Map(materias.map((m) => [m.id, m]));
-    for (const id of materiasPlanIds) {
-      const m = mapa.get(id);
-      if (m) total += m.creditos;
-    }
-    return total;
-  }, [materias, materiasPlanIds]);
-
-  const creditosAprobadosQueCuentan = useMemo(() => {
-    return materiasQueCuentan.reduce((acc, m) => {
-      if ((progreso[m.id] ?? "pendiente") === "aprobada") return acc + m.creditos;
-      return acc;
-    }, 0);
-  }, [materiasQueCuentan, progreso]);
-
-  const objetivo = selectedMinors.length === 2 ? OBJETIVO_2_MINORS : OBJETIVO_1_MINOR;
-  const totalPlanificado = creditosEnPlan;
-  const creditosFaltantes = Math.max(0, objetivo - totalPlanificado);
-
-  const toggleMateriaPlan = useCallback((id: string) => {
-    setMateriasPlanIds((actual) => {
-      const next = new Set(actual);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
 
   const handleAgregarPorCodigo = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
@@ -138,234 +281,363 @@ export function SeccionMinors() {
       const codigo = codigoInput.trim();
       if (!codigo) return;
 
-      const mapa = new Map(materiasQueCuentan.map((m) => [m.id, m]));
-      const materia = mapa.get(codigo);
+      const materia = mapaMaterias.get(codigo);
+      const perteneceASeleccion =
+        materia &&
+        esElectivaMinor(materia) &&
+        (selectedMinors.length === 0 ||
+          (materia.minorTags ?? []).some((minor) => selectedMinors.includes(minor)));
 
-      if (!materia) {
-        setErrorCodigo("No se encontró una materia de los minors seleccionados con ese código.");
+      if (!materia || !perteneceASeleccion) {
+        setErrorCodigo("No se encontró una electiva válida para los minors seleccionados con ese código.");
         return;
       }
 
-      setMateriasPlanIds((actual) => {
-        const next = new Set(actual);
-        next.add(codigo);
-        return next;
-      });
+      if (materiasConEstadoIds.has(codigo)) {
+        setErrorCodigo("Esa materia ya cuenta automáticamente porque ya la marcaste en la malla.");
+        return;
+      }
+
+      setMateriasPlanIds((actual) => new Set(actual).add(codigo));
+      setCodigoInput("");
       setErrorCodigo(null);
     },
-    [codigoInput, materiasQueCuentan],
+    [codigoInput, mapaMaterias, materiasConEstadoIds, selectedMinors],
   );
 
-  const minors: MinorTag[] = [
-    "finanzas-cripto",
-    "tecnologia-datos",
-    "innovacion-empresarial",
-    "gestion-comercial",
-  ];
+  const limpiarPlanManual = useCallback(() => {
+    setMateriasPlanIds(new Set());
+    setErrorCodigo(null);
+    setCodigoInput("");
+  }, []);
 
   return (
-    <section
-      id="minors"
-      className="scroll-mt-24 border-t border-slate-800 bg-slate-900/60 px-4 py-8"
-    >
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-6 flex items-center gap-2">
-          <GraduationCap className="h-6 w-6 text-violet-400" />
-          <h2 className="text-xl font-semibold text-slate-100">Planificación de Minors</h2>
-        </div>
+    <section className="border-t border-slate-800 bg-slate-900/60 px-4 py-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="mb-2 flex items-center gap-2">
+              <GraduationCap className="h-6 w-6 text-violet-400" />
+              <h2 className="text-xl font-semibold text-slate-100">Minors</h2>
+            </div>
+            <p className="max-w-3xl text-sm text-slate-400">
+              Esta pestaña te deja ver tu avance real, planificar electivas y comparar varios minors
+              al mismo tiempo. Las materias que ya marcaste en la malla se cuentan solas; acá solo
+              sumás o sacás materias que querés considerar en tu plan.
+            </p>
+          </div>
 
-        <p className="mb-6 text-sm text-slate-400">
-          Selecciona 1 o 2 minors y agrega materias electivas a tu plan para alcanzar los créditos
-          necesarios (45 cr por minor, 90 cr si haces 2).
-        </p>
-
-        <div className="mb-6">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
-            Seleccionar minors
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {minors.map((minor) => {
-              const checked = selectedMinors.includes(minor);
-              const disabled = !checked && selectedMinors.length >= 2;
-              return (
-                <label
-                  key={minor}
-                  className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                    disabled
-                      ? "cursor-not-allowed border-slate-700 text-slate-500 opacity-60"
-                      : checked
-                        ? "border-violet-400 bg-violet-900/30 text-violet-100"
-                        : "border-slate-600 text-slate-300 hover:border-slate-500"
-                  }`}
-                  style={checked ? { borderColor: MINOR_COLORES[minor] } : undefined}
-                >
-                  <input
-                    type="checkbox"
-                    className="h-3.5 w-3.5 accent-violet-400"
-                    checked={checked}
-                    disabled={disabled}
-                    onChange={() => handleToggleMinor(minor)}
-                  />
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: MINOR_COLORES[minor] }}
-                  />
-                  {MINOR_LABELS[minor]}
-                </label>
-              );
-            })}
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 px-4 py-3 text-xs text-slate-400">
+            <span className="font-medium text-slate-200">Tip:</span> podés entrar directo con
+            `#minors` y compartir ese link.
           </div>
         </div>
 
-        {selectedMinors.length > 0 ? (
-          <>
-            <div className="mb-6 rounded-xl border border-slate-800 bg-slate-950/50 p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-200">Progreso hacia el objetivo</span>
-                <span className="text-sm text-slate-400">
-                  {totalPlanificado} / {objetivo} cr
-                </span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-slate-800">
-                <div
-                  className="h-full rounded-full bg-violet-500 transition-all"
-                  style={{ width: `${Math.min(100, (totalPlanificado / objetivo) * 100)}%` }}
-                />
-              </div>
-              <p className="mt-2 text-xs text-slate-500">
-                {creditosAprobadosQueCuentan} cr ya aprobados cuentan en tu plan.{" "}
-                {creditosFaltantes > 0
-                  ? `Faltan ${creditosFaltantes} cr para alcanzar el objetivo.`
-                  : "Objetivo alcanzado."}
-              </p>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {MINOR_OPTIONS.map((minor) => {
+            const checked = selectedMinors.includes(minor);
 
-              <form
-                onSubmit={handleAgregarPorCodigo}
-                className="mt-4 flex flex-wrap items-center gap-2 text-xs"
+            return (
+              <button
+                key={minor}
+                type="button"
+                aria-pressed={checked}
+                onClick={() => handleToggleMinor(minor)}
+                className={`rounded-2xl border p-4 text-left transition-all ${
+                  checked
+                    ? "border-slate-500 bg-slate-950/90 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
+                    : "border-slate-800 bg-slate-950/45 hover:border-slate-700 hover:bg-slate-950/70"
+                }`}
+                style={checked ? { boxShadow: `0 0 0 1px ${MINOR_COLORES[minor]}55 inset` } : undefined}
               >
-                <label className="text-slate-300" htmlFor="codigo-minor">
-                  Agregar materia por código:
-                </label>
-                <input
-                  id="codigo-minor"
-                  type="text"
-                  value={codigoInput}
-                  onChange={(e) => {
-                    setCodigoInput(e.target.value);
-                    if (errorCodigo) setErrorCodigo(null);
-                  }}
-                  placeholder="Ej: 81.14"
-                  className="h-7 rounded-md border border-slate-600 bg-slate-900 px-2 font-mono text-xs text-slate-100 outline-none focus:border-violet-400"
-                />
-                <button
-                  type="submit"
-                  className="h-7 rounded-md border border-violet-500 bg-violet-600/20 px-3 text-xs font-medium text-violet-100 hover:border-violet-300"
-                >
-                  Agregar
-                </button>
-                {errorCodigo ? (
-                  <span className="text-[11px] text-rose-400">{errorCodigo}</span>
-                ) : null}
-              </form>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-xl border border-slate-800 bg-slate-950/50">
-                <button
-                  type="button"
-                  onClick={() => setExpandidoGestion((e) => !e)}
-                  className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-slate-200"
-                >
-                  Electivas de Gestión (27 cr)
-                  {expandidoGestion ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </button>
-                {expandidoGestion && (
-                  <div className="max-h-64 space-y-1 overflow-y-auto border-t border-slate-800 px-4 py-2">
-                    {electivasGestion.map((m) => {
-                      const enPlan = materiasPlanIds.has(m.id);
-                      const cuenta = materiasInterseccionIds.has(m.id);
-                      return (
-                        <label
-                          key={m.id}
-                          className={`flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors ${
-                            cuenta ? "bg-violet-950/30" : ""
-                          } ${enPlan ? "ring-1 ring-violet-400/50" : ""}`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={enPlan}
-                            onChange={() => toggleMateriaPlan(m.id)}
-                            className="h-3.5 w-3.5 accent-violet-400"
-                          />
-                          <span className="font-mono text-slate-400">{m.id}</span>
-                          <span className="min-w-0 flex-1 truncate text-slate-200">
-                            {m.nombre}
-                          </span>
-                          <span className="text-slate-500">{m.creditos} cr</span>
-                        </label>
-                      );
-                    })}
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: MINOR_COLORES[minor] }}
+                    />
+                    <span className="text-sm font-semibold text-slate-100">{MINOR_LABELS[minor]}</span>
                   </div>
-                )}
-              </div>
+                  <span
+                    className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                      checked
+                        ? "border-violet-400/40 bg-violet-500/10 text-violet-100"
+                        : "border-slate-700 text-slate-400"
+                    }`}
+                  >
+                    {checked ? "Seleccionado" : "Ver minor"}
+                  </span>
+                </div>
+                <p className="text-xs leading-5 text-slate-400">{MINOR_DESCRIPTIONS[minor]}</p>
+              </button>
+            );
+          })}
+        </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-950/50">
-                <button
-                  type="button"
-                  onClick={() => setExpandidoTecnologia((e) => !e)}
-                  className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium text-slate-200"
-                >
-                  Electivas de Tecnología (30 cr)
-                  {expandidoTecnologia ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </button>
-                {expandidoTecnologia && (
-                  <div className="max-h-64 space-y-1 overflow-y-auto border-t border-slate-800 px-4 py-2">
-                    {electivasTecnologia.map((m) => {
-                      const enPlan = materiasPlanIds.has(m.id);
-                      const cuenta = materiasInterseccionIds.has(m.id);
-                      return (
-                        <label
-                          key={m.id}
-                          className={`flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs transition-colors ${
-                            cuenta ? "bg-violet-950/30" : ""
-                          } ${enPlan ? "ring-1 ring-violet-400/50" : ""}`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={enPlan}
-                            onChange={() => toggleMateriaPlan(m.id)}
-                            className="h-3.5 w-3.5 accent-violet-400"
-                          />
-                          <span className="font-mono text-slate-400">{m.id}</span>
-                          <span className="min-w-0 flex-1 truncate text-slate-200">
-                            {m.nombre}
-                          </span>
-                          <span className="text-slate-500">{m.creditos} cr</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
+            <div className="mb-3 flex items-center gap-2 text-slate-300">
+              <Layers3 className="h-4 w-4 text-cyan-300" />
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">Activos</span>
             </div>
-
-            <p className="mt-4 text-xs text-slate-500">
-              Las materias resaltadas pertenecen a tu(s) minor(s) seleccionado(s). Marca las que
-              planeas cursar para sumar créditos al objetivo.
+            <p className="text-3xl font-semibold text-slate-100">{selectedMinors.length}</p>
+            <p className="mt-2 text-xs text-slate-500">
+              Elegí uno o varios minors para compararlos sin perder la planificación actual.
             </p>
-          </>
-        ) : (
-          <p className="rounded-xl border border-slate-800 bg-slate-950/50 px-4 py-6 text-center text-sm text-slate-500">
-            Selecciona al menos un minor para ver las materias y armar tu plan.
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
+            <div className="mb-3 flex items-center gap-2 text-slate-300">
+              <Target className="h-4 w-4 text-violet-300" />
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">En plan</span>
+            </div>
+            <p className="text-3xl font-semibold text-slate-100">{creditosVisiblesEnPlan}</p>
+            <p className="mt-2 text-xs text-slate-500">
+              Créditos visibles que ya cuentan por malla o por selección manual.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
+            <div className="mb-3 flex items-center gap-2 text-slate-300">
+              <ListChecks className="h-4 w-4 text-emerald-300" />
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">Aprobados</span>
+            </div>
+            <p className="text-3xl font-semibold text-slate-100">{creditosVisiblesAprobados}</p>
+            <p className="mt-2 text-xs text-slate-500">
+              Créditos ya aprobados dentro del conjunto de minors que estás mirando.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
+            <div className="mb-3 flex items-center gap-2 text-slate-300">
+              <GraduationCap className="h-4 w-4 text-amber-300" />
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">Compartidas</span>
+            </div>
+            <p className="text-3xl font-semibold text-slate-100">{materiasCompartidasEnPlan.length}</p>
+            <p className="mt-2 text-xs text-slate-500">
+              Materias compartidas entre tus minors activos que ya te conviene contar.
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-100">Planificación manual</h3>
+              <p className="mt-1 text-xs text-slate-500">
+                Sumá electivas por código para proyectar minors antes de marcarlas en la malla.
+              </p>
+            </div>
+
+            <form onSubmit={handleAgregarPorCodigo} className="flex flex-wrap items-center gap-2">
+              <input
+                type="text"
+                value={codigoInput}
+                onChange={(event) => {
+                  setCodigoInput(event.target.value);
+                  if (errorCodigo) setErrorCodigo(null);
+                }}
+                placeholder="Ej: 81.14"
+                className="h-9 rounded-lg border border-slate-700 bg-slate-900 px-3 font-mono text-xs text-slate-100 outline-none transition-colors focus:border-violet-400"
+              />
+              <button
+                type="submit"
+                className="h-9 rounded-lg border border-violet-500/70 bg-violet-500/10 px-3 text-xs font-medium text-violet-100 transition-colors hover:border-violet-300"
+              >
+                Agregar al plan
+              </button>
+              <button
+                type="button"
+                onClick={limpiarPlanManual}
+                className="h-9 rounded-lg border border-slate-700 px-3 text-xs font-medium text-slate-300 transition-colors hover:border-slate-500 hover:text-slate-100"
+              >
+                Limpiar manuales
+              </button>
+            </form>
+          </div>
+
+          {errorCodigo ? <p className="mt-3 text-xs text-rose-400">{errorCodigo}</p> : null}
+        </div>
+
+        {selectedMinors.length === 0 ? (
+          <p className="rounded-2xl border border-slate-800 bg-slate-950/50 px-4 py-8 text-center text-sm text-slate-500">
+            Elegí al menos un minor para ver sus materias, detectar compartidas y revisar cuánto ya
+            te cuenta tu progreso actual.
           </p>
+        ) : (
+          <>
+            {materiasCompartidas.length > 0 ? (
+              <div className="rounded-2xl border border-cyan-900/60 bg-cyan-950/10 p-4">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-cyan-100">Materias compartidas</h3>
+                    <p className="mt-1 text-xs text-cyan-200/70">
+                      Estas materias aparecen en dos o más minors seleccionados y son las primeras que
+                      conviene mirar si querés abrir varias opciones a la vez.
+                    </p>
+                  </div>
+                  <span className="text-xs font-medium text-cyan-200">
+                    {sumarCreditos(materiasCompartidasEnPlan)} cr compartidos ya cuentan en tu plan
+                  </span>
+                </div>
+
+                <div className="mt-4 grid gap-2 lg:grid-cols-2">
+                  {materiasCompartidas.map((materia) => {
+                    const estado = (progreso[materia.id] ?? "pendiente") as EstadoMateria;
+                    return (
+                      <MateriaMinorRow
+                        key={`shared-${materia.id}`}
+                        materia={materia}
+                        checked={materiasEnPlanIds.has(materia.id)}
+                        disabled={materiasConEstadoIds.has(materia.id)}
+                        estado={estado}
+                        esCompartida
+                        selectedMinors={selectedMinors}
+                        onToggle={toggleMateriaPlan}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="grid gap-4 xl:grid-cols-2">
+              {minorSummaries.map((summary) => {
+                const progresoMinor = Math.min(100, (summary.creditosPlanificados / OBJETIVO_MINOR) * 100);
+                const creditosFaltantes = Math.max(0, OBJETIVO_MINOR - summary.creditosPlanificados);
+
+                return (
+                  <article
+                    key={summary.minor}
+                    className="rounded-3xl border border-slate-800 bg-slate-950/50 p-5"
+                  >
+                    <div className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="h-3 w-3 rounded-full"
+                              style={{ backgroundColor: MINOR_COLORES[summary.minor] }}
+                            />
+                            <h3 className="text-lg font-semibold text-slate-100">
+                              {MINOR_LABELS[summary.minor]}
+                            </h3>
+                          </div>
+                          <p className="mt-2 text-sm text-slate-400">
+                            {MINOR_DESCRIPTIONS[summary.minor]}
+                          </p>
+                        </div>
+
+                        <div className="min-w-[13rem] rounded-2xl border border-slate-800 bg-slate-900/70 p-3">
+                          <div className="flex items-center justify-between text-sm text-slate-200">
+                            <span>Progreso estimado</span>
+                            <span>
+                              {summary.creditosPlanificados} / {OBJETIVO_MINOR} cr
+                            </span>
+                          </div>
+                          <div className="mt-2 h-2 rounded-full bg-slate-800">
+                            <div
+                              className="h-full rounded-full transition-all"
+                              style={{
+                                width: `${progresoMinor}%`,
+                                backgroundColor: MINOR_COLORES[summary.minor],
+                              }}
+                            />
+                          </div>
+                          <p className="mt-2 text-xs text-slate-500">
+                            {creditosFaltantes > 0
+                              ? `Faltan ${creditosFaltantes} cr para llegar al objetivo de 45.`
+                              : "Con lo que ya tenés y planificaste, este minor queda cubierto."}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-3 md:grid-cols-4">
+                        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-3">
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Aprobados</p>
+                          <p className="mt-2 text-2xl font-semibold text-slate-100">
+                            {summary.creditosAprobados}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-3">
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Gestión</p>
+                          <p className="mt-2 text-2xl font-semibold text-slate-100">
+                            {summary.creditosGestionPlanificados}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-3">
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Tecnología</p>
+                          <p className="mt-2 text-2xl font-semibold text-slate-100">
+                            {summary.creditosTecnologiaPlanificados}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-3">
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Compartidas</p>
+                          <p className="mt-2 text-2xl font-semibold text-slate-100">
+                            {summary.materiasCompartidas.length}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-4 lg:grid-cols-2">
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-medium text-slate-200">Electivas de Gestión</h4>
+                            <span className="text-xs text-slate-500">
+                              {summary.materiasGestion.length} materias
+                            </span>
+                          </div>
+                          <div className="max-h-80 space-y-2 overflow-y-auto pr-1">
+                            {summary.materiasGestion.map((materia) => {
+                              const estado = (progreso[materia.id] ?? "pendiente") as EstadoMateria;
+                              return (
+                                <MateriaMinorRow
+                                  key={`${summary.minor}-gestion-${materia.id}`}
+                                  materia={materia}
+                                  checked={materiasEnPlanIds.has(materia.id)}
+                                  disabled={materiasConEstadoIds.has(materia.id)}
+                                  estado={estado}
+                                  esCompartida={obtenerCantidadMinorsCompartidos(materia, selectedMinors) >= 2}
+                                  selectedMinors={selectedMinors}
+                                  onToggle={toggleMateriaPlan}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-medium text-slate-200">Electivas de Tecnología</h4>
+                            <span className="text-xs text-slate-500">
+                              {summary.materiasTecnologia.length} materias
+                            </span>
+                          </div>
+                          <div className="max-h-80 space-y-2 overflow-y-auto pr-1">
+                            {summary.materiasTecnologia.map((materia) => {
+                              const estado = (progreso[materia.id] ?? "pendiente") as EstadoMateria;
+                              return (
+                                <MateriaMinorRow
+                                  key={`${summary.minor}-tecnologia-${materia.id}`}
+                                  materia={materia}
+                                  checked={materiasEnPlanIds.has(materia.id)}
+                                  disabled={materiasConEstadoIds.has(materia.id)}
+                                  estado={estado}
+                                  esCompartida={obtenerCantidadMinorsCompartidos(materia, selectedMinors) >= 2}
+                                  selectedMinors={selectedMinors}
+                                  onToggle={toggleMateriaPlan}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
     </section>

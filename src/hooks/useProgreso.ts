@@ -25,6 +25,7 @@ interface UseProgresoResult {
   creditosAprobados: number;
   creditosCursando: number;
   actualizarEstado: (materiaId: string) => void;
+  actualizarEstadosMasivos: (materiaIds: string[], estado: EstadoMateria) => void;
   aprobarCursadas: () => void;
   resetearProgreso: () => void;
 }
@@ -171,6 +172,24 @@ export function useProgreso(materias: MateriaPlan[]): UseProgresoResult {
     });
   }, []);
 
+  const actualizarEstadosMasivos = useCallback(
+    (materiaIds: string[], estadoDestino: EstadoMateria) => {
+      if (materiaIds.length === 0) return;
+      setProgreso((actual) => {
+        const siguiente: ProgresoMaterias = { ...actual };
+        for (const id of materiaIds) {
+          if (estadoDestino === "pendiente") {
+            delete siguiente[id];
+          } else {
+            siguiente[id] = estadoDestino;
+          }
+        }
+        return siguiente;
+      });
+    },
+    [],
+  );
+
   const resetearProgreso = useCallback(() => {
     setProgreso({});
   }, []);
@@ -197,6 +216,7 @@ export function useProgreso(materias: MateriaPlan[]): UseProgresoResult {
     creditosAprobados,
     creditosCursando,
     actualizarEstado,
+    actualizarEstadosMasivos,
     aprobarCursadas,
     resetearProgreso,
   };
