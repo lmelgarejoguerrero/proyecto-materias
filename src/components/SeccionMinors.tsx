@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { GraduationCap, Layers3, ListChecks, Target } from "lucide-react";
+import { ArrowUpRight, GraduationCap, Layers3, ListChecks, Sparkles, Target } from "lucide-react";
 
 import {
   enriquecerMateriasConMinors,
@@ -145,7 +145,7 @@ function MateriaMinorRow({
 
 export function SeccionMinors() {
   const materias = useMemo(() => enriquecerMateriasConMinors(plan.materias), []);
-  const { progreso } = useProgreso(materias);
+  const { progreso, materiasHabilitadas } = useProgreso(materias);
 
   const electivasMinor = useMemo(() => materias.filter(esElectivaMinor), [materias]);
   const mapaMaterias = useMemo(() => new Map(materias.map((materia) => [materia.id, materia])), [materias]);
@@ -239,9 +239,13 @@ export function SeccionMinors() {
 
         return {
           minor,
+          materiasTotal: materiasDelMinor.length,
           materiasGestion,
           materiasTecnologia,
           materiasCompartidas: materiasCompartidasMinor,
+          materiasPendientes: materiasDelMinor.filter(
+            (materia) => (progreso[materia.id] ?? "pendiente") === "pendiente",
+          ),
           creditosPlanificados: sumarCreditos(materiasPlanificadas),
           creditosAprobados: sumarCreditos(materiasAprobadas),
           creditosGestionPlanificados: sumarCreditos(
@@ -254,6 +258,60 @@ export function SeccionMinors() {
       }),
     [electivasMinor, materiasEnPlanIds, progreso, selectedMinors],
   );
+
+  const comparativaMinors = useMemo(
+    () =>
+      [...minorSummaries]
+        .map((summary) => {
+          const creditosFaltantes = Math.max(0, OBJETIVO_MINOR - summary.creditosPlanificados);
+          const materiasPendientesActivas = summary.materiasPendientes.filter(
+            (materia) => materia.estadoOferta !== "inactiva",
+          ).length;
+
+          return {
+            ...summary,
+            creditosFaltantes,
+            porcentajeCubierto: Math.min(100, (summary.creditosPlanificados / OBJETIVO_MINOR) * 100),
+            materiasPendientesActivas,
+          };
+        })
+        .sort((left, right) => {
+          if (left.creditosPlanificados !== right.creditosPlanificados) {
+            return right.creditosPlanificados - left.creditosPlanificados;
+          }
+          if (left.creditosAprobados !== right.creditosAprobados) {
+            return right.creditosAprobados - left.creditosAprobados;
+          }
+          return left.creditosFaltantes - right.creditosFaltantes;
+        }),
+    [minorSummaries],
+  );
+
+  const recomendaciones = useMemo(() => {
+    if (selectedMinors.length === 0) return [];
+
+    return materiasVisibles
+      .filter((materia) => !materiasEnPlanIds.has(materia.id))
+      .filter((materia) => (progreso[materia.id] ?? "pendiente") === "pendiente")
+      .map((materia) => ({
+        materia,
+        overlap: obtenerCantidadMinorsCompartidos(materia, selectedMinors),
+        habilitada: materiasHabilitadas[materia.id] ?? false,
+        ofertaActiva: materia.estadoOferta !== "inactiva",
+      }))
+      .sort((left, right) => {
+        if (left.overlap !== right.overlap) return right.overlap - left.overlap;
+        if (left.habilitada !== right.habilitada) return Number(right.habilitada) - Number(left.habilitada);
+        if (left.ofertaActiva !== right.ofertaActiva) {
+          return Number(right.ofertaActiva) - Number(left.ofertaActiva);
+        }
+        if (left.materia.cuatrimestre !== right.materia.cuatrimestre) {
+          return left.materia.cuatrimestre - right.materia.cuatrimestre;
+        }
+        return left.materia.id.localeCompare(right.materia.id);
+      })
+      .slice(0, 6);
+  }, [materiasEnPlanIds, materiasHabilitadas, materiasVisibles, progreso, selectedMinors]);
 
   const handleToggleMinor = useCallback((minor: MinorTag) => {
     setSelectedMinors((actual) =>
@@ -461,6 +519,143 @@ export function SeccionMinors() {
           </p>
         ) : (
           <>
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+              <div className="rounded-3xl border border-slate-800 bg-slate-950/50 p-5">
+                <div className="flex items-center gap-2">
+                  <ArrowUpRight className="h-4 w-4 text-cyan-300" />
+                  <h3 className="text-sm font-semibold text-slate-100">Comparación rápida</h3>
+                </div>
+                <p className="mt-2 text-xs text-slate-500">
+                  Ordenados por cuánto ya cubriste entre aprobadas, materias contadas por tablero y planificación manual.
+                </p>
+
+                <div className="mt-4 space-y-3">
+                  {comparativaMinors.map((summary, index) => (
+                    <article
+                      key={`compare-${summary.minor}`}
+                      className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4"
+                    >
+                      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="h-2.5 w-2.5 rounded-full"
+                              style={{ backgroundColor: MINOR_COLORES[summary.minor] }}
+                            />
+                            <h4 className="text-sm font-semibold text-slate-100">
+                              {MINOR_LABELS[summary.minor]}
+                            </h4>
+                            {index === 0 ? (
+                              <span className="rounded-full border border-emerald-500/40 bg-emerald-950/25 px-2 py-0.5 text-[10px] font-medium text-emerald-200">
+                                Más encaminado
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {summary.creditosFaltantes > 0
+                              ? `Te faltan ${summary.creditosFaltantes} cr para cerrar el objetivo de 45.`
+                              : "Con lo que ya contaste, este minor queda cubierto."}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 text-[11px] md:min-w-[18rem]">
+                          <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-slate-300">
+                            <span className="text-slate-500">Cubierto</span>
+                            <p className="mt-1 text-sm font-semibold text-slate-100">
+                              {summary.creditosPlanificados} cr
+                            </p>
+                          </div>
+                          <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-slate-300">
+                            <span className="text-slate-500">Aprobado</span>
+                            <p className="mt-1 text-sm font-semibold text-slate-100">
+                              {summary.creditosAprobados} cr
+                            </p>
+                          </div>
+                          <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-slate-300">
+                            <span className="text-slate-500">Pendientes activas</span>
+                            <p className="mt-1 text-sm font-semibold text-slate-100">
+                              {summary.materiasPendientesActivas}
+                            </p>
+                          </div>
+                          <div className="rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-slate-300">
+                            <span className="text-slate-500">Compartidas</span>
+                            <p className="mt-1 text-sm font-semibold text-slate-100">
+                              {summary.materiasCompartidas.length}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-cyan-900/60 bg-cyan-950/10 p-5">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-cyan-300" />
+                  <h3 className="text-sm font-semibold text-cyan-100">Qué conviene mirar ahora</h3>
+                </div>
+                <p className="mt-2 text-xs text-cyan-200/70">
+                  Priorizo materias que abren más de un minor, ya están habilitadas o siguen con oferta activa.
+                </p>
+
+                <div className="mt-4 space-y-3">
+                  {recomendaciones.length > 0 ? (
+                    recomendaciones.map(({ materia, overlap, habilitada, ofertaActiva }) => (
+                      <article
+                        key={`reco-${materia.id}`}
+                        className="rounded-2xl border border-cyan-900/50 bg-slate-950/55 p-4"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-mono text-[11px] text-cyan-200/80">{materia.id}</span>
+                              <span className="text-sm font-medium text-slate-100">{materia.nombre}</span>
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px]">
+                              <span className="rounded-full border border-cyan-500/40 bg-cyan-950/20 px-2 py-0.5 text-cyan-100">
+                                {overlap > 1 ? `Sirve para ${overlap} minors` : "Suma directo al minor activo"}
+                              </span>
+                              <span
+                                className={`rounded-full border px-2 py-0.5 ${
+                                  habilitada
+                                    ? "border-emerald-500/40 bg-emerald-950/20 text-emerald-200"
+                                    : "border-slate-700 text-slate-400"
+                                }`}
+                              >
+                                {habilitada ? "Ya la podés cursar" : "Todavía depende de correlativas"}
+                              </span>
+                              <span
+                                className={`rounded-full border px-2 py-0.5 ${
+                                  ofertaActiva
+                                    ? "border-sky-500/40 bg-sky-950/20 text-sky-200"
+                                    : "border-amber-500/40 bg-amber-950/20 text-amber-200"
+                                }`}
+                              >
+                                {ofertaActiva ? "Oferta activa" : "Oferta no activa"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => toggleMateriaPlan(materia.id)}
+                            className="cursor-pointer rounded-xl border border-cyan-500/50 bg-cyan-500/10 px-3 py-2 text-[11px] font-medium text-cyan-100 transition-colors hover:border-cyan-300 hover:bg-cyan-500/20"
+                          >
+                            Sumarla
+                          </button>
+                        </div>
+                      </article>
+                    ))
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-cyan-900/60 px-4 py-8 text-center text-xs text-cyan-200/65">
+                      No quedan electivas pendientes recomendables dentro de la selección actual.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {materiasCompartidas.length > 0 ? (
               <div className="rounded-2xl border border-cyan-900/60 bg-cyan-950/10 p-4">
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">

@@ -24,6 +24,7 @@ import type { EstadoMateria, PlanDeEstudio, SlotElectiva8Cuat } from "@/types/pl
 
 const plan = planRaw as PlanDeEstudio;
 const ONBOARDING_STORAGE_KEY = "tablero-materias:onboarding-v1";
+const UI_STORAGE_KEY = "tablero-materias:ui:v1";
 const STORAGE_PROGRESO_KEY = "malla-curricular:progreso:v1";
 const STORAGE_MINORS_KEY = "malla-curricular:minors:v1";
 const STORAGE_PLAN_MINORS_KEY = "malla-curricular:plan-minors:v1";
@@ -46,10 +47,76 @@ type FiltroGrupoTablero =
   | "skills";
 type ModoVistaTablero = "anios" | "columnas";
 
+interface PreferenciasTablero {
+  vistaActiva: VistaActiva;
+  busqueda: string;
+  filtroEstado: FiltroEstadoTablero;
+  filtroGrupo: FiltroGrupoTablero;
+  modoVista: ModoVistaTablero;
+  usarCardsCompactas: boolean;
+}
+
+function parsearPreferenciasTablero(raw: string | null): Partial<PreferenciasTablero> {
+  if (!raw) return {};
+
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const next: Partial<PreferenciasTablero> = {};
+
+    if (
+      parsed.vistaActiva === "malla" ||
+      parsed.vistaActiva === "minors" ||
+      parsed.vistaActiva === "planificador"
+    ) {
+      next.vistaActiva = parsed.vistaActiva;
+    }
+
+    if (typeof parsed.busqueda === "string") {
+      next.busqueda = parsed.busqueda;
+    }
+
+    if (
+      parsed.filtroEstado === "todas" ||
+      parsed.filtroEstado === "pendiente" ||
+      parsed.filtroEstado === "cursando" ||
+      parsed.filtroEstado === "regular" ||
+      parsed.filtroEstado === "aprobada" ||
+      parsed.filtroEstado === "puedo_cursar" ||
+      parsed.filtroEstado === "habilitable_preview"
+    ) {
+      next.filtroEstado = parsed.filtroEstado;
+    }
+
+    if (
+      parsed.filtroGrupo === "todos" ||
+      parsed.filtroGrupo === "troncales" ||
+      parsed.filtroGrupo === "gestion" ||
+      parsed.filtroGrupo === "tecnologia" ||
+      parsed.filtroGrupo === "proyecto-final" ||
+      parsed.filtroGrupo === "skills"
+    ) {
+      next.filtroGrupo = parsed.filtroGrupo;
+    }
+
+    if (parsed.modoVista === "anios" || parsed.modoVista === "columnas") {
+      next.modoVista = parsed.modoVista;
+    }
+
+    if (typeof parsed.usarCardsCompactas === "boolean") {
+      next.usarCardsCompactas = parsed.usarCardsCompactas;
+    }
+
+    return next;
+  } catch {
+    return {};
+  }
+}
+
 export function MallaApp() {
   const materias = useMemo(() => enriquecerMateriasConMinors(plan.materias), []);
   const validacion = useMemo(() => validarPlan(materias), [materias]);
   const topBarRef = useRef<HTMLDivElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [slotActivo, setSlotActivo] = useState<SlotElectiva8Cuat>("gestion");
   const [mostrarOnboarding, setMostrarOnboarding] = useState(false);
   const [vistaActiva, setVistaActiva] = useState<VistaActiva>("malla");
@@ -60,6 +127,7 @@ export function MallaApp() {
   const [topBarHeight, setTopBarHeight] = useState(0);
   const [modoVista, setModoVista] = useState<ModoVistaTablero>("anios");
   const [usarCardsCompactas, setUsarCardsCompactas] = useState(true);
+  const [uiSincronizada, setUiSincronizada] = useState(false);
 
   const {
     progreso,
@@ -317,6 +385,26 @@ export function MallaApp() {
   }, []);
 
   useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      const preferencias = parsearPreferenciasTablero(window.localStorage.getItem(UI_STORAGE_KEY));
+
+      setBusqueda(preferencias.busqueda ?? "");
+      setFiltroEstado(preferencias.filtroEstado ?? "todas");
+      setFiltroGrupo(preferencias.filtroGrupo ?? "todos");
+      setModoVista(preferencias.modoVista ?? "anios");
+      setUsarCardsCompactas(preferencias.usarCardsCompactas ?? true);
+
+      if (!window.location.hash && preferencias.vistaActiva) {
+        setVistaActiva(preferencias.vistaActiva);
+      }
+
+      setUiSincronizada(true);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, []);
+
+  useEffect(() => {
     const actualizarAltura = () => {
       setTopBarHeight(topBarRef.current?.getBoundingClientRect().height ?? 0);
     };
@@ -350,12 +438,14 @@ export function MallaApp() {
   useEffect(() => {
     const actualizarVista = () => {
       const hash = window.location.hash.slice(1);
+      const preferencias = parsearPreferenciasTablero(window.localStorage.getItem(UI_STORAGE_KEY));
+
       if (hash === "minors") {
         setVistaActiva("minors");
       } else if (hash === "planificador") {
         setVistaActiva("planificador");
       } else {
-        setVistaActiva("malla");
+        setVistaActiva(preferencias.vistaActiva ?? "malla");
       }
     };
 
@@ -370,6 +460,60 @@ export function MallaApp() {
       vista === "minors" ? "minors" : vista === "planificador" ? "planificador" : "";
     setVistaActiva(vista);
   };
+
+  useEffect(() => {
+    if (!uiSincronizada) return;
+
+    const preferencias: PreferenciasTablero = {
+      vistaActiva,
+      busqueda,
+      filtroEstado,
+      filtroGrupo,
+      modoVista,
+      usarCardsCompactas,
+    };
+
+    window.localStorage.setItem(UI_STORAGE_KEY, JSON.stringify(preferencias));
+  }, [busqueda, filtroEstado, filtroGrupo, modoVista, uiSincronizada, usarCardsCompactas, vistaActiva]);
+
+  useEffect(() => {
+    const targetEditable = (target: EventTarget | null) => {
+      if (!(target instanceof HTMLElement)) return false;
+      return (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        target.isContentEditable
+      );
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (vistaActiva !== "malla") return;
+
+      const focusBuscar = () => {
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      };
+
+      const comandoBuscar = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k";
+      const slashBuscar = event.key === "/" && !event.ctrlKey && !event.metaKey && !event.altKey;
+
+      if (comandoBuscar) {
+        event.preventDefault();
+        focusBuscar();
+        return;
+      }
+
+      if (slashBuscar && !targetEditable(event.target)) {
+        event.preventDefault();
+        focusBuscar();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [vistaActiva]);
 
   const handleCerrarOnboarding = () => {
     window.localStorage.setItem(ONBOARDING_STORAGE_KEY, "1");
@@ -544,6 +688,7 @@ export function MallaApp() {
                   <label className="relative block flex-1 min-w-[16rem]">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                     <input
+                      ref={searchInputRef}
                       type="text"
                       value={busqueda}
                       onChange={(event) => setBusqueda(event.target.value)}
@@ -642,6 +787,10 @@ export function MallaApp() {
                         Limpiar filtros
                       </button>
                     ) : null}
+
+                    <span className="hidden rounded-xl border border-slate-700 bg-slate-950/60 px-3 py-2 text-[11px] text-slate-400 lg:inline-flex">
+                      `/` o `Ctrl/Cmd + K` para buscar
+                    </span>
                   </div>
                 </div>
 
