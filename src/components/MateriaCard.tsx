@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, CircleDashed, CircleDot, PlayCircle } from "lucide-react";
+import { CheckCircle2, CircleDashed, CircleDot, Info, PlayCircle } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 
 import { MINOR_COLORES, MINOR_SIGLAS } from "@/data/minorsMetadata";
@@ -14,6 +14,7 @@ interface MateriaCardProps {
   onClick: (materiaId: string) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  onOpenDetail?: (materiaId: string) => void;
   className?: string;
   disabled?: boolean;
   etiquetaExtra?: string;
@@ -62,6 +63,7 @@ export function MateriaCard({
   onClick,
   onMouseEnter,
   onMouseLeave,
+  onOpenDetail,
   className,
   disabled = false,
   etiquetaExtra,
@@ -112,6 +114,27 @@ export function MateriaCard({
           {materia.id}
         </span>
         <div className="flex items-center gap-1">
+          {onOpenDetail ? (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenDetail(materia.id);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onOpenDetail(materia.id);
+                }
+              }}
+              className="inline-flex cursor-pointer items-center rounded-full border border-slate-600/80 p-1 text-slate-300 transition-colors hover:border-slate-400 hover:bg-slate-900 hover:text-slate-100"
+              aria-label={`Ver detalle de ${materia.nombre}`}
+            >
+              <Info className="h-3 w-3" />
+            </span>
+          ) : null}
           {etiquetaExtra ? (
             <span className="rounded-full border border-slate-500/70 px-1.5 py-0.5 text-[8px] uppercase tracking-wider text-slate-300">
               {etiquetaExtra}

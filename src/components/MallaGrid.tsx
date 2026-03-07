@@ -15,6 +15,7 @@ interface MallaGridProps {
   materias: MateriaPlan[];
   estadoVisualPorMateria: Record<string, EstadoVisualMateria>;
   onMateriaClick: (materiaId: string) => void;
+  onOpenDetail: (materiaId: string) => void;
   progresoSlots8Cuat: Record<SlotElectiva8Cuat, { aprobado: number; objetivo: number }>;
   onSeleccionarSlot: (slot: SlotElectiva8Cuat) => void;
   slotActivo: SlotElectiva8Cuat | null;
@@ -43,6 +44,7 @@ export function MallaGrid({
   materias,
   estadoVisualPorMateria,
   onMateriaClick,
+  onOpenDetail,
   progresoSlots8Cuat,
   onSeleccionarSlot,
   slotActivo,
@@ -134,6 +136,7 @@ export function MallaGrid({
         materia={materia}
         estadoVisual={estadoVisualPorMateria[materia.id] ?? "pendiente"}
         onClick={seleccionMultipleActiva ? onToggleSeleccion : onMateriaClick}
+        onOpenDetail={onOpenDetail}
         compacta={compacta}
         className={
           seleccionMultipleActiva && materiasSeleccionadas.has(materia.id)

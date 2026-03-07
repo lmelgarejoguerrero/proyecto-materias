@@ -15,6 +15,7 @@ import {
 import { enriquecerMateriasConMinors } from "@/data/minorsMetadata";
 import planRaw from "@/data/planDeEstudio.json";
 import { LeyendaEstados } from "@/components/LeyendaEstados";
+import { DetalleMateriaPanel } from "@/components/DetalleMateriaPanel";
 import { MallaGrid } from "@/components/MallaGrid";
 import { PlanificadorCuatris } from "@/components/PlanificadorCuatris";
 import { SeccionMinors } from "@/components/SeccionMinors";
@@ -25,6 +26,7 @@ import type { EstadoMateria, PlanDeEstudio, SlotElectiva8Cuat } from "@/types/pl
 const plan = planRaw as PlanDeEstudio;
 const ONBOARDING_STORAGE_KEY = "tablero-materias:onboarding-v1";
 const UI_STORAGE_KEY = "tablero-materias:ui:v1";
+const STORAGE_PLANNER_KEY = "tablero-materias:planificador:v1";
 const STORAGE_PROGRESO_KEY = "malla-curricular:progreso:v1";
 const STORAGE_MINORS_KEY = "malla-curricular:minors:v1";
 const STORAGE_PLAN_MINORS_KEY = "malla-curricular:plan-minors:v1";
@@ -147,6 +149,7 @@ export function MallaApp() {
   const inputImportRef = useRef<HTMLInputElement | null>(null);
   const [seleccionMultipleActiva, setSeleccionMultipleActiva] = useState(false);
   const [materiasSeleccionadas, setMateriasSeleccionadas] = useState<Set<string>>(new Set());
+  const [materiaDetalleId, setMateriaDetalleId] = useState<string | null>(null);
 
   const toggleSeleccionMultiple = () => {
     setSeleccionMultipleActiva((prev) => {
@@ -181,13 +184,42 @@ export function MallaApp() {
     const progresoRaw = window.localStorage.getItem(STORAGE_PROGRESO_KEY);
     const minorsRaw = window.localStorage.getItem(STORAGE_MINORS_KEY);
     const planMinorsRaw = window.localStorage.getItem(STORAGE_PLAN_MINORS_KEY);
+    const plannerRaw = window.localStorage.getItem(STORAGE_PLANNER_KEY);
+    const uiRaw = window.localStorage.getItem(UI_STORAGE_KEY);
+    const onboardingRaw = window.localStorage.getItem(ONBOARDING_STORAGE_KEY);
 
     const payload = {
-      version: 1,
+      version: 2,
       generadoEn: new Date().toISOString(),
-      progreso: progresoRaw ? JSON.parse(progresoRaw) : {},
-      minors: minorsRaw ? JSON.parse(minorsRaw) : [],
-      materiasPlanMinors: planMinorsRaw ? JSON.parse(planMinorsRaw) : [],
+      plan: {
+        codigo: plan.plan,
+        creditosTitulo: plan.creditosTitulo,
+        cantidadMaterias: materias.length,
+      },
+      appState: {
+        progreso: progresoRaw ? JSON.parse(progresoRaw) : {},
+        minors: minorsRaw ? JSON.parse(minorsRaw) : [],
+        materiasPlanMinors: planMinorsRaw ? JSON.parse(planMinorsRaw) : [],
+        planner: plannerRaw ? JSON.parse(plannerRaw) : { version: 2, planificador: {} },
+        uiPreferences: uiRaw ? JSON.parse(uiRaw) : {},
+        onboardingVisto: onboardingRaw === "1",
+      },
+      storageDump: {
+        [STORAGE_PROGRESO_KEY]: progresoRaw ? JSON.parse(progresoRaw) : {},
+        [STORAGE_MINORS_KEY]: minorsRaw ? JSON.parse(minorsRaw) : [],
+        [STORAGE_PLAN_MINORS_KEY]: planMinorsRaw ? JSON.parse(planMinorsRaw) : [],
+        [STORAGE_PLANNER_KEY]: plannerRaw ? JSON.parse(plannerRaw) : { version: 2, planificador: {} },
+        [UI_STORAGE_KEY]: uiRaw ? JSON.parse(uiRaw) : {},
+        [ONBOARDING_STORAGE_KEY]: onboardingRaw === "1",
+      },
+      snapshot: {
+        vistaActiva,
+        hashActual: window.location.hash || "#tablero",
+        creditosAprobados,
+        creditosCursando,
+        creditosProyectados,
+        proyeccionGraduacion,
+      },
     };
 
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
@@ -219,19 +251,52 @@ export function MallaApp() {
           progreso?: unknown;
           minors?: unknown;
           materiasPlanMinors?: unknown;
+          planner?: unknown;
+          uiPreferences?: unknown;
+          onboardingVisto?: unknown;
+          appState?: {
+            progreso?: unknown;
+            minors?: unknown;
+            materiasPlanMinors?: unknown;
+            planner?: unknown;
+            uiPreferences?: unknown;
+            onboardingVisto?: unknown;
+          };
+          storageDump?: Record<string, unknown>;
         };
 
-        if (parsed.progreso && typeof parsed.progreso === "object") {
-          window.localStorage.setItem(STORAGE_PROGRESO_KEY, JSON.stringify(parsed.progreso));
+        const progresoImportado = parsed.appState?.progreso ?? parsed.progreso;
+        const minorsImportados = parsed.appState?.minors ?? parsed.minors;
+        const planMinorsImportados = parsed.appState?.materiasPlanMinors ?? parsed.materiasPlanMinors;
+        const plannerImportado =
+          parsed.appState?.planner ?? parsed.planner ?? parsed.storageDump?.[STORAGE_PLANNER_KEY];
+        const uiImportada =
+          parsed.appState?.uiPreferences ?? parsed.uiPreferences ?? parsed.storageDump?.[UI_STORAGE_KEY];
+        const onboardingImportado =
+          parsed.appState?.onboardingVisto ??
+          parsed.onboardingVisto ??
+          parsed.storageDump?.[ONBOARDING_STORAGE_KEY];
+
+        if (progresoImportado && typeof progresoImportado === "object") {
+          window.localStorage.setItem(STORAGE_PROGRESO_KEY, JSON.stringify(progresoImportado));
         }
-        if (parsed.minors && Array.isArray(parsed.minors)) {
-          window.localStorage.setItem(STORAGE_MINORS_KEY, JSON.stringify(parsed.minors));
+        if (minorsImportados && Array.isArray(minorsImportados)) {
+          window.localStorage.setItem(STORAGE_MINORS_KEY, JSON.stringify(minorsImportados));
         }
-        if (parsed.materiasPlanMinors && Array.isArray(parsed.materiasPlanMinors)) {
+        if (planMinorsImportados && Array.isArray(planMinorsImportados)) {
           window.localStorage.setItem(
             STORAGE_PLAN_MINORS_KEY,
-            JSON.stringify(parsed.materiasPlanMinors),
+            JSON.stringify(planMinorsImportados),
           );
+        }
+        if (plannerImportado && typeof plannerImportado === "object") {
+          window.localStorage.setItem(STORAGE_PLANNER_KEY, JSON.stringify(plannerImportado));
+        }
+        if (uiImportada && typeof uiImportada === "object") {
+          window.localStorage.setItem(UI_STORAGE_KEY, JSON.stringify(uiImportada));
+        }
+        if (typeof onboardingImportado === "boolean") {
+          window.localStorage.setItem(ONBOARDING_STORAGE_KEY, onboardingImportado ? "1" : "0");
         }
 
         // Recargar para que los hooks lean el nuevo estado
@@ -268,7 +333,7 @@ export function MallaApp() {
     return acumulado;
   }, [materias, progreso]);
 
-  const creditosProyectados = useMemo(() => {
+  const creditosProyectados = (() => {
     let total = creditosAprobados;
 
     for (const materia of materias) {
@@ -279,9 +344,9 @@ export function MallaApp() {
     }
 
     return Math.min(total, plan.creditosTitulo);
-  }, [materias, progreso, creditosAprobados]);
+  })();
 
-  const proyeccionGraduacion = useMemo(() => {
+  const proyeccionGraduacion = (() => {
     const hoy = new Date();
     const anioActual = hoy.getFullYear();
     const mesActual = hoy.getMonth() + 1;
@@ -315,7 +380,7 @@ export function MallaApp() {
     }
 
     return formatear(etapa === 2 ? "diciembre" : "julio", anio);
-  }, [creditosProyectados]);
+  })();
 
   const materiasFiltradas = useMemo(() => {
     const termino = busqueda.trim().toLowerCase();
@@ -371,6 +436,19 @@ export function MallaApp() {
 
   const handleCardClick = (materiaId: string) => {
     actualizarEstado(materiaId);
+  };
+
+  const materiaDetalle = useMemo(
+    () => materias.find((materia) => materia.id === materiaDetalleId) ?? null,
+    [materiaDetalleId, materias],
+  );
+
+  const handleOpenDetalle = (materiaId: string) => {
+    setMateriaDetalleId(materiaId);
+  };
+
+  const handleCloseDetalle = () => {
+    setMateriaDetalleId(null);
   };
 
   useEffect(() => {
@@ -819,6 +897,7 @@ export function MallaApp() {
               materias={materiasFiltradas}
               estadoVisualPorMateria={estadoVisualPorMateria}
               onMateriaClick={handleCardClick}
+              onOpenDetail={handleOpenDetalle}
               progresoSlots8Cuat={progresoSlots8Cuat}
               onSeleccionarSlot={handleSeleccionarSlot}
               slotActivo={slotActivo}
@@ -907,6 +986,18 @@ export function MallaApp() {
           </div>
         </div>
       ) : null}
+
+      <DetalleMateriaPanel
+        materia={materiaDetalle}
+        materias={materias}
+        progreso={progreso}
+        estadoVisualPorMateria={estadoVisualPorMateria}
+        materiasHabilitadas={materiasHabilitadas}
+        onClose={handleCloseDetalle}
+        onCambiarEstado={(materiaId) => {
+          actualizarEstado(materiaId);
+        }}
+      />
       </div>
     </div>
   );
