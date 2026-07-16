@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tablero de Organizacion de Materias",
-  description: "Planificador de materias para Gestion de Negocios",
+  title: "Mi carrera · Gestión de Negocios",
+  description: "Avance, minors y planificación de materias del plan L20",
 };
 
 export default function RootLayout({
@@ -23,12 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

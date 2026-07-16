@@ -1078,7 +1078,7 @@
       "cuatrimestre": 9,
       "creditos": 3,
       "creditosRequeridos": 48,
-      "correlativas": [],
+      "correlativas": ["94.60"],
       "tipoCorrelativa": "cursada",
       "grupo": "electiva-gestion"
     },
@@ -1089,6 +1089,26 @@
       "creditos": 3,
       "creditosRequeridos": 48,
       "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "94.78",
+      "nombre": "Gestion de Capital Emprendedor y Venture Capital",
+      "cuatrimestre": 9,
+      "creditos": 1,
+      "creditosRequeridos": 96,
+      "correlativas": [],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-gestion"
+    },
+    {
+      "id": "82.24",
+      "nombre": "Investigacion de mercado",
+      "cuatrimestre": 9,
+      "creditos": 3,
+      "creditosRequeridos": 0,
+      "correlativas": ["93.39", "81.20"],
       "tipoCorrelativa": "cursada",
       "grupo": "electiva-gestion"
     },
@@ -1419,6 +1439,16 @@
       "creditos": 3,
       "creditosRequeridos": 48,
       "correlativas": ["81.53", "61.87"],
+      "tipoCorrelativa": "cursada",
+      "grupo": "electiva-sistemas-tecnologia"
+    },
+    {
+      "id": "94.77",
+      "nombre": "Propiedad Intelectual",
+      "cuatrimestre": 10,
+      "creditos": 1,
+      "creditosRequeridos": 0,
+      "correlativas": ["61.87"],
       "tipoCorrelativa": "cursada",
       "grupo": "electiva-sistemas-tecnologia"
     },
