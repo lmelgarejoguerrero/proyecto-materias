@@ -324,7 +324,7 @@ export function MallaApp() {
         )}
       </main>
 
-      {creditosCursando > 0 ? (
+      {creditosCursando > 0 && view === "avance" ? (
         <div className="fixed bottom-4 left-4 right-4 z-40 rounded-2xl border border-blue-200 bg-white p-2 shadow-xl sm:left-auto sm:w-96">
           <button
             type="button"
