@@ -49,6 +49,28 @@ body {
 .dark .bg-slate-100 { background-color: #182438; }
 .dark .bg-slate-200 { background-color: #2a3950; }
 
+/* Dashboard depth: page → year → term → course card. */
+.dark .dashboard-year {
+  background-color: #111a29 !important;
+  border-color: #33445f !important;
+}
+
+.dark .dashboard-term {
+  background-color: #0b1422 !important;
+  border-color: #253650 !important;
+}
+
+.dark .dashboard-course-card {
+  background-color: #172438 !important;
+  border-color: #3c506d !important;
+  box-shadow: 0 1px 0 rgb(148 163 184 / 0.08), 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+.dark .dashboard-course-card:hover {
+  background-color: #1b2b42 !important;
+  border-color: #6b82a3 !important;
+}
+
 .dark .border-slate-100 { border-color: #1e2c40; }
 .dark .border-slate-200 { border-color: #26364d; }
 .dark .border-slate-300 { border-color: #3a4c66; }

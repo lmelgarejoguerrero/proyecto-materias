@@ -22,12 +22,18 @@ type FilterState = "todas" | EstadoMateria | "cursables";
 type ElectiveGroup = "todas" | "gestion" | "tecnologia";
 
 const STATE_STYLES: Record<EstadoVisualMateria, string> = {
-  pendiente: "bg-slate-100 text-slate-600",
-  cursando: "bg-blue-100 text-blue-800",
-  regular: "bg-amber-100 text-amber-800",
-  aprobada: "bg-emerald-100 text-emerald-800",
-  puedo_cursar: "bg-indigo-100 text-indigo-800",
-  habilitable_preview: "bg-sky-100 text-sky-800",
+  pendiente:
+    "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:ring-1 dark:ring-slate-600",
+  cursando:
+    "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200 dark:ring-1 dark:ring-blue-700",
+  regular:
+    "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 dark:ring-1 dark:ring-amber-700",
+  aprobada:
+    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 dark:ring-1 dark:ring-emerald-700",
+  puedo_cursar:
+    "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-200 dark:ring-1 dark:ring-indigo-700",
+  habilitable_preview:
+    "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-200 dark:ring-1 dark:ring-sky-700",
 };
 
 const STATE_LABELS: Record<EstadoVisualMateria, string> = {
@@ -53,20 +59,22 @@ function CourseCard({
       type="button"
       data-testid={`course-${materia.id}`}
       onClick={() => onOpen(materia.id)}
-      className="group flex min-h-28 w-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_12px_30px_rgba(15,23,42,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      className="dashboard-course-card group flex min-h-28 w-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_12px_30px_rgba(15,23,42,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:focus-visible:outline-blue-400"
     >
       <div className="flex w-full items-start justify-between gap-3">
         <div className="min-w-0">
-          <span className="font-mono text-[11px] font-semibold tracking-wide text-slate-500">{materia.id}</span>
+          <span className="font-mono text-[11px] font-semibold tracking-wide text-slate-500 dark:text-slate-300">
+            {materia.id}
+          </span>
           <p className="mt-1.5 text-sm font-semibold leading-snug text-slate-950">{materia.nombre}</p>
         </div>
-        <ChevronRight className="mt-0.5 size-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-600" />
+        <ChevronRight className="mt-0.5 size-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-600 dark:text-slate-400 dark:group-hover:text-slate-100" />
       </div>
       <div className="mt-3 flex w-full items-center justify-between gap-2">
         <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${STATE_STYLES[estado]}`}>
           {STATE_LABELS[estado]}
         </span>
-        <span className="text-xs font-medium text-slate-500">{materia.creditos} cr</span>
+        <span className="text-xs font-medium text-slate-500 dark:text-slate-300">{materia.creditos} cr</span>
       </div>
     </button>
   );
@@ -274,7 +282,10 @@ export function DashboardView({
       {scope === "plan" ? (
         <div className="space-y-5">
           {years.map(([year, terms]) => (
-            <section key={year} className="rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <section
+              key={year}
+              className="dashboard-year rounded-[1.75rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+            >
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">Año {year}</p>
@@ -291,10 +302,15 @@ export function DashboardView({
                 ].map(([label, term]) => {
                   const termMaterias = term as MateriaPlan[];
                   return (
-                    <article key={label as string} className="rounded-2xl bg-slate-50 p-3 sm:p-4">
+                    <article
+                      key={label as string}
+                      className="dashboard-term rounded-2xl border border-transparent bg-slate-50 p-3 sm:p-4"
+                    >
                       <div className="mb-3 flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-slate-800">{label as string}</h3>
-                        <span className="text-xs text-slate-500">{termMaterias.length} materias</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-300">
+                          {termMaterias.length} materias
+                        </span>
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {termMaterias.map((materia) => (

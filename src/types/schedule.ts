@@ -50,6 +50,9 @@ export interface PlannerScheduleEvent extends CeitbaScheduleMeeting {
   courseName: string;
   commissionId: string;
   commissionName: string;
+  isReference: boolean;
+  sourceYear: number;
+  sourcePeriod: AcademicPeriod;
 }
 
 export interface ScheduleConflict {

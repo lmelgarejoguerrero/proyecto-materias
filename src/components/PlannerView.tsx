@@ -15,6 +15,7 @@ import {
 import { PlannerSchedule } from "@/components/PlannerSchedule";
 import {
   findOffering,
+  findReferenceOffering,
   formatCommission,
   foroItbaCourseUrl,
   normalizeScheduleData,
@@ -56,8 +57,9 @@ type PlannerPanel = "materias" | "horario";
 function createSlots(count = 6): Slot[] {
   const today = new Date();
   let year = today.getFullYear();
-  let period: AcademicPeriod = today.getMonth() + 1 <= 7 ? 2 : 1;
-  if (today.getMonth() + 1 > 7) year += 1;
+  const month = today.getMonth() + 1;
+  const periodOneIsActive = month < 7 || (month === 7 && today.getDate() <= 25);
+  let period: AcademicPeriod = periodOneIsActive ? 1 : 2;
 
   return Array.from({ length: count }, (_, index) => {
     if (index > 0) {
@@ -241,20 +243,29 @@ export function PlannerView({
   );
   const activeScheduleRows = useMemo(
     () =>
-      activeCourses.map((course) => ({
-        course,
-        offering: activeSlot
+      activeCourses.map((course) => {
+        const exactOffering = activeSlot
           ? findOffering(offerings, course.id, activeSlot.year, activeSlot.period)
-          : undefined,
-      })),
+          : undefined;
+        const referenceOffering =
+          activeSlot && !exactOffering
+            ? findReferenceOffering(offerings, course.id, activeSlot.year, activeSlot.period)
+            : undefined;
+        return {
+          course,
+          offering: exactOffering ?? referenceOffering,
+          isReference: Boolean(referenceOffering),
+        };
+      }),
     [activeCourses, activeSlot, offerings],
   );
   const activeEvents = useMemo(() => {
     if (!activeSlot) return [];
     const events: PlannerScheduleEvent[] = [];
-    for (const { course, offering } of activeScheduleRows) {
+    for (const { course, offering, isReference } of activeScheduleRows) {
+      if (!offering) continue;
       const selectedId = commissionSelections[activeSlot.id]?.[course.id];
-      const commission = offering?.commissions.find((item) => item.id === selectedId);
+      const commission = offering.commissions.find((item) => item.id === selectedId);
       if (!commission) continue;
       commission.meetings.forEach((meeting, index) => {
         events.push({
@@ -264,6 +275,9 @@ export function PlannerView({
           courseName: course.nombre,
           commissionId: commission.id,
           commissionName: commission.name,
+          isReference,
+          sourceYear: offering.year,
+          sourcePeriod: offering.period,
         });
       });
     }
@@ -275,6 +289,17 @@ export function PlannerView({
         offering?.commissions.some(
           (commission) => commission.id === commissionSelections[activeSlotId]?.[course.id],
         ),
+      ).length,
+    [activeScheduleRows, activeSlotId, commissionSelections],
+  );
+  const selectedReferenceCount = useMemo(
+    () =>
+      activeScheduleRows.filter(
+        ({ course, offering, isReference }) =>
+          isReference &&
+          offering?.commissions.some(
+            (commission) => commission.id === commissionSelections[activeSlotId]?.[course.id],
+          ),
       ).length,
     [activeScheduleRows, activeSlotId, commissionSelections],
   );
@@ -546,12 +571,13 @@ export function PlannerView({
                 activeLabel={activeSlot?.label ?? "Cuatrimestre"}
                 subjectsCount={activeCourses.length}
                 selectedCount={selectedScheduleCount}
+                referenceCount={selectedReferenceCount}
                 loading={scheduleLoading}
                 sourceError={scheduleError}
               />
             ) : activeCourses.length > 0 ? (
               <div className="max-h-[39rem] space-y-2 overflow-y-auto pr-1">
-                {activeScheduleRows.map(({ course, offering }) => {
+                {activeScheduleRows.map(({ course, offering, isReference }) => {
                   const selectedCommission = commissionSelections[activeSlotId]?.[course.id] ?? "";
                   return (
                     <article key={`${activeSlotId}-${course.id}`} className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,24rem)_auto] lg:items-center">
@@ -587,13 +613,20 @@ export function PlannerView({
                               {scheduleLoading
                                 ? "Cargando horarios…"
                                 : offering?.commissions.length
-                                  ? "Elegir comisión"
+                                  ? isReference
+                                    ? `Referencia ${offering.period}° ${offering.year} · elegir comisión`
+                                    : "Elegir comisión"
                                   : "Horarios todavía no publicados"}
                             </option>
                             {offering?.commissions.map((commission) => (
                               <option key={commission.id} value={commission.id}>{formatCommission(commission)}</option>
                             ))}
                           </select>
+                          {isReference && offering ? (
+                            <span className="mt-1 block text-[10px] font-semibold text-amber-700">
+                              Oferta del {offering.period}° cuatrimestre de {offering.year}; usala sólo como referencia.
+                            </span>
+                          ) : null}
                         </label>
                         <label className="min-w-0">
                           <span className="sr-only">Mover {course.nombre} a otro cuatrimestre</span>

@@ -29,6 +29,7 @@ interface PlannerScheduleProps {
   activeLabel: string;
   subjectsCount: number;
   selectedCount: number;
+  referenceCount: number;
   loading: boolean;
   sourceError: string | null;
 }
@@ -48,6 +49,7 @@ export function PlannerSchedule({
   activeLabel,
   subjectsCount,
   selectedCount,
+  referenceCount,
   loading,
   sourceError,
 }: PlannerScheduleProps) {
@@ -135,6 +137,16 @@ export function PlannerSchedule({
           </span>
         ) : null}
       </div>
+
+      {referenceCount > 0 ? (
+        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <span>
+            {referenceCount} {referenceCount === 1 ? "materia usa" : "materias usan"} horarios del otro
+            cuatrimestre del mismo año como referencia. Confirmalos cuando el CEITBA publique la oferta exacta.
+          </span>
+        </div>
+      ) : null}
 
       {subjectsCount === 0 ? (
         <div className="grid min-h-[28rem] place-items-center rounded-2xl border border-dashed border-slate-300 px-6 text-center">

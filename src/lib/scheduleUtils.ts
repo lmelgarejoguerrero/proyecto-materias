@@ -33,6 +33,10 @@ function commissionSignature(name: string, meetings: CeitbaScheduleMeeting[]): s
   return `${name}|${schedule}`;
 }
 
+function commissionKey(name: string): string {
+  return name.trim().toLocaleLowerCase("es");
+}
+
 function commissionLabel(name: string, meetings: CeitbaScheduleMeeting[]): string {
   const buildings = [...new Set(meetings.map((meeting) => meeting.building).filter(Boolean))];
   const location = buildings.length > 0 ? ` · ${buildings.join("/")}` : "";
@@ -59,7 +63,9 @@ export function normalizeScheduleData(data: CeitbaSubjectsResponse): ScheduleOff
             courseEnd: subject.course_end,
             commissions: [],
           };
-          const existingIds = new Set(current.commissions.map((commission) => commission.id));
+          const commissionIndexes = new Map(
+            current.commissions.map((commission, index) => [commissionKey(commission.name), index]),
+          );
 
           for (const commission of subject.commissions ?? []) {
             const meetings = (commission.schedule ?? []).filter(
@@ -67,14 +73,23 @@ export function normalizeScheduleData(data: CeitbaSubjectsResponse): ScheduleOff
             );
             if (meetings.length === 0) continue;
             const id = commissionSignature(commission.name, meetings);
-            if (existingIds.has(id)) continue;
-            existingIds.add(id);
-            current.commissions.push({
+            const normalizedCommission = {
               id,
               name: commission.name,
               label: commissionLabel(commission.name, meetings),
               meetings,
-            });
+            };
+            const nameKey = commissionKey(commission.name);
+            const existingIndex = commissionIndexes.get(nameKey);
+
+            // The CEITBA response can repeat the same commission with an older room.
+            // Entries are chronological, so the last publication for each name wins.
+            if (existingIndex === undefined) {
+              commissionIndexes.set(nameKey, current.commissions.length);
+              current.commissions.push(normalizedCommission);
+            } else {
+              current.commissions[existingIndex] = normalizedCommission;
+            }
           }
 
           offerings.set(key, current);
@@ -83,7 +98,12 @@ export function normalizeScheduleData(data: CeitbaSubjectsResponse): ScheduleOff
     }
   }
 
-  return [...offerings.values()];
+  return [...offerings.values()].map((offering) => ({
+    ...offering,
+    commissions: offering.commissions.sort((left, right) =>
+      left.name.localeCompare(right.name, "es", { numeric: true }),
+    ),
+  }));
 }
 
 export function findOffering(
@@ -95,6 +115,21 @@ export function findOffering(
   return offerings.find(
     (offering) =>
       offering.courseId === courseId && offering.year === year && offering.period === period,
+  );
+}
+
+export function findReferenceOffering(
+  offerings: ScheduleOffering[],
+  courseId: string,
+  year: number,
+  period: AcademicPeriod,
+): ScheduleOffering | undefined {
+  return offerings.find(
+    (offering) =>
+      offering.courseId === courseId &&
+      offering.year === year &&
+      offering.period !== period &&
+      offering.commissions.length > 0,
   );
 }
 
