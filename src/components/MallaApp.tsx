@@ -9,7 +9,9 @@ import {
   Download,
   GraduationCap,
   Layers3,
+  Moon,
   RotateCcw,
+  Sun,
   Upload,
 } from "lucide-react";
 
@@ -163,6 +165,14 @@ export function MallaApp() {
     actualizarEstadosMasivos([courseId], status);
   };
 
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    const dark = !root.classList.contains("dark");
+    root.classList.toggle("dark", dark);
+    root.style.colorScheme = dark ? "dark" : "light";
+    window.localStorage.setItem("malla-curricular:theme:v1", dark ? "dark" : "light");
+  };
+
   return (
     <div className="min-h-screen bg-[#f4f6f9] text-slate-950">
       <header className="sticky top-0 z-50 border-b border-slate-200/90 bg-[#f4f6f9]/92 backdrop-blur-xl">
@@ -198,29 +208,44 @@ export function MallaApp() {
             </div>
           </div>
 
-          <details className="group relative">
-            <summary className="flex min-h-10 list-none items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:border-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-              Datos <ChevronDown className="size-3.5 transition group-open:rotate-180" />
-            </summary>
-            <div className="absolute right-0 top-12 z-50 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
-              <button type="button" onClick={exportData} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-100">
-                <Download className="size-4" /> Exportar backup
-              </button>
-              <button type="button" onClick={() => importRef.current?.click()} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-100">
-                <Upload className="size-4" /> Importar backup
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (window.confirm("¿Querés borrar todos los estados guardados? La planificación y el minor no se borran.")) resetearProgreso();
-                }}
-                className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-rose-700 hover:bg-rose-50"
-              >
-                <RotateCcw className="size-4" /> Reiniciar estados
-              </button>
-              <input ref={importRef} type="file" accept="application/json,.json" className="hidden" onChange={importData} />
-            </div>
-          </details>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Cambiar entre modo claro y modo noche"
+              title="Cambiar tema"
+              className="flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:border-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            >
+              <Moon className="size-4 dark:hidden" />
+              <Sun className="hidden size-4 dark:block" />
+              <span className="hidden sm:inline dark:hidden">Noche</span>
+              <span className="hidden sm:dark:inline">Día</span>
+            </button>
+
+            <details className="group relative">
+              <summary className="flex min-h-10 list-none items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:border-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                Datos <ChevronDown className="size-3.5 transition group-open:rotate-180" />
+              </summary>
+              <div className="absolute right-0 top-12 z-50 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                <button type="button" onClick={exportData} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-100">
+                  <Download className="size-4" /> Exportar backup
+                </button>
+                <button type="button" onClick={() => importRef.current?.click()} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-100">
+                  <Upload className="size-4" /> Importar backup
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm("¿Querés borrar todos los estados guardados? La planificación y el minor no se borran.")) resetearProgreso();
+                  }}
+                  className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-rose-700 hover:bg-rose-50"
+                >
+                  <RotateCcw className="size-4" /> Reiniciar estados
+                </button>
+                <input ref={importRef} type="file" accept="application/json,.json" className="hidden" onChange={importData} />
+              </div>
+            </details>
+          </div>
         </div>
       </header>
 

@@ -17,13 +17,26 @@ export const metadata: Metadata = {
   description: "Avance, minors y planificación de materias del plan L20",
 };
 
+const themeInitScript = `
+  try {
+    const savedTheme = localStorage.getItem("malla-curricular:theme:v1");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const dark = savedTheme ? savedTheme === "dark" : prefersDark;
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  } catch {}
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="antialiased">{children}</body>
     </html>
   );
