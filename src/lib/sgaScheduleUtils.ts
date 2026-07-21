@@ -1,6 +1,56 @@
 import type { CeitbaCommission, CeitbaSubject, CeitbaSubjectsResponse } from "@/types/schedule";
 import type { SgaCourse, SgaScheduleSnapshot } from "@/types/sgaSchedule";
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function isValidCourse(value: unknown): boolean {
+  if (!isRecord(value) || typeof value.courseId !== "string" || typeof value.courseName !== "string") {
+    return false;
+  }
+  if (value.availability !== "available" && value.availability !== "requested") return false;
+  if (!Array.isArray(value.commissions)) return false;
+
+  return value.commissions.every((commission) => {
+    if (!isRecord(commission) || typeof commission.name !== "string" || !Array.isArray(commission.meetings)) {
+      return false;
+    }
+    return commission.meetings.every(
+      (meeting) =>
+        isRecord(meeting) &&
+        typeof meeting.day === "string" &&
+        typeof meeting.time_from === "string" &&
+        typeof meeting.time_to === "string" &&
+        typeof meeting.classroom === "string" &&
+        typeof meeting.building === "string",
+    );
+  });
+}
+
+export function parseSgaScheduleSnapshot(raw: string | null): SgaScheduleSnapshot | null {
+  if (!raw) return null;
+
+  try {
+    const snapshot = JSON.parse(raw) as Partial<SgaScheduleSnapshot>;
+    const period = snapshot.academicPeriod;
+    if (
+      snapshot.schemaVersion !== 1 ||
+      snapshot.source !== "sga-itba" ||
+      !Array.isArray(snapshot.courses) ||
+      !snapshot.courses.every(isValidCourse) ||
+      !period ||
+      !Number.isInteger(period.year) ||
+      (period.period !== 1 && period.period !== 2)
+    ) {
+      return null;
+    }
+    return snapshot as SgaScheduleSnapshot;
+  } catch {
+    return null;
+  }
+}
+
 function courseDates(year: number, period: 1 | 2): { start: string; end: string } {
   return period === 1
     ? { start: `${year}-03-01`, end: `${year}-06-30` }

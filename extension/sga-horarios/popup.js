@@ -4,7 +4,10 @@ const elements = {
   start: document.querySelector("#start"),
   stop: document.querySelector("#stop"),
   download: document.querySelector("#download"),
-  linkProject: document.querySelector("#link-project"),
+  syncApp: document.querySelector("#sync-app"),
+  importKey: document.querySelector("#import-key"),
+  saveKey: document.querySelector("#save-key"),
+  keyStatus: document.querySelector("#key-status"),
   projectStatus: document.querySelector("#project-status"),
   statusDot: document.querySelector("#status-dot"),
   statusLabel: document.querySelector("#status-label"),
@@ -28,6 +31,7 @@ function render(scan) {
   elements.start.hidden = status === "scanning";
   elements.stop.hidden = status !== "scanning";
   elements.download.disabled = status !== "complete";
+  elements.syncApp.disabled = status !== "complete";
   elements.error.hidden = !scan?.error;
   elements.error.textContent = scan?.error || "";
 
@@ -35,10 +39,10 @@ function render(scan) {
     elements.statusLabel.textContent = "Actualizando horarios";
     elements.statusDetail.textContent = scan.currentCourseId ? `Leyendo ${scan.currentCourseId}. No cierres la pestaña del SGA.` : "Preparando el listado de materias disponibles…";
   } else if (status === "complete") {
-    elements.statusLabel.textContent = "Snapshot listo";
-    elements.statusDetail.textContent = scan.projectFile?.status === "saved"
-      ? `${total} materias procesadas y guardadas en la app.`
-      : `${total} materias procesadas. Ya podés guardar o descargar una copia.`;
+    elements.statusLabel.textContent = scan.appSync?.status === "published" ? "Web actualizada" : "Snapshot listo";
+    elements.statusDetail.textContent = scan.appSync?.status === "published"
+      ? `${total} materias procesadas y publicadas para todos.`
+      : `${total} materias procesadas. Podés volver a publicarlas en la web.`;
   } else if (status === "paused") {
     elements.statusLabel.textContent = "Recorrido pausado";
     elements.statusDetail.textContent = "Volvé al listado de matriculación y comenzá nuevamente.";
@@ -51,37 +55,34 @@ function render(scan) {
   }
 }
 
-async function renderProjectLink(scan) {
-  try {
-    const link = await SgaFileLink.getLinkStatus();
-    const write = scan?.projectFile;
-    const state = write?.status === "saved" ? write : link;
-    elements.projectStatus.className = `project-status ${state.status}`;
-    if (state.status === "saved") {
-      elements.projectStatus.textContent = `Guardado automáticamente en ${state.name}.`;
-      elements.linkProject.textContent = "Cambiar archivo vinculado";
-    } else if (state.status === "ready") {
-      elements.projectStatus.textContent = `${state.name} vinculado. El próximo recorrido se guardará solo.`;
-      elements.linkProject.textContent = "Cambiar archivo vinculado";
-    } else if (state.status === "permission-needed") {
-      elements.projectStatus.textContent = "Brave necesita que vuelvas a vincular el archivo.";
-      elements.linkProject.textContent = "Volver a vincular";
-    } else if (state.status === "error") {
-      elements.projectStatus.textContent = "No se pudo escribir el archivo vinculado. Volvé a elegirlo.";
-    } else {
-      elements.projectStatus.textContent = "Vinculalo una sola vez para guardar automáticamente.";
-    }
-  } catch {
-    elements.projectStatus.className = "project-status error";
-    elements.projectStatus.textContent = "No se pudo comprobar el archivo vinculado.";
+function renderAppSync(scan) {
+  const state = scan?.appSync;
+  elements.projectStatus.className = `project-status ${state?.status || ""}`;
+  if (state?.status === "published") {
+    elements.projectStatus.textContent = `${state.courses} materias guardadas persistentemente en la web.`;
+    elements.syncApp.textContent = "Volver a publicar en la web";
+  } else if (state?.status === "error") {
+    elements.projectStatus.textContent = state.error || "No se pudo abrir la app. Probá nuevamente.";
+    elements.syncApp.textContent = "Reintentar publicación";
+  } else {
+    elements.projectStatus.textContent = "Al terminar se guardarán los horarios en la web para todos.";
+    elements.syncApp.textContent = "Publicar en la web";
   }
+}
+
+async function renderKeyStatus() {
+  const stored = await chrome.storage.local.get("sgaImportKey");
+  const configured = Boolean(stored.sgaImportKey);
+  elements.keyStatus.textContent = configured ? "Clave guardada en esta extensión." : "Todavía no configurada.";
+  elements.importKey.placeholder = configured ? "Clave guardada" : "Pegala una sola vez";
 }
 
 async function refresh() {
   const response = await chrome.runtime.sendMessage({ type: "GET_SCAN" });
   const scan = response?.scan || null;
   render(scan);
-  await renderProjectLink(scan);
+  renderAppSync(scan);
+  await renderKeyStatus();
 }
 
 elements.start.addEventListener("click", async () => {
@@ -99,28 +100,26 @@ elements.stop.addEventListener("click", async () => {
   await refresh();
 });
 
-elements.linkProject.addEventListener("click", async () => {
-  try {
-    if (!window.showSaveFilePicker) throw new Error("Brave no habilitó el selector de archivos.");
-    const handle = await window.showSaveFilePicker({
-      suggestedName: "sgaHorarios.json",
-      types: [{ description: "Snapshot de horarios SGA", accept: { "application/json": [".json"] } }],
-    });
-    const permission = await handle.requestPermission({ mode: "readwrite" });
-    if (permission !== "granted") throw new Error("No se concedió permiso de escritura.");
-    await SgaFileLink.saveHandle(handle);
-
-    const response = await chrome.runtime.sendMessage({ type: "GET_SNAPSHOT" });
-    const scanResponse = await chrome.runtime.sendMessage({ type: "GET_SCAN" });
-    if (scanResponse?.scan?.status === "complete" && response?.snapshot) {
-      await SgaFileLink.writeSnapshot(response.snapshot);
-    }
-    await refresh();
-  } catch (error) {
-    if (error?.name === "AbortError") return;
-    elements.projectStatus.className = "project-status error";
-    elements.projectStatus.textContent = error instanceof Error ? error.message : String(error);
+elements.saveKey.addEventListener("click", async () => {
+  const value = elements.importKey.value.trim();
+  if (!value) {
+    elements.keyStatus.textContent = "Pegá una clave antes de guardar.";
+    return;
   }
+  await chrome.storage.local.set({ sgaImportKey: value });
+  elements.importKey.value = "";
+  await renderKeyStatus();
+});
+
+elements.syncApp.addEventListener("click", async () => {
+  elements.syncApp.disabled = true;
+  elements.syncApp.textContent = "Publicando…";
+  const response = await chrome.runtime.sendMessage({ type: "SYNC_TO_APP" });
+  if (!response?.ok) {
+    elements.error.textContent = response?.error || "No se pudo publicar el snapshot en la web.";
+    elements.error.hidden = false;
+  }
+  await refresh();
 });
 
 elements.download.addEventListener("click", async () => {

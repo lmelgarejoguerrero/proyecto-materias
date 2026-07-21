@@ -2,9 +2,12 @@
   "manifest_version": 3,
   "name": "ITBA SGA · Exportador de horarios",
   "description": "Exporta localmente materias, comisiones, horarios, aulas y cupos visibles en la matriculación del SGA.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "permissions": ["storage", "tabs", "scripting"],
-  "host_permissions": ["https://sga.itba.edu.ar/app2/*"],
+  "host_permissions": [
+    "https://sga.itba.edu.ar/app2/*",
+    "https://proyecto-materias.vercel.app/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },

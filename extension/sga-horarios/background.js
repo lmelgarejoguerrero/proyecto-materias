@@ -1,8 +1,9 @@
 "use strict";
 
-importScripts("file-link.js");
-
 const SCAN_KEY = "sgaScheduleScan";
+const IMPORT_KEY_STORAGE_KEY = "sgaImportKey";
+const APP_URL = "https://proyecto-materias.vercel.app/#planificar";
+const IMPORT_URL = "https://proyecto-materias.vercel.app/api/horarios/sga";
 
 async function getScan() {
   const stored = await chrome.storage.local.get(SCAN_KEY);
@@ -81,6 +82,30 @@ function snapshotFromScan(scan) {
   };
 }
 
+async function publishSnapshotToApp(snapshot) {
+  const stored = await chrome.storage.local.get(IMPORT_KEY_STORAGE_KEY);
+  const importKey = stored[IMPORT_KEY_STORAGE_KEY];
+  if (!importKey) throw new Error("Configurá una vez la clave privada de publicación.");
+
+  const response = await fetch(IMPORT_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${importKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(snapshot),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || "La web no pudo guardar los horarios.");
+
+  await chrome.tabs.create({ url: APP_URL, active: true });
+  return {
+    status: "published",
+    publishedAt: new Date().toISOString(),
+    courses: snapshot.courses.length,
+  };
+}
+
 async function continueFromList(scan, payload) {
   if (scan.phase === "opening-detail" && scan.currentCourseId) return;
   if (scan.phase === "expanding-list") return;
@@ -113,13 +138,14 @@ async function continueFromList(scan, payload) {
   if (!nextCourse) {
     const completedAt = new Date().toISOString();
     let completed = { ...updated, status: "complete", completedAt, updatedAt: completedAt };
+    await saveScan(completed);
     try {
-      const projectFile = await SgaFileLink.writeSnapshot(snapshotFromScan(completed));
-      completed = { ...completed, projectFile };
+      const appSync = await publishSnapshotToApp(snapshotFromScan(completed));
+      completed = { ...completed, appSync };
     } catch (error) {
       completed = {
         ...completed,
-        projectFile: {
+        appSync: {
           status: "error",
           error: error instanceof Error ? error.message : String(error),
         },
@@ -195,6 +221,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "GET_SNAPSHOT") {
       const scan = await getScan();
       sendResponse({ ok: Boolean(scan), snapshot: scan ? snapshotFromScan(scan) : null });
+      return;
+    }
+    if (message.type === "SYNC_TO_APP") {
+      const scan = await getScan();
+      if (!scan || scan.status !== "complete") {
+        sendResponse({ ok: false, error: "Primero completá la actualización desde el SGA." });
+        return;
+      }
+      try {
+        const appSync = await publishSnapshotToApp(snapshotFromScan(scan));
+        await saveScan({ ...scan, appSync, updatedAt: new Date().toISOString() });
+        sendResponse({ ok: true, appSync });
+      } catch (error) {
+        const appSync = { status: "error", error: error instanceof Error ? error.message : String(error) };
+        await saveScan({ ...scan, appSync, updatedAt: new Date().toISOString() });
+        sendResponse({ ok: false, error: appSync.error });
+      }
       return;
     }
     if (message.type === "PAGE_STATE") {

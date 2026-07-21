@@ -14,7 +14,8 @@ Extensión local Manifest V3 para Brave y Chrome. Recorre secuencialmente las ma
 1. Abrir la pantalla de matriculación del SGA.
 2. Abrir la extensión y pulsar **Actualizar desde el SGA**.
 3. Mantener abierta la pestaña mientras recorre las materias.
-4. Una única vez, pulsar **Vincular archivo de la app** y elegir `src/data/sgaHorarios.json`.
-5. Los recorridos siguientes actualizan ese archivo automáticamente. **Descargar copia JSON** queda como respaldo opcional.
+4. Una única vez, pegar la clave privada de publicación y guardarla en la extensión.
+5. Al terminar, la extensión publica el snapshot en el almacenamiento persistente de la web y abre el planificador.
+6. **Descargar copia JSON** queda como respaldo opcional.
 
-La versión 1.1.0 inyecta automáticamente el lector si la pestaña del SGA ya estaba abierta y puede escribir el snapshot directamente en la app, sin terminal ni `npm`.
+La versión 1.2.0 inyecta automáticamente el lector si la pestaña del SGA ya estaba abierta y publica el snapshot en Vercel Blob, sin selector de archivos, `localStorage`, terminal, `npm`, commit ni push.
