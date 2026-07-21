@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Horarios SGA</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <span class="eyebrow">ITBA · uso local</span>
+      <h1>Exportar horarios del SGA</h1>
+      <p class="intro">Recorre únicamente las materias disponibles. Nunca selecciona comisiones ni confirma una matrícula.</p>
+      <section class="status-card" aria-live="polite">
+        <div class="status-row"><span id="status-dot" class="status-dot"></span><strong id="status-label">Lista para comenzar</strong></div>
+        <p id="status-detail">Abrí la pantalla de matriculación del SGA.</p>
+        <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+        <p id="progress-label" class="progress-label">0 de 0 materias</p>
+      </section>
+      <p id="error" class="error" role="alert" hidden></p>
+      <div class="actions">
+        <button id="start" class="primary" type="button">Actualizar desde el SGA</button>
+        <button id="stop" class="secondary" type="button" hidden>Detener</button>
+        <button id="link-project" class="secondary" type="button">Vincular archivo de la app</button>
+        <button id="download" class="secondary" type="button" disabled>Descargar copia JSON</button>
+      </div>
+      <p id="project-status" class="project-status">Vinculalo una sola vez para guardar automáticamente.</p>
+      <p class="privacy">El archivo excluye tu nombre, docentes, cookies, URLs y credenciales.</p>
+    </main>
+    <script src="file-link.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

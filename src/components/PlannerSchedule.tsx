@@ -91,7 +91,7 @@ export function PlannerSchedule({
       <div className="grid min-h-[30rem] place-items-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 text-center">
         <div>
           <RefreshCw className="mx-auto size-6 animate-spin text-blue-700" />
-          <p className="mt-3 text-sm font-semibold text-slate-800">Actualizando horarios del CEITBA…</p>
+          <p className="mt-3 text-sm font-semibold text-slate-800">Actualizando horarios…</p>
           <p className="mt-1 text-xs text-slate-500">La planificación sigue disponible aunque la fuente tarde.</p>
         </div>
       </div>
@@ -143,7 +143,7 @@ export function PlannerSchedule({
           <AlertTriangle className="mt-0.5 size-4 shrink-0" />
           <span>
             {referenceCount} {referenceCount === 1 ? "materia usa" : "materias usan"} horarios del otro
-            cuatrimestre del mismo año como referencia. Confirmalos cuando el CEITBA publique la oferta exacta.
+            cuatrimestre del mismo año como referencia. Confirmalos cuando se publique la oferta exacta.
           </span>
         </div>
       ) : null}
@@ -255,7 +255,7 @@ export function PlannerSchedule({
       )}
 
       <p className="flex flex-wrap items-center justify-between gap-2 px-1 text-[10px] leading-4 text-slate-500">
-        <span>Horarios sincronizados desde el endpoint público del CEITBA. Verificá siempre antes de matricularte.</span>
+        <span>El snapshot del SGA tiene prioridad; CEITBA se usa como respaldo. Verificá siempre antes de matricularte.</span>
         <a
           href="https://ceitba.org.ar/scheduler/LN?plan=L20"
           target="_blank"

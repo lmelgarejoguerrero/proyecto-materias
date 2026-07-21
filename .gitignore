@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Exportación local de la extensión SGA (la app usa src/data/sgaHorarios.json)
+horarios-sga-*.json

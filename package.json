@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "import:sga": "node scripts/import-sga-schedules.mjs",
+    "test:extension": "node extension/sga-horarios/parser.test.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

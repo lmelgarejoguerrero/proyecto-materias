@@ -37,10 +37,19 @@ function commissionKey(name: string): string {
   return name.trim().toLocaleLowerCase("es");
 }
 
-function commissionLabel(name: string, meetings: CeitbaScheduleMeeting[]): string {
+function commissionLabel(
+  name: string,
+  meetings: CeitbaScheduleMeeting[],
+  availableSeats?: number | null,
+): string {
   const buildings = [...new Set(meetings.map((meeting) => meeting.building).filter(Boolean))];
   const location = buildings.length > 0 ? ` · ${buildings.join("/")}` : "";
-  return `Comisión ${name}${location}`;
+  const seats = availableSeats == null
+    ? ""
+    : availableSeats === 0
+      ? " · sin cupo"
+      : ` · ${availableSeats} cupo${availableSeats === 1 ? "" : "s"}`;
+  return `Comisión ${name}${location}${seats}`;
 }
 
 export function normalizeScheduleData(data: CeitbaSubjectsResponse): ScheduleOffering[] {
@@ -76,8 +85,11 @@ export function normalizeScheduleData(data: CeitbaSubjectsResponse): ScheduleOff
             const normalizedCommission = {
               id,
               name: commission.name,
-              label: commissionLabel(commission.name, meetings),
+              label: commissionLabel(commission.name, meetings, commission.available_seats),
               meetings,
+              applicants: commission.applicants,
+              availableSeats: commission.available_seats,
+              source: commission.source,
             };
             const nameKey = commissionKey(commission.name);
             const existingIndex = commissionIndexes.get(nameKey);

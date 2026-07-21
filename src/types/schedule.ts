@@ -11,6 +11,9 @@ export interface CeitbaScheduleMeeting {
 export interface CeitbaCommission {
   name: string;
   schedule: CeitbaScheduleMeeting[];
+  applicants?: number | null;
+  available_seats?: number | null;
+  source?: "ceitba" | "sga";
 }
 
 export interface CeitbaSubject {
@@ -32,6 +35,9 @@ export interface ScheduleCommission {
   name: string;
   label: string;
   meetings: CeitbaScheduleMeeting[];
+  applicants?: number | null;
+  availableSeats?: number | null;
+  source?: "ceitba" | "sga";
 }
 
 export interface ScheduleOffering {

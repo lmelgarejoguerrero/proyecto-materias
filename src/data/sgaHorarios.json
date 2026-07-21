@@ -1,0 +1,1888 @@
+{
+  "schemaVersion": 1,
+  "source": "sga-itba",
+  "academicPeriod": {
+    "year": 2026,
+    "period": 2,
+    "label": "Segundo Cuat. 2026"
+  },
+  "capturedAt": "2026-07-21T02:40:03.394Z",
+  "courses": [
+    {
+      "courseId": "10.07",
+      "courseName": "Creatividad",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Jueves 13:00 - 16:00 - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "401F",
+              "building": "SDF",
+              "raw": "Jueves 13:00 - 16:00 - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Jueves 10:00 - 13:00 - Aula ITBA: 501F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "10:00:00",
+              "time_to": "13:00:00",
+              "classroom": "501F",
+              "building": "SDF",
+              "raw": "Jueves 10:00 - 13:00 - Aula ITBA: 501F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "C",
+          "applicants": 49,
+          "availableSeats": 0,
+          "rawSchedule": "Jueves 16:00 - 19:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "901F",
+              "building": "SDF",
+              "raw": "Jueves 16:00 - 19:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "10.09",
+      "courseName": "Formación para Emprendedores",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 41,
+          "availableSeats": 7,
+          "rawSchedule": "Lunes 16:00 - 19:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Blended ()",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "701F",
+              "building": "SDF",
+              "raw": "Lunes 16:00 - 19:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Blended ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "10.23",
+      "courseName": "Agroindustria II",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 16:00 - 19:00 - Aula ITBA: 601F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "601F",
+              "building": "SDF",
+              "raw": "Martes 16:00 - 19:00 - Aula ITBA: 601F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "11.83",
+      "courseName": "Gestión de Operaciones",
+      "credits": 6,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 35,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula ITBA: 301F #----> Sede Distrito Financiero Aula externa: Presencial () Jueves 13:00 - 16:00 - Aula ITBA: 601F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "301F",
+              "building": "SDF",
+              "raw": "Martes 19:00 - 22:00 - Aula ITBA: 301F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "THURSDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "601F",
+              "building": "SDF",
+              "raw": "Jueves 13:00 - 16:00 - Aula ITBA: 601F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "applicants": 14,
+          "availableSeats": 10,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula ITBA: 602F #----> Sede Distrito Financiero Aula externa: Presencial () Jueves 16:00 - 19:00 - Aula ITBA: 903F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "602F",
+              "building": "SDF",
+              "raw": "Martes 19:00 - 22:00 - Aula ITBA: 602F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "903F",
+              "building": "SDF",
+              "raw": "Jueves 16:00 - 19:00 - Aula ITBA: 903F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "11.84",
+      "courseName": "Gestión de Proyectos",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "B",
+          "applicants": 26,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 15:00 - 18:00 - Aula ITBA: 503F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "15:00:00",
+              "time_to": "18:00:00",
+              "classroom": "503F",
+              "building": "SDF",
+              "raw": "Martes 15:00 - 18:00 - Aula ITBA: 503F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "C",
+          "applicants": 26,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 15:00 - 18:00 - Aula ITBA: 702F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "15:00:00",
+              "time_to": "18:00:00",
+              "classroom": "702F",
+              "building": "SDF",
+              "raw": "Martes 15:00 - 18:00 - Aula ITBA: 702F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "D",
+          "applicants": 26,
+          "availableSeats": 0,
+          "rawSchedule": "Jueves 15:00 - 18:00 - Aula ITBA: 602F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "15:00:00",
+              "time_to": "18:00:00",
+              "classroom": "602F",
+              "building": "SDF",
+              "raw": "Jueves 15:00 - 18:00 - Aula ITBA: 602F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "Inglés",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Lunes 13:00 - 16:00 - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "401F",
+              "building": "SDF",
+              "raw": "Lunes 13:00 - 16:00 - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "11.85",
+      "courseName": "Toma de Decisiones",
+      "credits": 6,
+      "availability": "requested",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": null,
+          "availableSeats": null,
+          "rawSchedule": "Martes (16:00 - 19:00) - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial | Viernes (13:00 - 16:00) - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial |",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "401F",
+              "building": "SDF",
+              "raw": "Martes (16:00 - 19:00) - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial"
+            },
+            {
+              "day": "FRIDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "701F",
+              "building": "SDF",
+              "raw": "Viernes (13:00 - 16:00) - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "17.23",
+      "courseName": "Triple Impacto: Estrategias para el Desarrollo Sostenible",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 5,
+          "availableSeats": 13,
+          "rawSchedule": "Jueves 19:00 - 22:00 - Aula ITBA: 604F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "604F",
+              "building": "SDF",
+              "raw": "Jueves 19:00 - 22:00 - Aula ITBA: 604F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "23.15",
+      "courseName": "Realidad Virtual",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "K",
+          "applicants": 25,
+          "availableSeats": null,
+          "rawSchedule": "Viernes 16:00 - 19:00 - Aula externa: Virtual sincrónica ()",
+          "meetings": [
+            {
+              "day": "FRIDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "Virtual sincrónica ()",
+              "building": "Online",
+              "raw": "Viernes 16:00 - 19:00 - Aula externa: Virtual sincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "61.02",
+      "courseName": "Economía del Mercado Laboral",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 3,
+          "availableSeats": 5,
+          "rawSchedule": "Domingo 13:00 - 14:00 - Aula externa: Virtual asincrónica () Jueves 14:00 - 16:00 - Aula ITBA: 700F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "SUNDAY",
+              "time_from": "13:00:00",
+              "time_to": "14:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Domingo 13:00 - 14:00 - Aula externa: Virtual asincrónica ()"
+            },
+            {
+              "day": "THURSDAY",
+              "time_from": "14:00:00",
+              "time_to": "16:00:00",
+              "classroom": "700F",
+              "building": "SDF",
+              "raw": "Jueves 14:00 - 16:00 - Aula ITBA: 700F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "61.04",
+      "courseName": "Sistema Monetario y Financiero en Argentina",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 6,
+          "availableSeats": 18,
+          "rawSchedule": "Miércoles 19:00 - 22:00 - Aula ITBA: 204F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "204F",
+              "building": "SDF",
+              "raw": "Miércoles 19:00 - 22:00 - Aula ITBA: 204F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "61.05",
+      "courseName": "Economía de la Salud",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 24,
+          "availableSeats": 0,
+          "rawSchedule": "Lunes 16:00 - 18:00 - Aula ITBA: 502F #----> Sede Distrito Financiero Aula externa: Presencial () Sábado 12:00 - 13:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "16:00:00",
+              "time_to": "18:00:00",
+              "classroom": "502F",
+              "building": "SDF",
+              "raw": "Lunes 16:00 - 18:00 - Aula ITBA: 502F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "12:00:00",
+              "time_to": "13:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 12:00 - 13:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "61.14",
+      "courseName": "Economía Internacional Real",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 24,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 16:00 - 18:00 - Aula ITBA: 602F #----> Sede Distrito Financiero Aula externa: Presencial () Sábado 08:00 - 09:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "16:00:00",
+              "time_to": "18:00:00",
+              "classroom": "602F",
+              "building": "SDF",
+              "raw": "Miércoles 16:00 - 18:00 - Aula ITBA: 602F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "08:00:00",
+              "time_to": "09:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 08:00 - 09:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "61.15",
+      "courseName": "Economía Internacional Monetaria",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 12,
+          "availableSeats": 6,
+          "rawSchedule": "Jueves 16:00 - 18:00 - Aula ITBA: 704F #----> Sede Distrito Financiero Aula externa: Presencial () Sábado 09:00 - 10:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "18:00:00",
+              "classroom": "704F",
+              "building": "SDF",
+              "raw": "Jueves 16:00 - 18:00 - Aula ITBA: 704F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "09:00:00",
+              "time_to": "10:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 09:00 - 10:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "61.30",
+      "courseName": "Econometría Aplicada",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Jueves 16:00 - 19:00 - Aula ITBA: 801F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "801F",
+              "building": "SDF",
+              "raw": "Jueves 16:00 - 19:00 - Aula ITBA: 801F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "61.93",
+      "courseName": "Estrategia Financiera",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 24,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula ITBA: 403F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "403F",
+              "building": "SDF",
+              "raw": "Martes 19:00 - 22:00 - Aula ITBA: 403F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "71.22",
+      "courseName": "Sistemas de Inteligencia Artificial",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 13:00 - 16:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "901F",
+              "building": "SDF",
+              "raw": "Miércoles 13:00 - 16:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 16:00 - 19:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "901F",
+              "building": "SDF",
+              "raw": "Miércoles 16:00 - 19:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "C",
+          "applicants": 15,
+          "availableSeats": 33,
+          "rawSchedule": "Jueves 08:00 - 11:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "08:00:00",
+              "time_to": "11:00:00",
+              "classroom": "701F",
+              "building": "SDF",
+              "raw": "Jueves 08:00 - 11:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "71.45",
+      "courseName": "Estructura de Datos y Programación",
+      "credits": 6,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 50,
+          "availableSeats": 0,
+          "rawSchedule": "Lunes 16:00 - 19:00 - Aula ITBA: 009R #----> Sede Rectorado Aula externa: Presencial () Martes 17:00 - 20:00 - Aula ITBA: 008R #----> Sede Rectorado Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "009R",
+              "building": "SDR",
+              "raw": "Lunes 16:00 - 19:00 - Aula ITBA: 009R #----> Sede Rectorado Aula externa: Presencial ()"
+            },
+            {
+              "day": "TUESDAY",
+              "time_from": "17:00:00",
+              "time_to": "20:00:00",
+              "classroom": "008R",
+              "building": "SDR",
+              "raw": "Martes 17:00 - 20:00 - Aula ITBA: 008R #----> Sede Rectorado Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Lunes 16:00 - 19:00 - Aula ITBA: 102R #----> Sede Rectorado Aula externa: Presencial () Jueves 16:00 - 19:00 - Aula ITBA: 002R #----> Sede Rectorado Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "102R",
+              "building": "SDR",
+              "raw": "Lunes 16:00 - 19:00 - Aula ITBA: 102R #----> Sede Rectorado Aula externa: Presencial ()"
+            },
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "002R",
+              "building": "SDR",
+              "raw": "Jueves 16:00 - 19:00 - Aula ITBA: 002R #----> Sede Rectorado Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "C",
+          "applicants": 14,
+          "availableSeats": 34,
+          "rawSchedule": "Jueves 17:00 - 20:00 - Aula ITBA: 008R #----> Sede Rectorado Aula externa: Presencial () Viernes 16:00 - 19:00 - Aula ITBA: 003R #----> Sede Rectorado Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "17:00:00",
+              "time_to": "20:00:00",
+              "classroom": "008R",
+              "building": "SDR",
+              "raw": "Jueves 17:00 - 20:00 - Aula ITBA: 008R #----> Sede Rectorado Aula externa: Presencial ()"
+            },
+            {
+              "day": "FRIDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "003R",
+              "building": "SDR",
+              "raw": "Viernes 16:00 - 19:00 - Aula ITBA: 003R #----> Sede Rectorado Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "72.74",
+      "courseName": "Visualización de Información",
+      "credits": 3,
+      "availability": "requested",
+      "commissions": [
+        {
+          "name": "S2",
+          "applicants": null,
+          "availableSeats": null,
+          "rawSchedule": "Lunes (10:00 - 13:00) - Aula ITBA: 903F #----> Sede Distrito Financiero Aula externa: Presencial |",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "10:00:00",
+              "time_to": "13:00:00",
+              "classroom": "903F",
+              "building": "SDF",
+              "raw": "Lunes (10:00 - 13:00) - Aula ITBA: 903F #----> Sede Distrito Financiero Aula externa: Presencial"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "72.80",
+      "courseName": "Big Data",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "S",
+          "applicants": 52,
+          "availableSeats": null,
+          "rawSchedule": "Lunes 19:00 - 22:00 - Aula externa: Virtual sincrónica ()",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "Virtual sincrónica ()",
+              "building": "Online",
+              "raw": "Lunes 19:00 - 22:00 - Aula externa: Virtual sincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "73.84",
+      "courseName": "Ciencia de Datos Aplicada",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "S",
+          "applicants": 30,
+          "availableSeats": null,
+          "rawSchedule": "Miércoles 19:00 - 22:00 - Aula externa: Virtual sincrónica ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "Virtual sincrónica ()",
+              "building": "Online",
+              "raw": "Miércoles 19:00 - 22:00 - Aula externa: Virtual sincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.04",
+      "courseName": "Teoría de Juegos y Estrategia",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 24,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 19:00 - 22:00 - Aula ITBA: 403F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "403F",
+              "building": "SDF",
+              "raw": "Miércoles 19:00 - 22:00 - Aula ITBA: 403F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.05",
+      "courseName": "Responsabilidad Social Empresaria",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 39,
+          "availableSeats": 9,
+          "rawSchedule": "Martes 17:00 - 19:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Blended ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "17:00:00",
+              "time_to": "19:00:00",
+              "classroom": "901F",
+              "building": "SDF",
+              "raw": "Martes 17:00 - 19:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Blended ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.18",
+      "courseName": "Taller de Simulación Comercial",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 11,
+          "availableSeats": 7,
+          "rawSchedule": "Viernes 13:00 - 16:00 - Aula ITBA: 604F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "FRIDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "604F",
+              "building": "SDF",
+              "raw": "Viernes 13:00 - 16:00 - Aula ITBA: 604F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.19",
+      "courseName": "Marketing Digital",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "Inglés",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Domingo 17:00 - 18:00 - Aula externa: Virtual asincrónica () Lunes 17:00 - 19:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "SUNDAY",
+              "time_from": "17:00:00",
+              "time_to": "18:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Domingo 17:00 - 18:00 - Aula externa: Virtual asincrónica ()"
+            },
+            {
+              "day": "MONDAY",
+              "time_from": "17:00:00",
+              "time_to": "19:00:00",
+              "classroom": "901F",
+              "building": "SDF",
+              "raw": "Lunes 17:00 - 19:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.21",
+      "courseName": "Gestión de Ventas",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 42,
+          "availableSeats": 6,
+          "rawSchedule": "Miércoles 19:00 - 22:00 - Aula ITBA: 601F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "601F",
+              "building": "SDF",
+              "raw": "Miércoles 19:00 - 22:00 - Aula ITBA: 601F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "applicants": 25,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula ITBA: 702F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "702F",
+              "building": "SDF",
+              "raw": "Martes 19:00 - 22:00 - Aula ITBA: 702F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.23",
+      "courseName": "Comercio Electrónico",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 16:00 - 19:00 - Aula ITBA: 601F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "601F",
+              "building": "SDF",
+              "raw": "Miércoles 16:00 - 19:00 - Aula ITBA: 601F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.26",
+      "courseName": "Comercio Exterior",
+      "credits": 3,
+      "availability": "requested",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": null,
+          "availableSeats": null,
+          "rawSchedule": "Martes (13:00 - 16:00) - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial |",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "401F",
+              "building": "SDF",
+              "raw": "Martes (13:00 - 16:00) - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.28",
+      "courseName": "Tecnologías exponenciales",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 18,
+          "availableSeats": 6,
+          "rawSchedule": "Jueves 10:00 - 13:00 - Aula ITBA: 902F #----> Sede Distrito Financiero Aula externa: Blended ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "10:00:00",
+              "time_to": "13:00:00",
+              "classroom": "902F",
+              "building": "SDF",
+              "raw": "Jueves 10:00 - 13:00 - Aula ITBA: 902F #----> Sede Distrito Financiero Aula externa: Blended ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.33",
+      "courseName": "Diseño de aplicaciones informáticas",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 8,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula ITBA: 400F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "400F",
+              "building": "SDF",
+              "raw": "Martes 19:00 - 22:00 - Aula ITBA: 400F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.34",
+      "courseName": "Arquitectura empresarial",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 22,
+          "availableSeats": 2,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula ITBA: 803F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "803F",
+              "building": "SDF",
+              "raw": "Martes 19:00 - 22:00 - Aula ITBA: 803F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.42",
+      "courseName": "Estrategia Empresarial",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 25,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 13:00 - 16:00 - Aula ITBA: 403F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "403F",
+              "building": "SDF",
+              "raw": "Miércoles 13:00 - 16:00 - Aula ITBA: 403F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.46",
+      "courseName": "Auditoría General y de Sistemas",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 1,
+          "availableSeats": 7,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula ITBA: 700F #----> Sede Distrito Financiero Aula externa: Blended ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "700F",
+              "building": "SDF",
+              "raw": "Martes 19:00 - 22:00 - Aula ITBA: 700F #----> Sede Distrito Financiero Aula externa: Blended ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.47",
+      "courseName": "Impuestos para la toma de decisiones I",
+      "credits": 3,
+      "availability": "requested",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": null,
+          "availableSeats": null,
+          "rawSchedule": "Miércoles (19:00 - 22:00) - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial |",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "401F",
+              "building": "SDF",
+              "raw": "Miércoles (19:00 - 22:00) - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.49",
+      "courseName": "Branding y Comunicación",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 23,
+          "availableSeats": 1,
+          "rawSchedule": "Miércoles 08:00 - 11:00 - Aula ITBA: 503F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "08:00:00",
+              "time_to": "11:00:00",
+              "classroom": "503F",
+              "building": "SDF",
+              "raw": "Miércoles 08:00 - 11:00 - Aula ITBA: 503F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.54",
+      "courseName": "Aplicaciones en Internet",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 7,
+          "availableSeats": 3,
+          "rawSchedule": "Jueves 19:00 - 22:00 - Aula ITBA: 105R #----> Sede Rectorado Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "105R",
+              "building": "SDR",
+              "raw": "Jueves 19:00 - 22:00 - Aula ITBA: 105R #----> Sede Rectorado Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.57",
+      "courseName": "Arquitectura de soluciones digitales",
+      "credits": 3,
+      "availability": "requested",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": null,
+          "availableSeats": null,
+          "rawSchedule": "Lunes (19:00 - 22:00) - Aula ITBA: 501F #----> Sede Distrito Financiero Aula externa: Presencial |",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "501F",
+              "building": "SDF",
+              "raw": "Lunes (19:00 - 22:00) - Aula ITBA: 501F #----> Sede Distrito Financiero Aula externa: Presencial"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.59",
+      "courseName": "Gestión de Servicios",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula externa: Virtual sincrónica ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "Virtual sincrónica ()",
+              "building": "Online",
+              "raw": "Martes 19:00 - 22:00 - Aula externa: Virtual sincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.65",
+      "courseName": "Logística Internacional",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 24,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 13:00 - 16:00 - Aula ITBA: 402F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "402F",
+              "building": "SDF",
+              "raw": "Miércoles 13:00 - 16:00 - Aula ITBA: 402F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.68",
+      "courseName": "Sistemas Integrados de Gestión I",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 38,
+          "availableSeats": 10,
+          "rawSchedule": "Jueves 19:00 - 22:00 - Aula ITBA: 109R #----> Sede Rectorado Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "109R",
+              "building": "SDR",
+              "raw": "Jueves 19:00 - 22:00 - Aula ITBA: 109R #----> Sede Rectorado Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.71",
+      "courseName": "Marketing avanzado",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "Inglés",
+          "applicants": 16,
+          "availableSeats": 8,
+          "rawSchedule": "Jueves 13:00 - 16:00 - Aula ITBA: 502F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "502F",
+              "building": "SDF",
+              "raw": "Jueves 13:00 - 16:00 - Aula ITBA: 502F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.76",
+      "courseName": "Tecnologías para las Finanzas",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 49,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 19:00 - 22:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "901F",
+              "building": "SDF",
+              "raw": "Martes 19:00 - 22:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.84",
+      "courseName": "ERP Action Lab",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 24,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 19:00 - 21:00 - Aula ITBA: 703F #----> Sede Distrito Financiero Aula externa: Blended () Sábado 16:00 - 17:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "21:00:00",
+              "classroom": "703F",
+              "building": "SDF",
+              "raw": "Miércoles 19:00 - 21:00 - Aula ITBA: 703F #----> Sede Distrito Financiero Aula externa: Blended ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "16:00:00",
+              "time_to": "17:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 16:00 - 17:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.85",
+      "courseName": "CRM Action Lab",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 24,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 17:00 - 19:00 - Aula ITBA: 702F #----> Sede Distrito Financiero Aula externa: Blended () Sábado 11:00 - 12:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "17:00:00",
+              "time_to": "19:00:00",
+              "classroom": "702F",
+              "building": "SDF",
+              "raw": "Miércoles 17:00 - 19:00 - Aula ITBA: 702F #----> Sede Distrito Financiero Aula externa: Blended ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "11:00:00",
+              "time_to": "12:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 11:00 - 12:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.86",
+      "courseName": "Gestión de la Experiencia del Usuario (CX, UX, UI)",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 26,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 19:00 - 22:00 - Aula ITBA: 802F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "802F",
+              "building": "SDF",
+              "raw": "Miércoles 19:00 - 22:00 - Aula ITBA: 802F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.91",
+      "courseName": "Inteligencia Artificial Aplicada a los Negocios",
+      "credits": 3,
+      "availability": "requested",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": null,
+          "availableSeats": null,
+          "rawSchedule": "Viernes (09:00 - 12:00) - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial |",
+          "meetings": [
+            {
+              "day": "FRIDAY",
+              "time_from": "09:00:00",
+              "time_to": "12:00:00",
+              "classroom": "401F",
+              "building": "SDF",
+              "raw": "Viernes (09:00 - 12:00) - Aula ITBA: 401F #----> Sede Distrito Financiero Aula externa: Presencial"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.95",
+      "courseName": "Proyecto de lanzamiento de productos o servicios (Trabajo Final)",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 27,
+          "availableSeats": 21,
+          "rawSchedule": "Jueves 16:00 - 19:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "701F",
+              "building": "SDF",
+              "raw": "Jueves 16:00 - 19:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "81.97",
+      "courseName": "Diagnóstico Empresario y Plan de Acción ( Trabajo Final )",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 9,
+          "availableSeats": 9,
+          "rawSchedule": "Jueves 16:00 - 19:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Blended ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "19:00:00",
+              "classroom": "404F",
+              "building": "SDF",
+              "raw": "Jueves 16:00 - 19:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Blended ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "82.07",
+      "courseName": "Blockchain (Moneda digital descentralizada)",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 50,
+          "availableSeats": 0,
+          "rawSchedule": "Lunes 19:00 - 22:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "MONDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "901F",
+              "building": "SDF",
+              "raw": "Lunes 19:00 - 22:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "82.08",
+      "courseName": "Cloud Computing",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "AWS",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Miércoles 19:00 - 22:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "701F",
+              "building": "SDF",
+              "raw": "Miércoles 19:00 - 22:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "82.21",
+      "courseName": "Factibilidad de Proyectos Data Driven",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 29,
+          "availableSeats": 1,
+          "rawSchedule": "Martes 13:00 - 16:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "901F",
+              "building": "SDF",
+              "raw": "Martes 13:00 - 16:00 - Aula ITBA: 901F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "82.23",
+      "courseName": "Marketing Analytics",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 42,
+          "availableSeats": 0,
+          "rawSchedule": "Jueves 19:00 - 22:00 - Aula ITBA: 301F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "301F",
+              "building": "SDF",
+              "raw": "Jueves 19:00 - 22:00 - Aula ITBA: 301F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "82.24",
+      "courseName": "Investigación de Mercados",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 15,
+          "availableSeats": 3,
+          "rawSchedule": "Viernes 09:00 - 12:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "FRIDAY",
+              "time_from": "09:00:00",
+              "time_to": "12:00:00",
+              "classroom": "404F",
+              "building": "SDF",
+              "raw": "Viernes 09:00 - 12:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "94.07",
+      "courseName": "Cultura Latinoamericana",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 9,
+          "availableSeats": 9,
+          "rawSchedule": "Martes 13:00 - 16:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "13:00:00",
+              "time_to": "16:00:00",
+              "classroom": "404F",
+              "building": "SDF",
+              "raw": "Martes 13:00 - 16:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        },
+        {
+          "name": "Inglés",
+          "applicants": 32,
+          "availableSeats": 16,
+          "rawSchedule": "Miércoles 11:00 - 13:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "11:00:00",
+              "time_to": "13:00:00",
+              "classroom": "701F",
+              "building": "SDF",
+              "raw": "Miércoles 11:00 - 13:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "94.09",
+      "courseName": "Cultura, Identidad y Política",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 19,
+          "availableSeats": 5,
+          "rawSchedule": "Miércoles 14:00 - 16:00 - Aula ITBA: 703F #----> Sede Distrito Financiero Aula externa: Presencial () Sábado 17:00 - 18:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "14:00:00",
+              "time_to": "16:00:00",
+              "classroom": "703F",
+              "building": "SDF",
+              "raw": "Miércoles 14:00 - 16:00 - Aula ITBA: 703F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "17:00:00",
+              "time_to": "18:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 17:00 - 18:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "94.11",
+      "courseName": "Sociología Política",
+      "credits": 6,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 14,
+          "availableSeats": 4,
+          "rawSchedule": "Martes 11:00 - 13:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Presencial () Miércoles 08:00 - 11:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "11:00:00",
+              "time_to": "13:00:00",
+              "classroom": "404F",
+              "building": "SDF",
+              "raw": "Martes 11:00 - 13:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "WEDNESDAY",
+              "time_from": "08:00:00",
+              "time_to": "11:00:00",
+              "classroom": "404F",
+              "building": "SDF",
+              "raw": "Miércoles 08:00 - 11:00 - Aula ITBA: 404F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "94.13",
+      "courseName": "Gestión de Organizaciones Sociales",
+      "credits": 6,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 21,
+          "availableSeats": 3,
+          "rawSchedule": "Domingo 11:00 - 13:00 - Aula externa: Virtual asincrónica () Miércoles 19:00 - 21:00 - Aula ITBA: 803F #----> Sede Distrito Financiero Aula externa: Presencial () Jueves 18:00 - 20:00 - Aula ITBA: 503F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "SUNDAY",
+              "time_from": "11:00:00",
+              "time_to": "13:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Domingo 11:00 - 13:00 - Aula externa: Virtual asincrónica ()"
+            },
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "21:00:00",
+              "classroom": "803F",
+              "building": "SDF",
+              "raw": "Miércoles 19:00 - 21:00 - Aula ITBA: 803F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "THURSDAY",
+              "time_from": "18:00:00",
+              "time_to": "20:00:00",
+              "classroom": "503F",
+              "building": "SDF",
+              "raw": "Jueves 18:00 - 20:00 - Aula ITBA: 503F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "94.19",
+      "courseName": "Comportamiento Organizacional",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 42,
+          "availableSeats": 0,
+          "rawSchedule": "Jueves 16:00 - 18:00 - Aula ITBA: 302F #----> Sede Distrito Financiero Aula externa: Presencial () Sábado 18:00 - 19:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "18:00:00",
+              "classroom": "302F",
+              "building": "SDF",
+              "raw": "Jueves 16:00 - 18:00 - Aula ITBA: 302F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "18:00:00",
+              "time_to": "19:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 18:00 - 19:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "94.27",
+      "courseName": "Administración de Recursos Humanos",
+      "credits": 3,
+      "availability": "requested",
+      "commissions": [
+        {
+          "name": "B",
+          "applicants": null,
+          "availableSeats": null,
+          "rawSchedule": "Jueves (16:00 - 18:00) - Aula ITBA: 603F #----> Sede Distrito Financiero Aula externa: Presencial | Sábado (19:00 - 20:00) - Aula externa: Virtual asincrónica |",
+          "meetings": [
+            {
+              "day": "THURSDAY",
+              "time_from": "16:00:00",
+              "time_to": "18:00:00",
+              "classroom": "603F",
+              "building": "SDF",
+              "raw": "Jueves (16:00 - 18:00) - Aula ITBA: 603F #----> Sede Distrito Financiero Aula externa: Presencial"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "19:00:00",
+              "time_to": "20:00:00",
+              "classroom": "Virtual asincrónica",
+              "building": "Online",
+              "raw": "Sábado (19:00 - 20:00) - Aula externa: Virtual asincrónica"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "94.42",
+      "courseName": "Comunicación Estratégica",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 48,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 17:00 - 19:00 - Aula ITBA: 501F #----> Sede Distrito Financiero Aula externa: Presencial () Sábado 12:00 - 13:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "17:00:00",
+              "time_to": "19:00:00",
+              "classroom": "501F",
+              "building": "SDF",
+              "raw": "Martes 17:00 - 19:00 - Aula ITBA: 501F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "12:00:00",
+              "time_to": "13:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 12:00 - 13:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "applicants": 49,
+          "availableSeats": 0,
+          "rawSchedule": "Martes 14:00 - 16:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial () Sábado 12:00 - 13:00 - Aula externa: Virtual asincrónica ()",
+          "meetings": [
+            {
+              "day": "TUESDAY",
+              "time_from": "14:00:00",
+              "time_to": "16:00:00",
+              "classroom": "701F",
+              "building": "SDF",
+              "raw": "Martes 14:00 - 16:00 - Aula ITBA: 701F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            },
+            {
+              "day": "SATURDAY",
+              "time_from": "12:00:00",
+              "time_to": "13:00:00",
+              "classroom": "Virtual asincrónica ()",
+              "building": "Online",
+              "raw": "Sábado 12:00 - 13:00 - Aula externa: Virtual asincrónica ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "courseId": "94.62",
+      "courseName": "Ética en los Negocios",
+      "credits": 3,
+      "availability": "available",
+      "commissions": [
+        {
+          "name": "A",
+          "applicants": 21,
+          "availableSeats": 3,
+          "rawSchedule": "Miércoles 19:00 - 22:00 - Aula ITBA: 603F #----> Sede Distrito Financiero Aula externa: Presencial ()",
+          "meetings": [
+            {
+              "day": "WEDNESDAY",
+              "time_from": "19:00:00",
+              "time_to": "22:00:00",
+              "classroom": "603F",
+              "building": "SDF",
+              "raw": "Miércoles 19:00 - 22:00 - Aula ITBA: 603F #----> Sede Distrito Financiero Aula externa: Presencial ()"
+            }
+          ]
+        }
+      ],
+      "error": null
+    }
+  ]
+}
