@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Mi carrera · Gestión de Negocios",
   description: "Avance, minors y planificación de materias del plan L20",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
+    apple: ["/icon.svg"],
+  },
 };
 
 const themeInitScript = `
