@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { Check, Circle, Clock3, LockKeyhole, Play, X } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, Circle, Clock3, LockKeyhole, Play, Undo2, X } from "lucide-react";
 
+import { Modal } from "@/components/Modal";
+import { cumpleCorrelativa, sumarCreditosAprobados } from "@/lib/planUtils";
 import { MINOR_COLORES, MINOR_LABELS } from "@/data/minorsMetadata";
 import type { EstadoMateria, MateriaPlan, ProgresoMaterias } from "@/types/plan";
 
@@ -13,6 +14,8 @@ interface CourseDrawerProps {
   habilitada: boolean;
   onClose: () => void;
   onSetEstado: (materiaId: string, estado: EstadoMateria) => void;
+  onOpenCourse?: (materiaId: string) => void;
+  onUndo?: () => void;
 }
 
 const ESTADOS: Array<{
@@ -59,24 +62,15 @@ export function CourseDrawer({
   habilitada,
   onClose,
   onSetEstado,
+  onOpenCourse,
+  onUndo,
 }: CourseDrawerProps) {
-  useEffect(() => {
-    if (!materia) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleEscape);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [materia, onClose]);
-
   if (!materia) return null;
 
   const estado = progreso[materia.id] ?? "pendiente";
+  const approvedCredits = sumarCreditosAprobados(materias, progreso);
+  const missingCredits = Math.max(0, materia.creditosRequeridos - approvedCredits);
+  const dependents = materias.filter((item) => item.correlativas.includes(materia.id));
   const mapa = new Map(materias.map((item) => [item.id, item]));
   const correlativas = materia.correlativas.map((id) => ({
     id,
@@ -85,20 +79,12 @@ export function CourseDrawer({
   }));
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-end bg-slate-950/30 backdrop-blur-[2px] md:items-stretch">
-      <button
-        type="button"
-        aria-label="Cerrar detalle de materia"
-        className="absolute inset-0 h-full w-full cursor-default"
-        onClick={onClose}
-      />
-
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="course-drawer-title"
-        className="relative z-10 max-h-[92vh] w-full overflow-y-auto rounded-t-[2rem] border border-slate-200 bg-[#fbfbfd] shadow-2xl md:max-h-none md:max-w-[28rem] md:rounded-none md:rounded-l-[2rem]"
-      >
+    <Modal
+      open={true}
+      onClose={onClose}
+      labelledBy="course-drawer-title"
+      className="course-dialog fixed bottom-0 left-auto right-0 top-auto m-0 max-h-[92dvh] w-full max-w-none overflow-y-auto rounded-t-3xl bg-[#fbfbfd] md:bottom-0 md:top-0 md:h-dvh md:max-h-dvh md:max-w-[30rem] md:rounded-none md:rounded-l-3xl"
+    >
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-[#fbfbfd]/95 px-5 py-4 backdrop-blur">
           <div>
             <p className="font-mono text-xs font-semibold tracking-wide text-blue-700">{materia.id}</p>
@@ -164,6 +150,8 @@ export function CourseDrawer({
                 );
               })}
             </div>
+            {onUndo ? <div role="status" className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-slate-100 px-3 py-2"><span className="inline-flex items-center gap-2 text-xs text-slate-600"><CheckCircle2 className="size-4 text-emerald-700" /> Estado actualizado</span><button type="button" onClick={onUndo} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-blue-700"><Undo2 className="size-3.5" /> Deshacer</button></div> : null}
+            {!habilitada && estado === "pendiente" ? <p className="mt-3 text-xs leading-5 text-slate-500">Todavía faltan requisitos para cursarla. Podés registrar una aprobación o equivalencia previa.</p> : null}
           </section>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -175,6 +163,8 @@ export function CourseDrawer({
                     ? `${materia.creditosRequeridos} créditos aprobados`
                     : "Sin mínimo de créditos"}
                 </p>
+                {materia.creditosRequeridos > 0 ? <p className={`mt-1 text-xs ${missingCredits ? "text-amber-800" : "text-emerald-700"}`}>{missingCredits ? `Tenés ${approvedCredits} aprobados · faltan ${missingCredits} cr` : "Mínimo de créditos cumplido"}</p> : null}
+                {materia.correlativas.length > 0 ? <p className="mt-2 text-xs text-slate-500">Requiere {materia.tipoCorrelativa === "final" ? "final aprobado" : "cursada regular o final aprobado"} en las correlativas.</p> : null}
               </div>
               <LockKeyhole className="size-5 text-slate-400" />
             </div>
@@ -182,13 +172,13 @@ export function CourseDrawer({
             {correlativas.length > 0 ? (
               <div className="mt-4 space-y-2 border-t border-slate-100 pt-4">
                 {correlativas.map((item) => {
-                  const cumplida = item.estado === "regular" || item.estado === "aprobada";
+                  const cumplida = cumpleCorrelativa(item.estado, materia.tipoCorrelativa);
                   return (
                     <div key={item.id} className="flex items-start justify-between gap-3 text-sm">
-                      <div>
+                      <button type="button" disabled={!item.materia || !onOpenCourse} onClick={() => onOpenCourse?.(item.id)} className="rounded-md text-left hover:text-blue-700">
                         <span className="font-mono text-xs text-slate-500">{item.id}</span>
                         <p className="mt-0.5 text-slate-800">{item.materia?.nombre ?? "Materia correlativa"}</p>
-                      </div>
+                      </button>
                       <span className={`shrink-0 text-xs font-semibold ${cumplida ? "text-emerald-700" : "text-slate-500"}`}>
                         {cumplida ? "Cumplida" : "Pendiente"}
                       </span>
@@ -200,6 +190,8 @@ export function CourseDrawer({
               <p className="mt-3 text-sm text-slate-500">No tiene correlativas específicas.</p>
             )}
           </section>
+
+          {dependents.length > 0 ? <section><p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Abre camino a {dependents.length} materias</p><p className="mt-2 text-xs leading-5 text-slate-500">Estas materias la tienen como correlativa. Pueden requerir otros créditos o materias.</p><div className="mt-3 space-y-1">{dependents.map((item) => <button key={item.id} type="button" onClick={() => onOpenCourse?.(item.id)} disabled={!onOpenCourse} className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-700 hover:border-blue-300"><span><span className="mr-2 font-mono text-slate-400">{item.id}</span>{item.nombre}</span><ArrowRight className="size-3.5 shrink-0 text-blue-600" /></button>)}</div></section> : null}
 
           {(materia.minorTags?.length ?? 0) > 0 ? (
             <section>
@@ -218,7 +210,6 @@ export function CourseDrawer({
             </section>
           ) : null}
         </div>
-      </aside>
-    </div>
+    </Modal>
   );
 }

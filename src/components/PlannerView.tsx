@@ -10,9 +10,13 @@ import {
   Plus,
   Search,
   Trash2,
+  RotateCcw,
+  RefreshCw,
 } from "lucide-react";
 
 import { PlannerSchedule } from "@/components/PlannerSchedule";
+import { parsePlannerStorage, projectPlannerEligibility, restorePlannerSlots } from "@/lib/plannerUtils";
+import type { PlannerSlot, PlannerStorage } from "@/lib/plannerUtils";
 import {
   findOffering,
   findReferenceOffering,
@@ -31,20 +35,6 @@ const STORAGE_PLANNER_KEY = "tablero-materias:planificador:v1";
 const MAX_CREDITS = 30;
 const IDEAL_CREDITS = 24;
 
-interface Slot {
-  id: string;
-  label: string;
-  shortLabel: string;
-  year: number;
-  period: AcademicPeriod;
-}
-
-interface PlannerStorage {
-  active?: string;
-  plan: Record<string, string[]>;
-  commissions: Record<string, Record<string, string>>;
-}
-
 interface PlannerViewProps {
   materias: MateriaPlan[];
   progreso: ProgresoMaterias;
@@ -54,7 +44,7 @@ interface PlannerViewProps {
 
 type PlannerPanel = "materias" | "horario";
 
-function createSlots(count = 6): Slot[] {
+function createSlots(count = 6): PlannerSlot[] {
   const today = new Date();
   let year = today.getFullYear();
   const month = today.getMonth() + 1;
@@ -79,49 +69,15 @@ function createSlots(count = 6): Slot[] {
   });
 }
 
-function parseCommissions(value: unknown): Record<string, Record<string, string>> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  const result: Record<string, Record<string, string>> = {};
-  for (const [slotId, selections] of Object.entries(value)) {
-    if (!selections || typeof selections !== "object" || Array.isArray(selections)) continue;
-    const validSelections: Record<string, string> = {};
-    for (const [courseId, commissionId] of Object.entries(selections)) {
-      if (typeof commissionId === "string") validSelections[courseId] = commissionId;
-    }
-    result[slotId] = validSelections;
-  }
-  return result;
-}
-
-function parseStorage(raw: string | null): PlannerStorage {
-  if (!raw) return { plan: {}, commissions: {} };
-  try {
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
-    const source =
-      parsed.planificador && typeof parsed.planificador === "object"
-        ? (parsed.planificador as Record<string, unknown>)
-        : parsed;
-    const plan: Record<string, string[]> = {};
-    for (const [slotId, ids] of Object.entries(source)) {
-      if (Array.isArray(ids)) plan[slotId] = ids.filter((id): id is string => typeof id === "string");
-    }
-    return {
-      active: typeof parsed.slotActivoId === "string" ? parsed.slotActivoId : undefined,
-      plan,
-      commissions: parseCommissions(parsed.comisiones),
-    };
-  } catch {
-    return { plan: {}, commissions: {} };
-  }
-}
-
 export function PlannerView({
   materias,
   progreso,
-  materiasHabilitadas,
   onOpenCourse,
 }: PlannerViewProps) {
-  const slots = useMemo(() => createSlots(), []);
+  const initialSlots = useMemo(() => createSlots(), []);
+  const [slots, setSlots] = useState(initialSlots);
+  const [hasExplicitChanges, setHasExplicitChanges] = useState(false);
+  const [storageReadable, setStorageReadable] = useState(false);
   const courseMap = useMemo(() => new Map(materias.map((materia) => [materia.id, materia])), [materias]);
   const [plan, setPlan] = useState<Record<string, string[]>>({});
   const [commissionSelections, setCommissionSelections] = useState<
@@ -136,14 +92,30 @@ export function PlannerView({
   const [scheduleData, setScheduleData] = useState<CeitbaSubjectsResponse | null>(null);
   const [scheduleLoading, setScheduleLoading] = useState(true);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
+  const [scheduleRequest, setScheduleRequest] = useState(0);
+  const [storageError, setStorageError] = useState<string | null>(null);
+  const [lastRemoved, setLastRemoved] = useState<{ courseId: string; slotId: string; commissionId?: string } | null>(null);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      const stored = parseStorage(window.localStorage.getItem(STORAGE_PLANNER_KEY));
-      const validSlots = new Set(slots.map((slot) => slot.id));
+      setHasExplicitChanges(false);
+      setStorageReadable(false);
+      let stored: PlannerStorage = { plan: {}, commissions: {} };
+      try {
+        const parsed = parsePlannerStorage(window.localStorage.getItem(STORAGE_PLANNER_KEY));
+        if (parsed) {
+          stored = parsed;
+          setStorageReadable(true);
+          setStorageError(null);
+        }
+        else setStorageError("No pudimos leer el plan guardado. Conservamos los datos originales; sólo se reemplazarán si modificás tu planificación.");
+      } catch {
+        setStorageError("El navegador bloqueó el acceso al guardado. Podés planificar en esta sesión, pero los cambios podrían perderse al cerrar.");
+      }
+      const restoredSlots = restorePlannerSlots(initialSlots, stored);
+      const validSlots = new Set(restoredSlots.map((slot) => slot.id));
       const seen = new Set<string>();
       const normalized: Record<string, string[]> = {};
-      const migrated: string[] = [];
 
       for (const [slotId, ids] of Object.entries(stored.plan)) {
         const unique = ids.filter((id) => {
@@ -152,10 +124,6 @@ export function PlannerView({
           return true;
         });
         if (validSlots.has(slotId)) normalized[slotId] = unique;
-        else migrated.push(...unique);
-      }
-      if (migrated.length > 0 && slots[0]) {
-        normalized[slots[0].id] = [...(normalized[slots[0].id] ?? []), ...migrated];
       }
 
       const normalizedCommissions: Record<string, Record<string, string>> = {};
@@ -167,26 +135,34 @@ export function PlannerView({
         );
       }
 
+      setSlots(restoredSlots);
       setPlan(normalized);
       setCommissionSelections(normalizedCommissions);
       if (stored.active && validSlots.has(stored.active)) setActiveSlotId(stored.active);
       setHydrated(true);
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [courseMap, slots]);
+  }, [courseMap, initialSlots]);
 
   useEffect(() => {
-    if (!hydrated) return;
-    window.localStorage.setItem(
-      STORAGE_PLANNER_KEY,
-      JSON.stringify({
-        version: 3,
-        slotActivoId: activeSlotId,
-        planificador: plan,
-        comisiones: commissionSelections,
-      }),
-    );
-  }, [activeSlotId, commissionSelections, hydrated, plan]);
+    if (!hydrated || !hasExplicitChanges) return;
+    let failure: string | null = null;
+    try {
+      window.localStorage.setItem(
+        STORAGE_PLANNER_KEY,
+        JSON.stringify({
+          version: 3,
+          slotActivoId: activeSlotId,
+          planificador: plan,
+          comisiones: commissionSelections,
+        }),
+      );
+    } catch {
+      failure = "No pudimos guardar el plan en este navegador. Conservá esta pestaña abierta para no perder los cambios.";
+    }
+    const frame = window.requestAnimationFrame(() => setStorageError(failure));
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeSlotId, commissionSelections, hasExplicitChanges, hydrated, plan]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -207,7 +183,7 @@ export function PlannerView({
     };
     void loadSchedules();
     return () => controller.abort();
-  }, []);
+  }, [scheduleRequest]);
 
   const offerings = useMemo(
     () => (scheduleData ? normalizeScheduleData(scheduleData) : []),
@@ -248,12 +224,12 @@ export function PlannerView({
           ? findOffering(offerings, course.id, activeSlot.year, activeSlot.period)
           : undefined;
         const referenceOffering =
-          activeSlot && !exactOffering
+          activeSlot && !exactOffering?.commissions.length
             ? findReferenceOffering(offerings, course.id, activeSlot.year, activeSlot.period)
             : undefined;
         return {
           course,
-          offering: exactOffering ?? referenceOffering,
+          offering: exactOffering?.commissions.length ? exactOffering : referenceOffering ?? exactOffering,
           isReference: Boolean(referenceOffering),
         };
       }),
@@ -303,39 +279,44 @@ export function PlannerView({
       ).length,
     [activeScheduleRows, activeSlotId, commissionSelections],
   );
+  const eligibility = useMemo(
+    () => projectPlannerEligibility(materias, progreso, plan, slots.map((slot) => slot.id), activeSlotId),
+    [activeSlotId, materias, plan, progreso, slots],
+  );
+  const activeCredits = creditsBySlot[activeSlotId] ?? 0;
 
   const available = useMemo(() => {
-    const term = search.trim().toLocaleLowerCase("es");
+    const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
+    const term = normalize(search.trim());
     return materias
       .filter((materia) => progreso[materia.id] !== "aprobada")
       .filter((materia) => !plannedIds.has(materia.id))
-      .filter((materia) => materia.grupo !== "electiva-proyecto-final" || materia.estadoOferta !== "inactiva")
+      .filter((materia) => showAll || materia.estadoOferta !== "inactiva")
       .filter(
         (materia) =>
           showAll ||
-          materiasHabilitadas[materia.id] ||
+          eligibility[materia.id]?.ready ||
           progreso[materia.id] === "regular" ||
           progreso[materia.id] === "cursando",
       )
       .filter(
         (materia) =>
           !term ||
-          materia.id.toLocaleLowerCase("es").includes(term) ||
-          materia.nombre.toLocaleLowerCase("es").includes(term),
+          normalize(materia.id).includes(term) ||
+          normalize(materia.nombre).includes(term),
       )
       .sort((left, right) => {
-        const leftScore = materiasHabilitadas[left.id] ? 0 : 1;
-        const rightScore = materiasHabilitadas[right.id] ? 0 : 1;
+        const leftScore = eligibility[left.id]?.ready ? 0 : 1;
+        const rightScore = eligibility[right.id]?.ready ? 0 : 1;
         if (leftScore !== rightScore) return leftScore - rightScore;
         if (left.cuatrimestre !== right.cuatrimestre) return left.cuatrimestre - right.cuatrimestre;
         return left.id.localeCompare(right.id);
-      })
-      .slice(0, term ? 50 : showAll ? 20 : 12);
-  }, [materias, materiasHabilitadas, plannedIds, progreso, search, showAll]);
+      });
+  }, [materias, eligibility, plannedIds, progreso, search, showAll]);
 
   const moveCourse = (courseId: string, targetSlotId: string) => {
     const course = courseMap.get(courseId);
-    if (!course) return;
+    if (!course || !slots.some((slot) => slot.id === targetSlotId)) return;
     const sourceSlotId = slots.find((slot) => (plan[slot.id] ?? []).includes(courseId))?.id;
     const targetWithoutCourse = (plan[targetSlotId] ?? []).filter((id) => id !== courseId);
     const resultCredits = targetWithoutCourse.reduce(
@@ -359,11 +340,14 @@ export function PlannerView({
         return updated;
       });
     }
+    setHasExplicitChanges(true);
     setPlan(next);
     setError(null);
   };
 
   const removeCourse = (courseId: string, slotId: string) => {
+    setHasExplicitChanges(true);
+    setLastRemoved({ courseId, slotId, commissionId: commissionSelections[slotId]?.[courseId] });
     setPlan((current) => ({ ...current, [slotId]: (current[slotId] ?? []).filter((id) => id !== courseId) }));
     setCommissionSelections((current) => {
       const updated = { ...current, [slotId]: { ...(current[slotId] ?? {}) } };
@@ -373,7 +357,25 @@ export function PlannerView({
     setError(null);
   };
 
+  const undoRemove = () => {
+    if (!lastRemoved || plannedIds.has(lastRemoved.courseId)) return;
+    const course = courseMap.get(lastRemoved.courseId);
+    if (!course) return;
+    if ((creditsBySlot[lastRemoved.slotId] ?? 0) + course.creditos > MAX_CREDITS) {
+      setError(`Para restaurar ${course.nombre}, liberá créditos en ese cuatrimestre.`);
+      return;
+    }
+    setHasExplicitChanges(true);
+    setPlan((current) => ({ ...current, [lastRemoved.slotId]: [...(current[lastRemoved.slotId] ?? []), lastRemoved.courseId] }));
+    if (lastRemoved.commissionId) {
+      setCommissionSelections((current) => ({ ...current, [lastRemoved.slotId]: { ...current[lastRemoved.slotId], [lastRemoved.courseId]: lastRemoved.commissionId! } }));
+    }
+    setLastRemoved(null);
+    setError(null);
+  };
+
   const selectCommission = (courseId: string, commissionId: string) => {
+    setHasExplicitChanges(true);
     setCommissionSelections((current) => {
       const slotSelections = { ...(current[activeSlotId] ?? {}) };
       if (commissionId) slotSelections[courseId] = commissionId;
@@ -382,8 +384,21 @@ export function PlannerView({
     });
   };
 
+  const selectSlot = (slotId: string) => {
+    if (storageReadable) setHasExplicitChanges(true);
+    setActiveSlotId(slotId);
+    setError(null);
+  };
+
   return (
     <div className="space-y-5">
+      {storageError ? <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">{storageError}</p> : null}
+      {lastRemoved && !plannedIds.has(lastRemoved.courseId) ? (
+        <div role="status" className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-xs text-blue-800">
+          <span>Quitaste {courseMap.get(lastRemoved.courseId)?.nombre} del plan.</span>
+          <button type="button" onClick={undoRemove} className="inline-flex min-h-9 items-center gap-1.5 font-bold"><RotateCcw className="size-3.5" /> Deshacer</button>
+        </div>
+      ) : null}
       <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -392,7 +407,7 @@ export function PlannerView({
             </span>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950">Armá un cuatri a la vez.</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Elegí un período, sumá materias y asigná comisiones. La lista queda contenida aunque agregues muchas y el calendario te marca superposiciones.
+              Organizá los próximos cuatrimestres, revisá tus correlativas y encontrá comisiones que encajen en tu semana.
             </p>
             <div className="mt-3 flex flex-wrap gap-3 text-xs font-bold">
               <a href="https://ceitba.org.ar/scheduler/LN?plan=L20" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-blue-700 hover:underline">
@@ -422,7 +437,7 @@ export function PlannerView({
         <div className="mb-3 flex items-center justify-between gap-3 px-1">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Tu ruta</p>
-            <p className="mt-0.5 text-xs text-slate-500">Seleccioná un cuatri para editarlo sin abrir seis listas largas.</p>
+            <p className="mt-0.5 text-xs text-slate-500">Tu plan se guarda automáticamente en este navegador.</p>
           </div>
           <span className="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 sm:inline">Objetivo · {IDEAL_CREDITS} cr</span>
         </div>
@@ -436,7 +451,8 @@ export function PlannerView({
               <button
                 key={slot.id}
                 type="button"
-                onClick={() => setActiveSlotId(slot.id)}
+                onClick={() => selectSlot(slot.id)}
+                disabled={!hydrated}
                 aria-pressed={active}
                 className={`min-h-24 rounded-2xl border p-3 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
                   active
@@ -468,7 +484,8 @@ export function PlannerView({
           <select
             id="planner-term"
             value={activeSlotId}
-            onChange={(event) => setActiveSlotId(event.target.value)}
+            disabled={!hydrated}
+            onChange={(event) => selectSlot(event.target.value)}
             className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           >
             {slots.map((slot) => <option key={slot.id} value={slot.id}>{slot.label}</option>)}
@@ -478,6 +495,7 @@ export function PlannerView({
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
             <input
               type="search"
+              aria-label="Buscar materias para agregar al plan"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Buscar por nombre o código"
@@ -498,9 +516,12 @@ export function PlannerView({
             <p className="text-xs font-semibold text-slate-500">{available.length} para agregar</p>
             {search ? <button type="button" onClick={() => setSearch("")} className="text-xs font-bold text-blue-700">Limpiar</button> : null}
           </div>
+          <p className="mt-2 text-[11px] leading-5 text-slate-500">“Según tu plan” supone aprobar las materias de cuatris anteriores. Las correlativas del mismo cuatri no se dan por cumplidas.</p>
           <div className="mt-2 max-h-[32rem] space-y-2 overflow-y-auto pr-1 xl:flex-1">
             {available.length > 0 ? available.map((materia) => {
-              const ready = materiasHabilitadas[materia.id];
+              const readiness = eligibility[materia.id];
+              const ready = readiness?.ready;
+              const exceedsCredits = activeCredits + materia.creditos > MAX_CREDITS;
               return (
                 <div key={`available-${materia.id}`} className="rounded-2xl border border-slate-200 bg-white p-3">
                   <div className="flex items-start justify-between gap-2">
@@ -508,16 +529,18 @@ export function PlannerView({
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="font-mono text-[10px] font-semibold text-slate-500">{materia.id}</span>
                         <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${ready ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-500"}`}>
-                          {ready ? "Podés cursar" : "Con correlativas"}
+                          {materia.estadoOferta === "inactiva" ? "Oferta inactiva" : ready ? readiness.projected ? "Según tu plan" : "Podés cursar" : "Revisar requisitos"}
                         </span>
                       </div>
                       <p className="mt-1 text-sm font-semibold leading-snug text-slate-900">{materia.nombre}</p>
-                      <p className="mt-1 text-xs text-slate-500">{materia.creditos} cr</p>
+                      <p className="mt-1 text-xs text-slate-500">{materia.creditos} cr{exceedsCredits ? " · No entra en este cuatri" : ""}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => moveCourse(materia.id, activeSlotId)}
-                      className="grid size-10 shrink-0 place-items-center rounded-xl bg-slate-950 text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                      disabled={!hydrated || exceedsCredits}
+                      title={exceedsCredits ? `Máximo ${MAX_CREDITS} créditos por cuatrimestre` : undefined}
+                      className="grid size-10 shrink-0 place-items-center rounded-xl bg-slate-950 text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
                       aria-label={`Agregar ${materia.nombre} a ${activeSlot?.label}`}
                     >
                       <Plus className="size-4" />
@@ -539,12 +562,21 @@ export function PlannerView({
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-700">Editando</p>
               <h3 className="mt-1 text-xl font-semibold text-slate-950">{activeSlot?.label}</h3>
-              <p className="mt-1 text-xs text-slate-500">{activeCourses.length} materias · {creditsBySlot[activeSlotId] ?? 0} créditos</p>
+              <p className="mt-1 text-xs text-slate-500">{activeCourses.length} materias · {activeCredits} créditos · {Math.max(0, MAX_CREDITS - activeCredits)} disponibles</p>
             </div>
-            <div className="grid grid-cols-2 rounded-xl bg-slate-100 p-1" role="tablist" aria-label="Vista del cuatrimestre">
+            <div className="grid grid-cols-2 rounded-xl bg-slate-100 p-1" role="tablist" aria-label="Vista del cuatrimestre" onKeyDown={(event) => {
+              if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+              event.preventDefault();
+              const next = event.key === "Home" ? "materias" : event.key === "End" ? "horario" : activePanel === "materias" ? "horario" : "materias";
+              setActivePanel(next);
+              document.getElementById(`planner-tab-${next}`)?.focus();
+            }}>
               <button
                 type="button"
                 role="tab"
+                id="planner-tab-materias"
+                aria-controls="planner-panel"
+                tabIndex={activePanel === "materias" ? 0 : -1}
                 aria-selected={activePanel === "materias"}
                 onClick={() => setActivePanel("materias")}
                 className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 text-xs font-bold ${activePanel === "materias" ? "bg-white text-slate-950 shadow-sm" : "text-slate-500"}`}
@@ -554,6 +586,9 @@ export function PlannerView({
               <button
                 type="button"
                 role="tab"
+                id="planner-tab-horario"
+                aria-controls="planner-panel"
+                tabIndex={activePanel === "horario" ? 0 : -1}
                 aria-selected={activePanel === "horario"}
                 onClick={() => setActivePanel("horario")}
                 className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 text-xs font-bold ${activePanel === "horario" ? "bg-white text-slate-950 shadow-sm" : "text-slate-500"}`}
@@ -564,7 +599,9 @@ export function PlannerView({
             </div>
           </div>
 
-          <div className="pt-4" role="tabpanel">
+          {scheduleError && activePanel === "materias" ? <div role="alert" className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-amber-50 p-3 text-xs text-amber-900"><span>No pudimos cargar los horarios. Podés seguir planificando.</span><button type="button" onClick={() => setScheduleRequest((current) => current + 1)} disabled={scheduleLoading} className="inline-flex min-h-9 items-center gap-1.5 font-bold disabled:opacity-50"><RefreshCw className="size-3.5" /> Reintentar</button></div> : null}
+          {activeCredits > IDEAL_CREDITS ? <p className="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-5 text-amber-800">Carga alta: superaste la referencia de {IDEAL_CREDITS} créditos. Revisá cuántas horas podés dedicarle a este cuatrimestre.</p> : null}
+          <div className="pt-4" role="tabpanel" id="planner-panel" aria-labelledby={`planner-tab-${activePanel}`}>
             {activePanel === "horario" ? (
               <PlannerSchedule
                 events={activeEvents}
@@ -574,22 +611,28 @@ export function PlannerView({
                 referenceCount={selectedReferenceCount}
                 loading={scheduleLoading}
                 sourceError={scheduleError}
+                onRetry={() => setScheduleRequest((current) => current + 1)}
+                onSelectCourses={() => setActivePanel("materias")}
               />
             ) : activeCourses.length > 0 ? (
               <div className="max-h-[39rem] space-y-2 overflow-y-auto pr-1">
                 {activeScheduleRows.map(({ course, offering, isReference }) => {
-                  const selectedCommission = commissionSelections[activeSlotId]?.[course.id] ?? "";
+                  const storedCommission = commissionSelections[activeSlotId]?.[course.id] ?? "";
+                  const selectedCommission = offering?.commissions.some((commission) => commission.id === storedCommission) ? storedCommission : "";
+                  const readiness = eligibility[course.id];
                   return (
                     <article key={`${activeSlotId}-${course.id}`} className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3.5 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,24rem)_auto] lg:items-center">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-mono text-[10px] font-bold text-slate-500">{course.id}</span>
                           <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-slate-600 shadow-sm">{course.creditos} cr</span>
-                          <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${materiasHabilitadas[course.id] ? "bg-indigo-100 text-indigo-700" : "bg-amber-50 text-amber-800"}`}>
-                            {materiasHabilitadas[course.id] ? "Habilitada" : "Revisar correlativas"}
+                          <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${readiness?.ready ? "bg-indigo-100 text-indigo-700" : "bg-amber-50 text-amber-800"}`}>
+                            {readiness?.ready ? readiness.projected ? "Según tu plan" : "Habilitada" : "Revisar requisitos"}
                           </span>
+                          {course.estadoOferta === "inactiva" ? <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-bold text-amber-800">Oferta inactiva</span> : null}
                         </div>
                         <h4 className="mt-1.5 text-sm font-semibold leading-snug text-slate-950">{course.nombre}</h4>
+                        {!readiness?.ready ? <p className="mt-1 text-[11px] leading-5 text-amber-800">{readiness?.missingPrerequisites.length ? `Faltan: ${readiness.missingPrerequisites.map((id) => courseMap.get(id)?.nombre ?? id).join(", ")}. ` : ""}{readiness?.missingCredits ? `Necesitás ${readiness.missingCredits} créditos aprobados más.` : ""}</p> : null}
                         <a
                           href={foroItbaCourseUrl(course.id, course.nombre)}
                           target="_blank"
@@ -622,6 +665,7 @@ export function PlannerView({
                               <option key={commission.id} value={commission.id}>{formatCommission(commission)}</option>
                             ))}
                           </select>
+                          {storedCommission && !selectedCommission && !scheduleLoading ? <span className="mt-1 block text-[10px] leading-4 text-amber-700">La comisión guardada cambió o ya no está publicada. Elegí una de la oferta actual.</span> : null}
                           {isReference && offering ? (
                             <span className="mt-1 block text-[10px] font-semibold text-amber-700">
                               Oferta del {offering.period}° cuatrimestre de {offering.year}; usala sólo como referencia.
@@ -667,7 +711,7 @@ export function PlannerView({
                 <div>
                   <Plus className="mx-auto size-7 text-slate-400" />
                   <p className="mt-3 text-sm font-semibold text-slate-800">Este cuatrimestre está vacío</p>
-                  <p className="mt-1 text-xs text-slate-500">Elegí materias desde el panel izquierdo. Esta vista no va a crecer más allá de la pantalla.</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">Buscá una materia en “Agregar a” y tocá +. Después elegí su comisión para armar tu semana.</p>
                 </div>
               </div>
             )}

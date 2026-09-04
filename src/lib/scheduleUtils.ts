@@ -56,11 +56,16 @@ export function normalizeScheduleData(data: CeitbaSubjectsResponse): ScheduleOff
   const offerings = new Map<string, ScheduleOffering>();
 
   for (const section of Object.values(data)) {
+    if (!section || typeof section !== "object" || Array.isArray(section)) continue;
     for (const yearGroup of Object.values(section)) {
+      if (!yearGroup || typeof yearGroup !== "object" || Array.isArray(yearGroup)) continue;
       for (const subjects of Object.values(yearGroup)) {
+        if (!Array.isArray(subjects)) continue;
         for (const subject of subjects) {
-          if (!subject.subject_id || !subject.course_start) continue;
+          if (!subject || typeof subject.subject_id !== "string" || typeof subject.course_start !== "string") continue;
           const year = Number(subject.course_start.slice(0, 4));
+          const month = Number(subject.course_start.slice(5, 7));
+          if (!Number.isInteger(year) || year < 1900 || !Number.isInteger(month) || month < 1 || month > 12) continue;
           const period = academicPeriod(subject.course_start);
           const key = `${subject.subject_id}:${year}:${period}`;
           const current = offerings.get(key) ?? {
@@ -76,10 +81,9 @@ export function normalizeScheduleData(data: CeitbaSubjectsResponse): ScheduleOff
             current.commissions.map((commission, index) => [commissionKey(commission.name), index]),
           );
 
-          for (const commission of subject.commissions ?? []) {
-            const meetings = (commission.schedule ?? []).filter(
-              (meeting) => meeting.day && meeting.time_from && meeting.time_to,
-            );
+          for (const commission of Array.isArray(subject.commissions) ? subject.commissions : []) {
+            if (!commission || typeof commission.name !== "string" || !commission.name.trim()) continue;
+            const meetings = (Array.isArray(commission.schedule) ? commission.schedule : []).filter(isValidScheduleMeeting);
             if (meetings.length === 0) continue;
             const id = commissionSignature(commission.name, meetings);
             const normalizedCommission = {
@@ -157,9 +161,51 @@ export function formatCommission(commission: ScheduleCommission): string {
   return `${commission.label} — ${commission.meetings.map(formatMeeting).join(" / ")}`;
 }
 
-function timeToMinutes(time: string): number {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + (minutes || 0);
+export function timeToMinutes(time: string): number {
+  if (!/^\d{1,2}:\d{2}(?::\d{2})?$/.test(time)) return Number.NaN;
+  const [hours, minutes, seconds = 0] = time.split(":").map(Number);
+  if (hours > 24 || minutes > 59 || seconds > 59 || (hours === 24 && (minutes !== 0 || seconds !== 0))) return Number.NaN;
+  return hours * 60 + minutes;
+}
+
+export function isValidScheduleMeeting(meeting: CeitbaScheduleMeeting): boolean {
+  return Boolean(meeting) && Object.prototype.hasOwnProperty.call(DAY_LABELS, meeting.day) &&
+    Number.isFinite(timeToMinutes(meeting.time_from)) &&
+    Number.isFinite(timeToMinutes(meeting.time_to)) &&
+    timeToMinutes(meeting.time_from) < timeToMinutes(meeting.time_to);
+}
+
+export function isAsynchronousMeeting(meeting: CeitbaScheduleMeeting): boolean {
+  const location = `${meeting.classroom} ${meeting.building}`
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return /asincronic|asynchronous/.test(location);
+}
+
+export function layoutScheduleEvents(events: PlannerScheduleEvent[]): Map<string, { index: number; count: number }> {
+  const layout = new Map<string, { index: number; count: number }>();
+  const days = [...new Set(events.map((event) => event.day))];
+  for (const day of days) {
+    const ordered = events.filter((event) => event.day === day && isValidScheduleMeeting(event))
+      .sort((left, right) => timeToMinutes(left.time_from) - timeToMinutes(right.time_from) ||
+        timeToMinutes(right.time_to) - timeToMinutes(left.time_to));
+    let group: { id: string; index: number }[] = [];
+    let ends: number[] = [];
+    const flush = () => {
+      for (const item of group) layout.set(item.id, { index: item.index, count: ends.length });
+      group = [];
+      ends = [];
+    };
+    for (const event of ordered) {
+      const start = timeToMinutes(event.time_from);
+      if (ends.length > 0 && start >= Math.max(...ends)) flush();
+      const freeColumn = ends.findIndex((end) => end <= start);
+      const index = freeColumn === -1 ? ends.length : freeColumn;
+      ends[index] = timeToMinutes(event.time_to);
+      group.push({ id: event.id, index });
+    }
+    flush();
+  }
+  return layout;
 }
 
 export function detectScheduleConflicts(events: PlannerScheduleEvent[]): ScheduleConflict[] {
@@ -167,13 +213,14 @@ export function detectScheduleConflicts(events: PlannerScheduleEvent[]): Schedul
 
   for (let leftIndex = 0; leftIndex < events.length; leftIndex += 1) {
     const left = events[leftIndex];
-    if (left.building === "Online") continue;
+    if (!isValidScheduleMeeting(left) || isAsynchronousMeeting(left)) continue;
     for (let rightIndex = leftIndex + 1; rightIndex < events.length; rightIndex += 1) {
       const right = events[rightIndex];
       if (
         left.courseId === right.courseId ||
         left.day !== right.day ||
-        right.building === "Online"
+        !isValidScheduleMeeting(right) ||
+        isAsynchronousMeeting(right)
       ) {
         continue;
       }

@@ -14,6 +14,30 @@ const CORS_HEADERS = {
 
 export const dynamic = "force-dynamic";
 
+class SnapshotTooLargeError extends Error {}
+
+async function readSnapshotBody(request: Request): Promise<string> {
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder("utf-8", { fatal: true });
+  let bytes = 0;
+  let text = "";
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) return text + decoder.decode();
+      bytes += value.byteLength;
+      if (bytes > MAX_BODY_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        throw new SnapshotTooLargeError();
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 function authorized(request: Request): boolean {
   const expected = process.env.SGA_IMPORT_TOKEN;
   const provided = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
@@ -44,11 +68,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const raw = await request.text();
-  if (new TextEncoder().encode(raw).byteLength > MAX_BODY_BYTES) {
+  let raw: string;
+  try {
+    raw = await readSnapshotBody(request);
+  } catch (error) {
+    const tooLarge = error instanceof SnapshotTooLargeError;
     return NextResponse.json(
-      { error: "El snapshot supera el tamaño permitido." },
-      { status: 413, headers: CORS_HEADERS },
+      { error: tooLarge ? "El snapshot supera el tamaño permitido." : "No se pudo leer el snapshot enviado." },
+      { status: tooLarge ? 413 : 400, headers: CORS_HEADERS },
     );
   }
 

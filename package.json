@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "import:sga": "node scripts/import-sga-schedules.mjs",
-    "test:extension": "node extension/sga-horarios/parser.test.mjs"
+    "test:extension": "node extension/sga-horarios/parser.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs && npm run test:extension",
+    "test:progress": "node --test tests/progress.test.mjs",
+    "test:planner": "node --test tests/planner.test.mjs",
+    "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

@@ -1,28 +1,29 @@
 "use client";
 
-import { AlertTriangle, CalendarClock, ExternalLink, RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { AlertTriangle, CalendarClock, CalendarDays, CheckCircle2, ExternalLink, List, RefreshCw } from "lucide-react";
 
-import { detectScheduleConflicts, formatMeeting } from "@/lib/scheduleUtils";
+import {
+  detectScheduleConflicts,
+  formatMeeting,
+  isAsynchronousMeeting,
+  isValidScheduleMeeting,
+  layoutScheduleEvents,
+  timeToMinutes,
+} from "@/lib/scheduleUtils";
 import type { PlannerScheduleEvent } from "@/types/schedule";
 
-const WEEKDAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"] as const;
-const DAY_LABELS: Record<(typeof WEEKDAYS)[number], string> = {
-  MONDAY: "Lunes",
-  TUESDAY: "Martes",
-  WEDNESDAY: "Miércoles",
-  THURSDAY: "Jueves",
-  FRIDAY: "Viernes",
+const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+const DAY_LABELS: Record<string, string> = {
+  MONDAY: "Lunes", TUESDAY: "Martes", WEDNESDAY: "Miércoles", THURSDAY: "Jueves",
+  FRIDAY: "Viernes", SATURDAY: "Sábado", SUNDAY: "Domingo",
 };
-const START_HOUR = 8;
-const END_HOUR = 22;
-const TOTAL_MINUTES = (END_HOUR - START_HOUR) * 60;
-
 const EVENT_STYLES = [
   "border-blue-300 bg-blue-50 text-blue-950 dark:border-blue-700 dark:bg-blue-950 dark:text-blue-100",
   "border-indigo-300 bg-indigo-50 text-indigo-950 dark:border-indigo-700 dark:bg-indigo-950 dark:text-indigo-100",
   "border-emerald-300 bg-emerald-50 text-emerald-950 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100",
   "border-amber-300 bg-amber-50 text-amber-950 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100",
-] as const;
+];
 
 interface PlannerScheduleProps {
   events: PlannerScheduleEvent[];
@@ -32,11 +33,8 @@ interface PlannerScheduleProps {
   referenceCount: number;
   loading: boolean;
   sourceError: string | null;
-}
-
-function timeToMinutes(time: string): number {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + (minutes || 0);
+  onRetry?: () => void;
+  onSelectCourses?: () => void;
 }
 
 function eventStyle(courseId: string): string {
@@ -45,225 +43,172 @@ function eventStyle(courseId: string): string {
 }
 
 export function PlannerSchedule({
-  events,
-  activeLabel,
-  subjectsCount,
-  selectedCount,
-  referenceCount,
-  loading,
-  sourceError,
+  events, activeLabel, subjectsCount, selectedCount, referenceCount, loading, sourceError,
+  onRetry, onSelectCourses,
 }: PlannerScheduleProps) {
-  const conflicts = detectScheduleConflicts(events);
+  const [view, setView] = useState<"semana" | "agenda">("semana");
+  const validEvents = events.filter(isValidScheduleMeeting);
+  const scheduled = validEvents.filter((event) => !isAsynchronousMeeting(event));
+  const asynchronous = validEvents.filter(isAsynchronousMeeting);
+  const conflicts = detectScheduleConflicts(validEvents);
   const conflictedIds = new Set(conflicts.flatMap((conflict) => conflict.eventIds));
-  const weekdayEvents = events.filter(
-    (event) =>
-      WEEKDAYS.includes(event.day as (typeof WEEKDAYS)[number]) && event.building !== "Online",
-  );
-  const complementaryEvents = events.filter(
-    (event) =>
-      !WEEKDAYS.includes(event.day as (typeof WEEKDAYS)[number]) || event.building === "Online",
-  );
-  const conflictLayout = new Map<string, { index: number; count: number }>();
-  const adjacency = new Map<string, Set<string>>();
-  for (const conflict of conflicts) {
-    const [left, right] = conflict.eventIds;
-    adjacency.set(left, new Set([...(adjacency.get(left) ?? []), right]));
-    adjacency.set(right, new Set([...(adjacency.get(right) ?? []), left]));
-  }
-  const visited = new Set<string>();
-  for (const eventId of adjacency.keys()) {
-    if (visited.has(eventId)) continue;
-    const pending = [eventId];
-    const group: string[] = [];
-    while (pending.length > 0) {
-      const current = pending.pop();
-      if (!current || visited.has(current)) continue;
-      visited.add(current);
-      group.push(current);
-      for (const neighbor of adjacency.get(current) ?? []) pending.push(neighbor);
-    }
-    group.sort();
-    group.forEach((id, index) => conflictLayout.set(id, { index, count: group.length }));
-  }
+  const layout = layoutScheduleEvents(scheduled);
+  const visibleDays = DAYS.filter((day, index) => index < 5 || scheduled.some((event) => event.day === day));
+  const firstHour = Math.min(8, ...scheduled.map((event) => Math.floor(timeToMinutes(event.time_from) / 60)));
+  const lastHour = Math.max(22, ...scheduled.map((event) => Math.ceil(timeToMinutes(event.time_to) / 60)));
+  const minutes = (lastHour - firstHour) * 60;
+  const hours = scheduled.reduce((total, event) => total + timeToMinutes(event.time_to) - timeToMinutes(event.time_from), 0) / 60;
+  const gridColumns = `3.5rem repeat(${visibleDays.length}, minmax(8rem, 1fr))`;
+  const eventById = new Map(events.map((event) => [event.id, event]));
 
-  if (loading) {
+  if (loading && subjectsCount > 0 && events.length === 0) {
     return (
-      <div className="grid min-h-[30rem] place-items-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 text-center">
+      <div role="status" className="grid min-h-[24rem] place-items-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 text-center">
         <div>
-          <RefreshCw className="mx-auto size-6 animate-spin text-blue-700" />
+          <RefreshCw className="mx-auto size-6 animate-spin text-blue-700" aria-hidden="true" />
           <p className="mt-3 text-sm font-semibold text-slate-800">Actualizando horarios…</p>
-          <p className="mt-1 text-xs text-slate-500">La planificación sigue disponible aunque la fuente tarde.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (sourceError) {
-    return (
-      <div className="grid min-h-[30rem] place-items-center rounded-2xl border border-amber-200 bg-amber-50 px-6 text-center">
-        <div className="max-w-md">
-          <AlertTriangle className="mx-auto size-6 text-amber-700" />
-          <p className="mt-3 text-sm font-semibold text-amber-900">No pudimos actualizar los horarios</p>
-          <p className="mt-1 text-xs leading-5 text-amber-800">{sourceError}</p>
-          <a
-            href="https://ceitba.org.ar/scheduler/LN?plan=L20"
-            target="_blank"
-            rel="noreferrer"
-            className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-xl bg-amber-900 px-4 text-xs font-bold text-white"
-          >
-            Abrir combinador CEITBA <ExternalLink className="size-3.5" />
-          </a>
+          <p className="mt-1 text-xs text-slate-500">Podés seguir organizando tus materias mientras tanto.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-col gap-2 rounded-2xl bg-slate-100 p-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 rounded-2xl bg-slate-100 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs font-bold text-slate-800">{activeLabel}</p>
-          <p className="mt-0.5 text-[11px] text-slate-500">
-            {selectedCount} de {subjectsCount} materias con comisión elegida
+          <p className="text-sm font-bold text-slate-800">{activeLabel}</p>
+          <p className="mt-1 text-xs text-slate-500">
+            {selectedCount} de {subjectsCount} materias con comisión · {hours.toLocaleString("es-AR", { maximumFractionDigits: 1 })} h semanales con horario fijo
           </p>
         </div>
         {conflicts.length > 0 ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700">
-            <AlertTriangle className="size-3.5" /> {conflicts.length} choque{conflicts.length === 1 ? "" : "s"}
+          <span className="inline-flex items-center gap-1.5 self-start rounded-full bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700">
+            <AlertTriangle className="size-3.5" /> {conflicts.length} cruce{conflicts.length === 1 ? "" : "s"}
           </span>
         ) : selectedCount > 0 ? (
-          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
-            Sin superposiciones
+          <span className="inline-flex items-center gap-1.5 self-start rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
+            <CheckCircle2 className="size-3.5" /> Sin cruces detectados
           </span>
         ) : null}
       </div>
 
-      {referenceCount > 0 ? (
-        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-          <span>
-            {referenceCount} {referenceCount === 1 ? "materia usa" : "materias usan"} horarios del otro
-            cuatrimestre del mismo año como referencia. Confirmalos cuando se publique la oferta exacta.
-          </span>
+      {sourceError ? (
+        <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">
+          <p><strong>No pudimos actualizar los horarios.</strong> {sourceError}</p>
+          {onRetry ? <button type="button" onClick={onRetry} disabled={loading} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-white px-3 font-bold disabled:opacity-50"><RefreshCw className="size-3.5" /> Reintentar</button> : null}
         </div>
       ) : null}
 
-      {subjectsCount === 0 ? (
-        <div className="grid min-h-[28rem] place-items-center rounded-2xl border border-dashed border-slate-300 px-6 text-center">
-          <div>
-            <CalendarClock className="mx-auto size-7 text-slate-400" />
-            <p className="mt-3 text-sm font-semibold text-slate-800">Primero agregá materias a este cuatrimestre</p>
-            <p className="mt-1 text-xs text-slate-500">Después vas a poder elegir comisiones y detectar cruces.</p>
-          </div>
+      {referenceCount > 0 ? (
+        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <span>{referenceCount} {referenceCount === 1 ? "materia usa" : "materias usan"} horarios del otro cuatrimestre del mismo año. Son una referencia; confirmalos cuando se publique la oferta de este período.</span>
         </div>
-      ) : events.length === 0 ? (
-        <div className="grid min-h-[28rem] place-items-center rounded-2xl border border-dashed border-slate-300 px-6 text-center">
-          <div>
-            <CalendarClock className="mx-auto size-7 text-slate-400" />
-            <p className="mt-3 text-sm font-semibold text-slate-800">Elegí una comisión en la pestaña Materias</p>
-            <p className="mt-1 text-xs text-slate-500">El calendario se arma solo con los días, aulas y sedes publicados.</p>
+      ) : null}
+
+      {conflicts.length > 0 ? (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3" aria-live="polite">
+          <p className="text-xs font-bold text-rose-800">Revisá estas comisiones</p>
+          <ul className="mt-2 space-y-1.5 text-xs leading-5 text-rose-700">
+            {conflicts.map((conflict) => (
+              <li key={conflict.eventIds.join(":")}>
+                <strong>{DAY_LABELS[conflict.day]} {conflict.from}–{conflict.to}:</strong>{" "}
+                {conflict.eventIds.map((id) => eventById.get(id)?.courseName).join(" y ")}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {events.length === 0 ? (
+        <div className="grid min-h-[24rem] place-items-center rounded-2xl border border-dashed border-slate-300 px-6 text-center">
+          <div className="max-w-sm">
+            <CalendarClock className="mx-auto size-8 text-slate-400" />
+            <p className="mt-3 text-sm font-semibold text-slate-800">{subjectsCount === 0 ? "Tu semana empieza con una materia" : "Elegí una comisión para ver tu semana"}</p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">{subjectsCount === 0 ? "Agregá las materias que querés cursar en este cuatrimestre y después elegí sus comisiones." : "En Materias vas a encontrar los días, horarios y cupos publicados para cada comisión."}</p>
+            {onSelectCourses ? <button type="button" onClick={onSelectCourses} className="mt-4 min-h-10 rounded-xl bg-blue-700 px-4 text-xs font-bold text-white hover:bg-blue-800">Ir a materias</button> : null}
           </div>
         </div>
       ) : (
         <>
-          <div className="max-h-[34rem] overflow-auto rounded-2xl border border-slate-200 bg-white">
-            <div className="min-w-[760px]">
-              <div className="sticky top-0 z-20 grid grid-cols-[3.5rem_repeat(5,minmax(8rem,1fr))] border-b border-slate-200 bg-white">
-                <div className="border-r border-slate-200" />
-                {WEEKDAYS.map((day) => (
-                  <div key={day} className="border-r border-slate-200 px-2 py-2 text-center text-xs font-bold text-slate-700 last:border-r-0">
-                    {DAY_LABELS[day]}
-                  </div>
-                ))}
+          {scheduled.length > 0 ? (
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs text-slate-500">Incluye las clases virtuales con horario fijo.</p>
+                <div className="flex rounded-xl bg-slate-100 p-1" aria-label="Formato del horario">
+                  <button type="button" onClick={() => setView("semana")} aria-pressed={view === "semana"} className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold ${view === "semana" ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}><CalendarDays className="size-3.5" /> Semana</button>
+                  <button type="button" onClick={() => setView("agenda")} aria-pressed={view === "agenda"} className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-bold ${view === "agenda" ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}><List className="size-3.5" /> Agenda</button>
+                </div>
               </div>
-              <div className="grid grid-cols-[3.5rem_repeat(5,minmax(8rem,1fr))]">
-                <div className="relative h-[616px] border-r border-slate-200 bg-slate-50">
-                  {Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, index) => (
-                    <span
-                      key={index}
-                      className="absolute right-2 -translate-y-1/2 font-mono text-[10px] text-slate-400"
-                      style={{ top: `${(index / (END_HOUR - START_HOUR)) * 100}%` }}
-                    >
-                      {(START_HOUR + index).toString().padStart(2, "0")}:00
-                    </span>
+
+              {view === "semana" ? (
+                <div>
+                  <p className="mb-2 text-[11px] text-slate-500 sm:hidden">Deslizá para ver la semana o usá Agenda.</p>
+                  <div tabIndex={0} role="region" aria-label={`Calendario semanal: ${activeLabel}`} className="max-h-[36rem] overflow-auto rounded-2xl border border-slate-200 bg-white focus-visible:outline-2 focus-visible:outline-blue-600">
+                    <div style={{ minWidth: `${56 + visibleDays.length * 136}px` }}>
+                      <div className="sticky top-0 z-20 grid border-b border-slate-200 bg-white" style={{ gridTemplateColumns: gridColumns }}>
+                        <div className="border-r border-slate-200" />
+                        {visibleDays.map((day) => <div key={day} className="border-r border-slate-200 px-2 py-3 text-center text-xs font-bold text-slate-700 last:border-r-0">{DAY_LABELS[day]}</div>)}
+                      </div>
+                      <div className="grid" style={{ gridTemplateColumns: gridColumns }}>
+                        <div className="relative border-r border-slate-200 bg-slate-50" style={{ height: (lastHour - firstHour) * 48 }}>
+                          {Array.from({ length: lastHour - firstHour }, (_, index) => <span key={index} className="absolute right-2 font-mono text-[10px] text-slate-400" style={{ top: index * 48 + 3 }}>{(firstHour + index).toString().padStart(2, "0")}:00</span>)}
+                        </div>
+                        {visibleDays.map((day) => (
+                          <div key={day} className="relative border-r border-slate-200 last:border-r-0" style={{ height: (lastHour - firstHour) * 48, backgroundImage: "repeating-linear-gradient(to bottom, transparent 0, transparent 47px, rgb(226 232 240 / 0.85) 47px, rgb(226 232 240 / 0.85) 48px)" }}>
+                            {scheduled.filter((event) => event.day === day).map((event) => {
+                              const start = timeToMinutes(event.time_from);
+                              const end = timeToMinutes(event.time_to);
+                              const position = layout.get(event.id) ?? { index: 0, count: 1 };
+                              return (
+                                <div key={event.id} tabIndex={0} className={`absolute overflow-hidden rounded-lg border p-1.5 text-[10px] leading-tight shadow-sm focus:z-30 focus:overflow-visible focus:outline-2 focus:outline-blue-600 ${conflictedIds.has(event.id) ? "border-rose-400 bg-rose-50 text-rose-950" : eventStyle(event.courseId)}`} style={{ top: `${((start - firstHour * 60) / minutes) * 100}%`, height: `${((end - start) / minutes) * 100}%`, left: `calc(${position.index * 100 / position.count}% + 3px)`, width: `calc(${100 / position.count}% - 6px)` }} title={`${event.courseName} · Comisión ${event.commissionName} · ${formatMeeting(event)}`} aria-label={`${event.courseName}, comisión ${event.commissionName}, ${formatMeeting(event)}${conflictedIds.has(event.id) ? ", con superposición" : ""}`}>
+                                  <p className="font-mono font-bold">{event.courseId}</p>
+                                  <p className="mt-0.5 line-clamp-2 font-semibold">{event.courseName}</p>
+                                  <p className="mt-1">{event.time_from.slice(0, 5)}–{event.time_to.slice(0, 5)}</p>
+                                  <p className="mt-0.5 truncate opacity-75">Com. {event.commissionName} · {event.classroom || event.building}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {DAYS.filter((day) => scheduled.some((event) => event.day === day)).map((day) => (
+                    <section key={day}>
+                      <h4 className="mb-2 text-xs font-bold text-slate-500">{DAY_LABELS[day]}</h4>
+                      <div className="space-y-2">
+                        {scheduled.filter((event) => event.day === day).sort((left, right) => timeToMinutes(left.time_from) - timeToMinutes(right.time_from)).map((event) => (
+                          <article key={event.id} className={`flex gap-3 rounded-xl border p-3 ${conflictedIds.has(event.id) ? "border-rose-300 bg-rose-50 text-rose-900" : eventStyle(event.courseId)}`}>
+                            <p className="shrink-0 font-mono text-xs font-semibold">{event.time_from.slice(0, 5)}<span className="mt-1 block font-normal opacity-60">{event.time_to.slice(0, 5)}</span></p>
+                            <div><h5 className="text-sm font-semibold">{event.courseName}</h5><p className="mt-1 text-xs opacity-75">{event.courseId} · Comisión {event.commissionName} · {event.classroom || event.building || "Aula por confirmar"}</p>{conflictedIds.has(event.id) ? <p className="mt-1 text-xs font-bold">Cruce de horario</p> : null}</div>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
                   ))}
                 </div>
-                {WEEKDAYS.map((day) => (
-                  <div
-                    key={day}
-                    className="relative h-[616px] border-r border-slate-200 last:border-r-0"
-                    style={{
-                      backgroundImage:
-                        "repeating-linear-gradient(to bottom, transparent 0, transparent 43px, rgb(226 232 240 / 0.85) 43px, rgb(226 232 240 / 0.85) 44px)",
-                    }}
-                  >
-                    {weekdayEvents
-                      .filter((event) => event.day === day)
-                      .map((event) => {
-                        const start = Math.max(START_HOUR * 60, timeToMinutes(event.time_from));
-                        const end = Math.min(END_HOUR * 60, timeToMinutes(event.time_to));
-                        const top = ((start - START_HOUR * 60) / TOTAL_MINUTES) * 100;
-                        const height = Math.max(3, ((end - start) / TOTAL_MINUTES) * 100);
-                        const conflict = conflictedIds.has(event.id);
-                        const layout = conflictLayout.get(event.id);
-                        const left = layout ? (layout.index / layout.count) * 100 : 0;
-                        const width = layout ? 100 / layout.count : 100;
-                        return (
-                          <div
-                            key={event.id}
-                            className={`absolute overflow-hidden rounded-lg border p-1.5 text-[10px] leading-tight shadow-sm ${
-                              conflict
-                                ? "z-10 border-rose-500 bg-rose-50 text-rose-950 dark:bg-rose-950 dark:text-rose-100"
-                                : eventStyle(event.courseId)
-                            }`}
-                            style={{
-                              top: `${top}%`,
-                              height: `${height}%`,
-                              left: `calc(${left}% + 0.25rem)`,
-                              width: `calc(${width}% - 0.5rem)`,
-                            }}
-                            title={`${event.courseName} · ${formatMeeting(event)}`}
-                          >
-                            <p className="font-mono font-bold">{event.courseId}</p>
-                            <p className="mt-0.5 line-clamp-2 font-semibold">{event.courseName}</p>
-                            <p className="mt-1 opacity-75">
-                              {event.time_from.slice(0, 5)}–{event.time_to.slice(0, 5)} · {event.commissionName}
-                            </p>
-                            <p className="truncate opacity-75">{event.classroom || event.building}</p>
-                          </div>
-                        );
-                      })}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+              )}
+            </>
+          ) : null}
 
-          {complementaryEvents.length > 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Virtuales y fin de semana</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {complementaryEvents.map((event) => (
-                  <span key={event.id} className="rounded-lg bg-white px-2.5 py-1.5 text-[11px] text-slate-700 shadow-sm">
-                    <strong>{event.courseId}</strong> · {formatMeeting(event)}
-                  </span>
-                ))}
-              </div>
+          {asynchronous.length > 0 ? (
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-bold text-slate-700">Actividades asincrónicas</p>
+              <p className="mt-1 text-xs leading-5 text-slate-500">Sin asistencia en un horario fijo. No se cuentan como cruces.</p>
+              <ul className="mt-3 space-y-2">{asynchronous.map((event) => <li key={event.id} className="rounded-lg bg-white px-3 py-2 text-xs text-slate-700"><strong>{event.courseName}</strong> · Comisión {event.commissionName}</li>)}</ul>
             </div>
           ) : null}
         </>
       )}
 
-      <p className="flex flex-wrap items-center justify-between gap-2 px-1 text-[10px] leading-4 text-slate-500">
-        <span>El snapshot del SGA tiene prioridad; CEITBA se usa como respaldo. Verificá siempre antes de matricularte.</span>
-        <a
-          href="https://ceitba.org.ar/scheduler/LN?plan=L20"
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 font-bold text-blue-700 hover:underline"
-        >
-          Fuente original <ExternalLink className="size-3" />
-        </a>
+      <p className="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] leading-5 text-slate-500">
+        <span>Oferta del SGA con respaldo de CEITBA. Confirmá horarios y cupos antes de inscribirte.</span>
+        <a href="https://ceitba.org.ar/scheduler/LN?plan=L20" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-bold text-blue-700 hover:underline">Consultar CEITBA <ExternalLink className="size-3" /></a>
       </p>
     </div>
   );

@@ -1,9 +1,12 @@
 import type {
   EstadoMateria,
+  EstadoVisualMateria,
   MateriaPlan,
+  MapaHabilitadas,
   MinorTag,
   ProgresoMaterias,
   SlotElectiva8Cuat,
+  TipoCorrelativa,
 } from "@/types/plan";
 
 export interface InconsistenciaCorrelativa {
@@ -55,7 +58,75 @@ export function getEstadoPersistido(
   progreso: ProgresoMaterias,
   materiaId: string,
 ): EstadoMateria {
-  return progreso[materiaId] ?? "pendiente";
+  const estado = Object.prototype.hasOwnProperty.call(progreso, materiaId)
+    ? progreso[materiaId]
+    : undefined;
+  return esEstadoMateria(estado) ? estado : "pendiente";
+}
+
+export function esEstadoMateria(value: unknown): value is EstadoMateria {
+  return value === "pendiente" || value === "cursando" || value === "regular" || value === "aprobada";
+}
+
+export function normalizarProgreso(
+  value: unknown,
+  idsValidos?: ReadonlySet<string>,
+): ProgresoMaterias {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).filter(([id, estado]) =>
+      id.length > 0 &&
+      !["__proto__", "constructor", "prototype"].includes(id) &&
+      (!idsValidos || idsValidos.has(id)) &&
+      esEstadoMateria(estado) && estado !== "pendiente",
+    ),
+  );
+}
+
+export function parsearProgreso(raw: string | null): ProgresoMaterias {
+  if (!raw) return {};
+  try {
+    return normalizarProgreso(JSON.parse(raw));
+  } catch {
+    return {};
+  }
+}
+
+export function cumpleCorrelativa(estado: EstadoMateria, tipo: TipoCorrelativa): boolean {
+  return estado === "aprobada" || (tipo === "cursada" && estado === "regular");
+}
+
+export function cumpleRequisitos(
+  materia: MateriaPlan,
+  progreso: ProgresoMaterias,
+  creditosAprobados: number,
+): boolean {
+  return creditosAprobados >= materia.creditosRequeridos && materia.correlativas.every(
+    (id) => cumpleCorrelativa(getEstadoPersistido(progreso, id), materia.tipoCorrelativa),
+  );
+}
+
+export function calcularDisponibilidad(materias: MateriaPlan[], progreso: ProgresoMaterias) {
+  const creditosAprobados = sumarCreditosAprobados(materias, progreso);
+  const proyeccion = Object.fromEntries(
+    Object.entries(progreso).map(([id, estado]) => [id, estado === "cursando" ? "regular" : estado]),
+  ) as ProgresoMaterias;
+  const materiasHabilitadas: MapaHabilitadas = {};
+  const materiasPreview: Record<string, boolean> = {};
+  const estadoVisualPorMateria: Record<string, EstadoVisualMateria> = {};
+
+  for (const materia of materias) {
+    const estado = getEstadoPersistido(progreso, materia.id);
+    const habilitada = estado !== "aprobada" && cumpleRequisitos(materia, progreso, creditosAprobados);
+    materiasHabilitadas[materia.id] = habilitada;
+    const preview = estado === "pendiente" && !habilitada && cumpleRequisitos(materia, proyeccion, creditosAprobados);
+    if (preview) materiasPreview[materia.id] = true;
+    estadoVisualPorMateria[materia.id] = estado !== "pendiente"
+      ? estado
+      : habilitada ? "puedo_cursar" : preview ? "habilitable_preview" : "pendiente";
+  }
+
+  return { creditosAprobados, materiasHabilitadas, materiasPreview, estadoVisualPorMateria };
 }
 
 export function sumarCreditosAprobados(
@@ -66,6 +137,19 @@ export function sumarCreditosAprobados(
     const estado = getEstadoPersistido(progreso, materia.id);
     return estado === "aprobada" ? total + materia.creditos : total;
   }, 0);
+}
+
+/** Créditos que aportan al título; el excedente de una categoría no cubre otra. */
+export function calcularCreditosTitulo(
+  materias: MateriaPlan[],
+  progreso: ProgresoMaterias,
+): number {
+  const obligatorias = materias.filter((materia) => materia.grupo === "obligatoria");
+  const slots = calcularProgresoSlots8Cuat(materias, progreso);
+  return sumarCreditosAprobados(obligatorias, progreso) + Object.values(slots).reduce(
+    (total, slot) => total + Math.min(slot.aprobado, slot.objetivo),
+    0,
+  );
 }
 
 export function getInterseccionMaterias(

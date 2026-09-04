@@ -27,21 +27,11 @@ export async function GET() {
       signal: AbortSignal.timeout(8_000),
     });
 
-    if (!response.ok) {
-      const imported = await mergePublishedSnapshot({});
-      if (Object.keys(imported).length > 0) return NextResponse.json(imported);
-      return NextResponse.json(
-        { error: "El CEITBA no pudo responder la consulta de horarios." },
-        { status: 502 },
-      );
-    }
+    if (!response.ok) throw new Error("CEITBA schedule request failed");
 
     const data: unknown = await response.json();
     if (!data || typeof data !== "object" || Array.isArray(data)) {
-      return NextResponse.json(
-        { error: "El CEITBA devolvió un formato de horarios inesperado." },
-        { status: 502 },
-      );
+      throw new Error("Invalid CEITBA schedule response");
     }
 
     const merged = await mergePublishedSnapshot(data as CeitbaSubjectsResponse);
@@ -53,10 +43,12 @@ export async function GET() {
     });
   } catch {
     const imported = await mergePublishedSnapshot({});
-    if (Object.keys(imported).length > 0) return NextResponse.json(imported);
+    if (Object.keys(imported).length > 0) {
+      return NextResponse.json(imported, { headers: { "Cache-Control": "no-store" } });
+    }
     return NextResponse.json(
       { error: "No se pudieron actualizar los horarios del CEITBA." },
-      { status: 502 },
+      { status: 502, headers: { "Cache-Control": "no-store" } },
     );
   }
 }

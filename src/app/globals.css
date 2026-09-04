@@ -16,14 +16,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Geist", "Geist Fallback", Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   min-width: 320px;
   transition: background-color 180ms ease, color 180ms ease;
 }
@@ -150,4 +150,55 @@ summary::-webkit-details-marker {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.brand-mark {
+  background: linear-gradient(145deg, #2563eb, #1d4ed8 60%, #1e40af);
+  box-shadow: 0 3px 8px rgb(37 99 235 / 18%), inset 0 1px 0 rgb(255 255 255 / 20%);
+}
+
+:where(button, a, input, select, summary):focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.dark :where(button, a, input, select, summary):focus-visible {
+  outline-color: #93c5fd;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: -5rem;
+  z-index: 100;
+  border-radius: 0.75rem;
+  background: #1d4ed8;
+  color: white;
+  padding: 0.75rem 1rem;
+}
+
+.skip-link:focus { top: 1rem; }
+
+.app-dialog { overscroll-behavior: contain; }
+.app-dialog::backdrop {
+  background: rgb(15 23 42 / 38%);
+  backdrop-filter: blur(3px);
+}
+.app-dialog[open] { animation: dialog-appear 150ms ease-out; }
+.course-dialog[open] { animation: drawer-appear 180ms ease-out; }
+.dark .app-dialog { border-color: #334155; color: #f1f5f9; }
+.dark .ring-slate-950\/80 { --tw-ring-color: #93c5fd; }
+.dark .ring-slate-950 { --tw-ring-color: #60a5fa; }
+.dark .ring-offset-2 { --tw-ring-offset-color: #111a29; }
+.dark .border-slate-950 { border-color: #60a5fa; }
+.dark .border-emerald-200 { border-color: #155e4e; }
+.dark .bg-blue-50\/60 { background-color: rgb(11 39 67 / 60%); }
+
+@keyframes dialog-appear {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes drawer-appear {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
 }
